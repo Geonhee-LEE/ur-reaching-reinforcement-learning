@@ -1,0 +1,39 @@
+
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="glue">
+    <link name="glue_link">
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.08</mass>
+      </inertial>
+
+      <visual name="glue_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <material>
+          <script>
+            <uri>model://glue/materials/scripts</uri>
+            <uri>model://glue/materials/textures</uri>
+            <name>glue</name>
+          </script>
+        </material>
+        <geometry>
+          <mesh>
+            <uri>model://glue/meshes/glue.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+
+      <collision name="glue_collision">
+        <pose>0 0 0.067 0 0 -0.95</pose>
+        <geometry>
+          <box>
+            <size>0.054 0.032 0.133</size>
+          </box>
+        </geometry>
+      </collision>
+
+    </link>
+  </model>
+</sdf>

@@ -1,0 +1,39 @@
+
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="snacks">
+    <link name="snacks_link">
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.08</mass>
+      </inertial>
+
+      <visual name="snacks_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <material>
+          <script>
+            <uri>model://snacks/materials/scripts</uri>
+            <uri>model://snacks/materials/textures</uri>
+            <name>snacks</name>
+          </script>
+        </material>
+        <geometry>
+          <mesh>
+            <uri>model://snacks/meshes/snacks.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+
+      <collision name="snacks_collision">
+        <pose>0.04 0.02 0.117 0 0 2.1</pose>
+        <geometry>
+          <box>
+            <size>0.165 0.06 0.235</size>
+          </box>
+        </geometry>
+      </collision>
+
+    </link>
+  </model>
+</sdf>

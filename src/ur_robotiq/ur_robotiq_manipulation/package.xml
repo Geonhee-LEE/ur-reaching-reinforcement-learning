@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>ur_robotiq_manipulation</name>
+  <version>1.0.0</version>
+  <description>
+      Universal robot arm manipulation.
+  </description>
+
+
+  <author email="nekanat.stock@gmail.com">neka-nat</author>
+  <maintainer email="nekanat.stock@gmail.com">neka-nat</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>moveit_commander</run_depend>
+
+  <export>
+  </export>
+</package>

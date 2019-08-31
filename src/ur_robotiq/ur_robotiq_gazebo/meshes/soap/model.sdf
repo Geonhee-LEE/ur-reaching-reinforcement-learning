@@ -1,0 +1,39 @@
+
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="soap">
+    <link name="soap_link">
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.08</mass>
+      </inertial>
+
+      <visual name="soap_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <material>
+          <script>
+            <uri>model://soap/materials/scripts</uri>
+            <uri>model://soap/materials/textures</uri>
+            <name>soap</name>
+          </script>
+        </material>
+        <geometry>
+          <mesh>
+            <uri>model://soap/meshes/soap.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+
+      <collision name="soap_collision">
+        <pose>0.02 0.002 0.05 0 0 -1.05</pose>
+        <geometry>
+          <box>
+            <size>0.14 0.065 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+
+    </link>
+  </model>
+</sdf>

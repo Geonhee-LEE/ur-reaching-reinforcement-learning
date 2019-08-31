@@ -1,0 +1,2 @@
+- git: {local-name: universal_robot, uri: 'https://github.com/neka-nat/universal_robot.git'}
+- git: {local-name: robotiq_85_gripper, uri: 'https://github.com/neka-nat/robotiq_85_gripper.git'}
