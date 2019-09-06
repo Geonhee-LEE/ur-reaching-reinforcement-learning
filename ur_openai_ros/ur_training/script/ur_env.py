@@ -16,6 +16,8 @@ from joint_publisher import JointPub
 from ur_state import URState
 from controllers_connection import ControllersConnection
 
+
+rospy.loginfo("register...")
 #register the training environment in the gym as an available one
 reg = register(
     id='UR-v0',
@@ -44,7 +46,7 @@ class UREnv(gym.Env):
         self.desired_force = rospy.get_param("/desired_force")
         self.desired_yaw = rospy.get_param("/desired_yaw")
 
-        self.list_of_observations = rospy.get_param("/list_of_observations")
+        # self.list_of_observations = rospy.get_param("/list_of_observations")
 
         haa_max = rospy.get_param("/joint_limits_array/haa_max")
         haa_min = rospy.get_param("/joint_limits_array/haa_min")
