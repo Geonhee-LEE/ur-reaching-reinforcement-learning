@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>ur_robotiq_description</name>
+  <version>1.2.1</version>
+  <description>
+      URDF description for Universal robot arm with robotiq gripper
+  </description>
+
+  <author email="nekanat.stock@gmail.com">neka-nat</author>
+  <maintainer email="nekanat.stock@gmail.com">neka-nat</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>urdf</run_depend>
+  <run_depend>pr2_description</run_depend>
+
+  <export>
+  </export>
+</package>

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="debug" default="false"/>
+  
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <% nrow = 5
+     ncol = 5
+     dlen = 2.0
+     x_center = (nrow - 1) * dlen * 0.5
+     y_center = (ncol - 1) * dlen * 0.5
+     nrow.times do |i|
+     ncol.times do |j|
+     robo_no = i * ncol + j %>
+  <group ns="test<%= robo_no %>">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_robotiq_description)/urdf/ur_robotiq.urdf.xacro'" />
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot<%= robo_no %> -x <%= i*dlen-x_center %> -y <%= j*dlen-y_center %> -z 0.1 -robot_namespace test<%= robo_no %>" respawn="false" output="screen" />
+    <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+
+    <rosparam file="$(find ur_robotiq_gazebo)/controller/arm_controller.yaml" command="load"/>
+    <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller gripper_controller" respawn="false" output="screen"/>
+
+    <include file="$(find ur_robotiq_moveit_config)/launch/move_group.launch">
+      <arg name="debug" default="$(arg debug)" />
+    </include>
+  </group>
+  <% end
+     end %>
+
+</launch>
