@@ -30,3 +30,39 @@ gripper_controller:
   stop_trajectory_duration: 0.5
   state_publish_rate:  25
   action_monitor_rate: 10
+
+ur_shoulder_pan_vel_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: shoulder_pan_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+
+ur_shoulder_lift_vel_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: shoulder_lift_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+
+ur_elbow_vel_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: elbow_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+
+ur_wrist_1_vel_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: wrist_1_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+
+ur_wrist_2_vel_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: wrist_2_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+
+ur_wrist_3_vel_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: wrist_3_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}

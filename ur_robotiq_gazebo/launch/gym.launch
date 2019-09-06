@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="robot" default="ur5"/>
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="pause" default="true"/>  <!-- Start Gazebo with a blank world -->
+   
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" default="$(find ur_robotiq_gazebo)/worlds/demo.world"/>
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg pause)"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="headless" value="$(arg headless)"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_robotiq_description)/urdf/ur_robotiq-vel.urdf.xacro'" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -z 0.1" respawn="false" output="screen" />
+  <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+
+  <!-- Load controllers -->
+  <rosparam file="$(find ur_robotiq_gazebo)/controller/arm_controller.yaml" command="load"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn ur_shoulder_pan_vel_controller ur_shoulder_lift_vel_controller ur_elbow_vel_controller ur_wrist_1_vel_controller ur_wrist_2_vel_controller ur_wrist_3_vel_controller gripper_controller" respawn="false" output="screen"/>
+
+  <!-- Run moveit 
+  <include file="$(find ur_robotiq_moveit_config)/launch/move_group.launch">
+    <arg name="debug" default="$(arg debug)" />
+  </include>
+
+  < Run Rviz >
+  <include file="$(find ur_robotiq_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="debug" default="$(arg debug)" />
+    <arg name="config" default="true" />
+  </include-->
+
+</launch>
