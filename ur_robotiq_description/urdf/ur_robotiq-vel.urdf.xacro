@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ur_robotiq">
 
   <xacro:include filename="$(find ur_description)/urdf/common.gazebo.xacro" />
-  <xacro:include filename="$(find ur_robotiq_description)/urdf/ur5.urdf.xacro" />
+  <xacro:include filename="$(find ur_robotiq_description)/urdf/ur5-vel.urdf.xacro" />
   <xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
   <xacro:include filename="$(find pr2_description)/urdf/common.xacro" />
   <xacro:include filename="$(find pr2_description)/urdf/sensors/kinect2.urdf.xacro" />
