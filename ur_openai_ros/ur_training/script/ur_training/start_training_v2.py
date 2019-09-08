@@ -12,7 +12,7 @@ import random
 import time
 from ur_training.algorithm.qlearn import QLearn
 # import our training environment
-from ur_training.env.ur_env import UREnv
+from ur_training.env.ur_sim_env import URSimEnv
 
 from gym import wrappers
 from std_msgs.msg import Float64

@@ -10,7 +10,7 @@ import gym
 import numpy as np
 import matplotlib.pyplot as plt
 from ur_training.algorithm.qlearn import QLearn
-from ur_training.env.ur_env import *
+from ur_training.env.ur_sim_env import *
 
 MAX_STATES = 10**4
 GAMMA = 0.9
@@ -18,7 +18,6 @@ ALPHA = 0.01
 
 # Create the Gym environment
 env = gym.make('UR-v0')
-print "ENV Loaded..."
 
 def max_dict(d):
     max_v = float('-inf')

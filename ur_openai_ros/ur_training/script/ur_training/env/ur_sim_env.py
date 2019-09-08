@@ -7,31 +7,34 @@ import gym
 import rospy
 import numpy as np
 import time
+
 from gym import utils, spaces
 from geometry_msgs.msg import Pose
 from gym.utils import seeding
+# For register my env
 from gym.envs.registration import register
+
+# For inherit RobotGazeboEnv
+from ur_training.env import robot_gazebo_env_goal
+# About reset GAZEBO simultor
 from gazebo_connection import GazeboConnection
 from joint_publisher import JointPub
 from ur_state import URState
 from controllers_connection import ControllersConnection
 
-
 rospy.loginfo("register...")
 #register the training environment in the gym as an available one
-reg = register(
+reg = gym.envs.register(
     id='UR-v0',
-    entry_point='ur_env:UREnv',
+    entry_point='ur_training.env.ur_sim_env:URSimEnv', # Its directory associated with importing in other sources like from 'ur_training.env.ur_sim_env import *' 
     #timestep_limit=100000,
     )
 
-class UREnv(gym.Env):
+class URSimEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     def __init__(self):
-        
-        # We assume that a ROS node has already been created
-        # before initialising the environment
+        # We assume that a ROS node has already been created before initialising the environment
 
-        # gets training parameters from param server
+        # Gets training parameters from param server
         self.desired_pose = Pose()
         self.desired_pose.position.x = rospy.get_param("/desired_pose/x")
         self.desired_pose.position.y = rospy.get_param("/desired_pose/y")
@@ -46,8 +49,8 @@ class UREnv(gym.Env):
         self.desired_force = rospy.get_param("/desired_force")
         self.desired_yaw = rospy.get_param("/desired_yaw")
 
-        # self.list_of_observations = rospy.get_param("/list_of_observations")
-
+        self.list_of_observations = rospy.get_param("/list_of_observations")
+        
         haa_max = rospy.get_param("/joint_limits_array/haa_max")
         haa_min = rospy.get_param("/joint_limits_array/haa_min")
         hfe_max = rospy.get_param("/joint_limits_array/hfe_max")
@@ -84,10 +87,9 @@ class UREnv(gym.Env):
 
         # Jump Increment Value in Radians
         self.jump_increment = rospy.get_param("/jump_increment")
-
+        
         # stablishes connection with simulator
         self.gazebo = GazeboConnection()
-
         self.controllers_object = ControllersConnection(namespace="ur")
 
         self.ur_state_object = URState(   max_height=self.max_height,
@@ -120,8 +122,6 @@ class UREnv(gym.Env):
 
         self.ur_joint_pubisher_object = JointPub()
         
-
-
         """
         For this version, we consider 5 actions
         1-2) Increment/Decrement haa_joint
@@ -141,7 +141,6 @@ class UREnv(gym.Env):
         
     # Resets the state of the environment and returns an initial observation.
     def _reset(self):
-
         # 0st: We pause the Simulator
         rospy.logdebug("Pausing SIM...")
         self.gazebo.pauseSim()

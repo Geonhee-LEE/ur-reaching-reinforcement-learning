@@ -19,7 +19,7 @@ import rospkg
 from live_plot import LivePlot
 
 # import our training environment
-import ur_env
+import ur_sim_env
 
 
 if __name__ == '__main__':
