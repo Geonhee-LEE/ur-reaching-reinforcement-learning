@@ -38,6 +38,7 @@ def main():
 	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.DEBUG)
     # Create the Gym environment
 	env = gym.make('URTest-v0')
+	env._max_episode_steps = 10000
 	rospy.logdebug ( "Gym environment done")
 	reward_pub = rospy.Publisher('/ur/reward', Float64, queue_size=1)
 	episode_reward_pub = rospy.Publisher('/ur/episode_reward', Float64, queue_size=1)
@@ -47,8 +48,8 @@ def main():
 	pkg_path = rospack.get_path('ur_training')
 	outdir = pkg_path + '/training_results'
 	# Gym wrapper for monitoring
-	env = wrappers.Monitor(env, outdir, force=True)
-	rospy.logdebug("Monitor Wrapper started")
+	#env = wrappers.Monitor(env, outdir, force=True)
+	#rospy.logdebug("Monitor Wrapper started")
 	
 	last_time_steps = numpy.ndarray(0)
 

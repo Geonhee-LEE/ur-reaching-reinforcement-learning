@@ -153,7 +153,7 @@ class URTestEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     	return [seed]
     	
     # Resets the state of the environment and returns an initial observation.
-    def _reset(self):
+    def reset(self):
     	# 0st: We pause the Simulator
     	rospy.logdebug("Pausing SIM...")
     	self._gz_conn.pauseSim()
@@ -204,7 +204,7 @@ class URTestEnv(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	return state
 
-    def _step(self, action):
+    def step(self, action):
     	rospy.logdebug("URTest step func")
 
     	# Given the action selected by the learning algorithm,
