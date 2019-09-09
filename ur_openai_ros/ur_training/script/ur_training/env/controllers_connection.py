@@ -71,7 +71,11 @@ class ControllersConnection():
 
     def reset_ur_joint_controllers(self):
         controllers_reset = ['joint_state_controller',
-                             'arm_controller',
                              'gripper_controller',
-                             'ur_vel_controller']
+                             'ur_shoulder_pan_vel_controller'
+                             'ur_shoulder_lift_vel_controller'
+                             'ur_elbow_vel_controller'
+                             'ur_wrist_1_vel_controller'
+                             'ur_wrist_2_vel_controller'
+                             'ur_wrist_3_vel_controller']
         self.reset_controllers(controllers_reset)

@@ -15,7 +15,8 @@ include_directories(
 
 
 install(PROGRAMS
-  scripts/ur_training/start_training_v2.py
+scripts/ur_training/start_training_v2.py
+scripts/ur_training/test.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

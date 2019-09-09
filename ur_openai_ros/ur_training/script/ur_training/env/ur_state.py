@@ -1,20 +1,30 @@
 #!/usr/bin/env python
-
-import rospy
+# Python
 import copy
+import numpy
+import math
+import sys
+
+# ROS 
+import rospy
+import tf
+
+# ROS msg
 from gazebo_msgs.msg import ContactsState
 from sensor_msgs.msg import Imu
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Quaternion, Vector3
 from sensor_msgs.msg import JointState
-import tf
-import numpy
-import math
+from std_msgs.msg import String
 
+# MoveIt
+import moveit_commander
+import moveit_msgs.msg
+from moveit_commander.conversions import pose_to_list
 
 class URState(object):
 
-    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0, jump_increment=0.7):
+    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
         rospy.logdebug("Starting URState Class object...")
         self.desired_world_point = Vector3(0.0, 0.0, 0.0)
         self._min_height = min_height
@@ -54,7 +64,6 @@ class URState(object):
 
         self._discrete_division = discrete_division
 
-        self.jump_increment = jump_increment
         # We init the observation ranges and We create the bins now for all the observations
         self.init_bins()
 
@@ -80,6 +89,7 @@ class URState(object):
         We check that all systems are ready
         :return:
         """
+        '''
         data_pose = None
         while data_pose is None and not rospy.is_shutdown():
             try:
@@ -109,11 +119,11 @@ class URState(object):
                 rospy.logdebug("Current contacts_data READY")
             except:
                 rospy.logdebug("Current contacts_data not ready yet, retrying")
-
+        '''
         joint_states_msg = None
         while joint_states_msg is None and not rospy.is_shutdown():
             try:
-                joint_states_msg = rospy.wait_for_message("/ur/joint_states", JointState, timeout=0.1)
+                joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=0.1)
                 self.joints_state = joint_states_msg
                 rospy.logdebug("Current joint_states READY")
             except Exception as e:
@@ -129,7 +139,6 @@ class URState(object):
         self.desired_world_point.x = x
         self.desired_world_point.y = y
         self.desired_world_point.z = z
-
 
     def get_base_height(self):
         height = self.base_position.z
@@ -331,9 +340,6 @@ class URState(object):
         rospy.logdebug("###############")
 
         return total_reward
-
-
-
 
     def get_observations(self):
         """
@@ -590,7 +596,6 @@ class URState(object):
         """
         self.current_joint_pose =[]
         self.current_joint_pose = copy.deepcopy(des_init_pos)
-        self.init_knee_value = copy.deepcopy(self.current_joint_pose[2])
         return self.current_joint_pose
 
     def get_action_to_position(self, action):
@@ -603,68 +608,67 @@ class URState(object):
         rospy.logdebug("current joint pose>>>"+str(self.current_joint_pose))
         rospy.logdebug("Action Number>>>"+str(action))
         # We dont want to jump unless the action jump is selected
-        do_jump = False
 
-        if action == 0: #Increment haa_joint
-            rospy.logdebug("Action Decided:Increment haa_joint>>>")
+        if action == 0: #Increment 
+            rospy.logdebug("Action Decided:Increment shp_joint>>>")
             self.current_joint_pose[0] += self._joint_increment_value
-        elif action == 1: #Decrement haa_joint
-            rospy.logdebug("Action Decided:Decrement haa_joint>>>")
-            self.current_joint_pose[0] -= self._joint_increment_value
-        elif action == 2: #Increment hfe_joint
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[1] += self._joint_increment_value
-        elif action == 3: #Decrement hfe_joint
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+        elif action == 1: #Increment 
+            rospy.logdebug("Action Decided:Increment shl_joint>>>")
             self.current_joint_pose[1] -= self._joint_increment_value
-        elif action == 4:  # Dont Move
-            rospy.logdebug("Action Decided:Dont Move>>>")
-        elif action == 5:  # Perform One Jump
-            rospy.logdebug("Action Decided:Perform One Jump>>>")
+        elif action == 2: #Increment 
+            rospy.logdebug("Action Decided:Increment elb_joint>>>")
+            self.current_joint_pose[2] += self._joint_increment_value
+        elif action == 3: #Increment 
+            rospy.logdebug("Action Decided:Increment wr1_joint>>>")
+            self.current_joint_pose[3] -= self._joint_increment_value
+        elif action == 4:  # Increment
+            rospy.logdebug("Action Decided:Increment wr2_joint>>>")
+            self.current_joint_pose[4] += self._joint_increment_value
+        elif action == 5:  # Increment
+            rospy.logdebug("Action Decided:Increment wr3_joint>>>")
             # We get the Value Used for the Knee charged position
-            do_jump = True
-
-        # We set the Knee to be ready for jump, based on the init knee pose
-        self.current_joint_pose[2] = self.init_knee_value
+            self.current_joint_pose[5] += self._joint_increment_value
 
         rospy.logdebug("action to move joint states>>>" + str(self.current_joint_pose))
 
         self.clamp_to_joint_limits()
 
-        return self.current_joint_pose, do_jump
+        return self.current_joint_pose
 
     def clamp_to_joint_limits(self):
         """
         clamps self.current_joint_pose based on the joint limits
         self._joint_limits
-        {"haa_max": haa_max,
-         "haa_min": haa_min,
-         "hfe_max": hfe_max,
-         "hfe_min": hfe_min,
-         "kfe_max": kfe_max,
-         "kfe_min": kfe_min
+        {
+         "shp_max": shp_max,
+         "shp_min": shp_min,
+         ...
          }
         :return:
         """
 
         rospy.logdebug("Clamping current_joint_pose>>>" + str(self.current_joint_pose))
-        haa_joint_value = self.current_joint_pose[0]
-        hfe_joint_value = self.current_joint_pose[1]
-        kfe_joint_value = self.current_joint_pose[2]
+        shp_joint_value = self.current_joint_pose[0]
+        shl_joint_value = self.current_joint_pose[1]
+        elb_joint_value = self.current_joint_pose[2]
+        wr1_joint_value = self.current_joint_pose[3]
+        wr2_joint_value = self.current_joint_pose[4]
+        wr3_joint_value = self.current_joint_pose[5]
 
-        self.current_joint_pose[0] = max(min(haa_joint_value, self._joint_limits["haa_max"]),
-                                         self._joint_limits["haa_min"])
-        self.current_joint_pose[1] = max(min(hfe_joint_value, self._joint_limits["hfe_max"]),
-                                         self._joint_limits["hfe_min"])
-
-
-        rospy.logdebug("kfe_min>>>" + str(self._joint_limits["kfe_min"]))
-        rospy.logdebug("kfe_max>>>" + str(self._joint_limits["kfe_max"]))
-        self.current_joint_pose[2] = max(min(kfe_joint_value, self._joint_limits["kfe_max"]),
-                                         self._joint_limits["kfe_min"])
+        self.current_joint_pose[0] = max(min(shp_joint_value, self._joint_limits["shp_max"]),
+                                         self._joint_limits["shp_min"])
+        self.current_joint_pose[1] = max(min(shl_joint_value, self._joint_limits["shl_max"]),
+                                         self._joint_limits["shl_min"])
+        self.current_joint_pose[2] = max(min(elb_joint_value, self._joint_limits["elb_max"]),
+                                         self._joint_limits["elb_min"])
+        self.current_joint_pose[3] = max(min(wr1_joint_value, self._joint_limits["wr1_max"]),
+                                         self._joint_limits["wr1_min"])
+        self.current_joint_pose[4] = max(min(wr2_joint_value, self._joint_limits["wr2_max"]),
+                                         self._joint_limits["wr2_min"])
+        self.current_joint_pose[5] = max(min(wr3_joint_value, self._joint_limits["wr3_max"]),
+                                         self._joint_limits["wr3_min"])
 
         rospy.logdebug("DONE Clamping current_joint_pose>>>" + str(self.current_joint_pose))
-
 
     def process_data(self):
         """
@@ -720,15 +724,34 @@ if __name__ == "__main__":
                             "base_linear_acceleration_x",
                             "base_linear_acceleration_y",
                             "base_linear_acceleration_z"]
-    joint_limits = {"haa_max": 1.6,
-                     "haa_min": -1.6,
-                     "hfe_max": 1.6,
-                     "hfe_min": -1.6,
-                     "kfe_max": 0.0,
-                     "kfe_min": -1.6
-                     }
-    episode_done_criteria = [ "ur_minimum_height",
-                              "ur_vertical_orientation"]
+
+    shp_max = rospy.get_param("/joint_limits_array/shp_max")
+    shp_min = rospy.get_param("/joint_limits_array/shp_min")
+    shl_max = rospy.get_param("/joint_limits_array/shl_max")
+    shl_min = rospy.get_param("/joint_limits_array/shl_min")
+    elb_max = rospy.get_param("/joint_limits_array/elb_max")
+    elb_min = rospy.get_param("/joint_limits_array/elb_min")
+    wr1_max = rospy.get_param("/joint_limits_array/wr1_max")
+    wr1_min = rospy.get_param("/joint_limits_array/wr1_min")
+    wr2_max = rospy.get_param("/joint_limits_array/wr2_max")
+    wr2_min = rospy.get_param("/joint_limits_array/wr2_min")
+    wr3_max = rospy.get_param("/joint_limits_array/wr3_max")
+    wr3_min = rospy.get_param("/joint_limits_array/wr3_min")
+    
+    joint_limits = {"shp_max": shp_max,
+						     "shp_min": shp_min,
+						     "shl_max": shl_max,
+						     "shl_min": shl_min,
+						     "elb_max": elb_max,
+						     "elb_min": elb_min,
+						     "wr1_max": wr1_max,
+						     "wr1_min": wr1_min,
+						     "wr2_max": wr2_max,
+						     "wr2_min": wr2_min,
+						     "wr3_max": wr3_max,
+						     "wr3_min": wr3_min}
+    episode_done_criteria = [ "minimum_height",
+                              "vertical_orientation"]
     done_reward = -1000.0
     alive_reward = 100.0
     desired_force = 7.08
