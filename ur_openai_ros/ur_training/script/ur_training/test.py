@@ -35,7 +35,7 @@ def fill_qLearn_message(qlearn_dict):
 
 def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.DEBUG)
+	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.INFO)
     # Create the Gym environment
 	env = gym.make('URTest-v0')
 	env._max_episode_steps = 10000

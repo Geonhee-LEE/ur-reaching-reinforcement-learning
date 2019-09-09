@@ -1,8 +1,8 @@
 import rospy
 import gym
 from gym.utils import seeding
-from .gazebo_connection import GazeboConnection
-from .controllers_connection import ControllersConnection
+from gazebo_connection import GazeboConnection
+from controllers_connection import ControllersConnection
 #https://bitbucket.org/theconstructcore/theconstruct_msgs/src/master/msg/RLExperimentInfo.msg
 from openai_ros.msg import RLExperimentInfo
 
@@ -62,6 +62,7 @@ class RobotGazeboEnv(gym.GoalEnv):
         print ("Entered reset")
         self._reset_sim()
         self._init_env_variables()
+        self._init_obj_pose()
         self._update_episode()
         obs = self._get_obs()
         return obs
@@ -125,11 +126,6 @@ class RobotGazeboEnv(gym.GoalEnv):
 
         return True
 
-    def _set_init_pose(self):
-        """Sets the Robot in its init pose
-        """
-        raise NotImplementedError()
-
     def _check_all_systems_ready(self):
         """
         Checks that all the sensors, publishers and other simulation systems are
@@ -145,6 +141,16 @@ class RobotGazeboEnv(gym.GoalEnv):
     def _init_env_variables(self):
         """Inits variables needed to be initialised each time we reset at the start
         of an episode.
+        """
+        raise NotImplementedError()
+   
+    def _init_obj_pose(self):
+        """Inits object pose for arrangement at reset time
+        """
+        raise NotImplementedError()
+
+    def _set_init_pose(self):
+        """Sets the Robot in its init pose
         """
         raise NotImplementedError()
 

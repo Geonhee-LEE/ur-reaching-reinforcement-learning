@@ -21,6 +21,8 @@ from gazebo_connection import GazeboConnection
 from joint_publisher import JointPub
 from ur_state import URState
 from controllers_connection import ControllersConnection
+from gazebo_msgs.srv import SetModelState, SetModelStateRequest, GetModelState
+from gazebo_msgs.srv import GetWorldProperties
 
 rospy.loginfo("register...")
 #register the training environment in the gym as an available one
@@ -33,6 +35,9 @@ reg = gym.envs.register(
 class URTestEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     def __init__(self):
     	# We assume that a ROS node has already been created before initialising the environment
+        # Init GAZEBO Objects
+        self.set_obj_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
+        self.get_world_state = rospy.ServiceProxy('/gazebo/get_world_properties', GetWorldProperties)
 
     	# Gets training parameters from param server
     	self.desired_pose = Pose()
@@ -196,6 +201,7 @@ class URTestEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     	# 7th: pauses simulation
     	rospy.logdebug("Pause SIM...")
     	self._gz_conn.pauseSim()
+        # self._init_obj_pose()
 
     	# 8th: Get the State Discrete Stringuified version of the observations
     	rospy.logdebug("get_observations...")
@@ -241,3 +247,57 @@ class URTestEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     	:return: state
     	"""
     	return self._ur_state.get_state_as_string(observation)
+
+
+    def _init_obj_pose(self):
+        """Inits object pose for arrangement at reset time
+        _init_obj_pose() isn't completely worked, but if loaded each sdf file follwing a object it can be worked.
+        """
+        x = [0]
+        y = [0]
+        z = [0]
+
+        qx = [0]
+        qy = [0]
+        qz = [0]
+        qw = [1]
+
+        req_position = np.array([x, y, z])
+        req_orientation = np.array([qx, qy, qz, qw])
+        req_name = 'dropbox'
+        while not self._set_obj_position(req_name, req_position, req_orientation):
+            pass
+        req_name = 'dropbox_clone'
+        while not self._set_obj_position(req_name, req_position, req_orientation):
+            pass
+        req_name = 'short_table'
+        while not self._set_obj_position(req_name, req_position, req_orientation):
+            pass
+        req_name = 'short_table_clone'
+        while not self._set_obj_position(req_name, req_position, req_orientation):
+            pass
+
+    def _set_obj_position(self, obj_name, position, orientation):
+        rospy.wait_for_service('/gazebo/set_model_state')
+        rospy.loginfo("set model_state for " + obj_name + " available")
+        sms_req = SetModelStateRequest()
+        sms_req.model_state.pose.position.x = position[0]
+        sms_req.model_state.pose.position.y = position[1]
+        sms_req.model_state.pose.position.z = position[2]
+        sms_req.model_state.pose.orientation.x = orientation[0]
+        sms_req.model_state.pose.orientation.y = orientation[1]
+        sms_req.model_state.pose.orientation.z = orientation[2]
+        sms_req.model_state.pose.orientation.w = orientation[3]
+
+        sms_req.model_state.twist.linear.x = 0.
+        sms_req.model_state.twist.linear.y = 0.
+        sms_req.model_state.twist.linear.z = 0.
+        sms_req.model_state.twist.angular.x = 0.
+        sms_req.model_state.twist.angular.y = 0.
+        sms_req.model_state.twist.angular.z = 0.
+        sms_req.model_state.model_name = obj_name
+        sms_req.model_state.reference_frame = 'ground_plane'
+        result = self.set_obj_state(sms_req)
+
+        rospy.loginfo("result.success: " + str(result.success) )
+        return result.success
