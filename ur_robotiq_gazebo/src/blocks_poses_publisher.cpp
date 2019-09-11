@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
             current_poses_msg.y = g_y;
             current_poses_msg.z = g_z;
             poses_publisher.publish(current_poses_msg);
-            
+            ROS_INFO_STREAM("poses_publisher");           
             
         }
         ros::spinOnce();

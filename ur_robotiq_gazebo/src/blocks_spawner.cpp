@@ -173,7 +173,7 @@
 
           // loop end, increase index by 1, add blank line
           i = i + 1;
-          ROS_INFO_STREAM("");
+          ROS_INFO_STREAM("Loop end at: " <<  i);
 
           ros::spinOnce();
           ros::Duration(20.0).sleep();  // frequency control, spawn one cylinder in each loop
