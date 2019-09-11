@@ -4,7 +4,7 @@ project(ur_robotiq_gazebo)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED gazebo_msgs roscpp geometry_msgs std_srvs std_msgs)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -14,6 +14,9 @@ find_package(catkin REQUIRED)
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
 # catkin_python_setup()
+
+
+
 
 #######################################
 ## Declare ROS messages and services ##
@@ -62,22 +65,17 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
-## Declare a cpp library
-# add_library(ur_gazebo
-#   src/${PROJECT_NAME}/ur_gazebo.cpp
-# )
+# Specify locations of header files.
+include_directories(include ${catkin_INCLUDE_DIRS})
 
-## Declare a cpp executable
-# add_executable(ur_gazebo_node src/ur_gazebo_node.cpp)
 
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-# add_dependencies(ur_gazebo_node ur_gazebo_generate_messages_cpp)
+# Declare the executable, along with its source files.
+add_executable(blocks_spawner src/blocks_spawner.cpp)
+add_executable(blocks_poses_publisher src/blocks_poses_publisher.cpp)
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(ur_gazebo_node
-#   ${catkin_LIBRARIES}
-# )
+# Specify libraries against which to link.
+target_link_libraries(blocks_spawner ${catkin_LIBRARIES})
+target_link_libraries(blocks_poses_publisher ${catkin_LIBRARIES})
 
 #############
 ## Install ##
