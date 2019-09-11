@@ -16,11 +16,33 @@
     <arg name="headless" value="$(arg headless)"/>
   </include>
 
+  <!-- Object pose -->
+  <arg name="x" default="0"/>
+  <arg name="y" default="0"/>
+  <arg name="z" default="0."/>
+  <arg name="roll" default="0"/>
+  <arg name="pitch" default="0"/>
+  <arg name="yaw" default="0"/>
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_robotiq_description)/urdf/ur_robotiq-vel.urdf.xacro'" />
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
   <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -z 0.1" respawn="false" output="screen" />
   <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+
+  <!-- Load models for objects in environment -->
+    <node name="spawn_dropbox" pkg="gazebo_ros" type="spawn_model"
+        args="-file $(find ur_robotiq_gazebo)/worlds/dropbox.sdf
+                     -sdf -x $(arg x) -z $(arg z) -gazebo -model dropbox"/>
+    <node name="spawn_dropbox_clone" pkg="gazebo_ros" type="spawn_model"
+        args="-file $(find ur_robotiq_gazebo)/worlds/dropbox_clone.sdf
+                     -sdf -x $(arg x) -z $(arg z) -gazebo -model dropbox_clone"/>
+    <node name="spawn_short_table" pkg="gazebo_ros" type="spawn_model"
+        args="-file $(find ur_robotiq_gazebo)/worlds/short_table.sdf
+                     -sdf -x $(arg x) -z $(arg z) -gazebo -model short_table"/>
+    <node name="spawn_short_table_clone" pkg="gazebo_ros" type="spawn_model"
+        args="-file $(find ur_robotiq_gazebo)/worlds/short_table_clone.sdf
+                     -sdf -x $(arg x) -z $(arg z) -gazebo -model short_table_clone"/>
+
 
   <!-- Load controllers -->
   <rosparam file="$(find ur_robotiq_gazebo)/controller/arm_controller.yaml" command="load"/>
