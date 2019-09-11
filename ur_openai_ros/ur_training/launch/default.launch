@@ -8,8 +8,8 @@
 <launch>
 
     <!-- Load the parameters for the algorithm -->
-    <rosparam command="load" file="$(find ur_training)/config/test_params.yaml" />
+    <rosparam command="load" file="$(find ur_training)/config/default_params.yaml" />
 
     <!-- Launch the training system -->
-    <node pkg="ur_training" name="ur_gym" type="test.py" output="screen"/>
+    <node pkg="ur_training" name="ur_gym" type="default.py" output="screen"/>
 </launch>
