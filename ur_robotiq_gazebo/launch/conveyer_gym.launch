@@ -52,9 +52,9 @@
 
 
   <!-- spawn the conveyor_belt in gazebo -->
-  <node name="spawn_conveyor_belt" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_robotiq_gazebo)/urdf/conveyor_belt.urdf -urdf -model conveyor_belt" />
+  <node name="spawn_conveyor_belt" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_robotiq_gazebo)/urdf/conveyor_belt.urdf -urdf -model conveyor_belt -x 0.0 -y -1.0 -z 0" />
   <!-- spawn the conveyor_belt in gazebo -->
-  <node name="bin" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_robotiq_gazebo)/urdf/bin.urdf -urdf -model bin -y 0.8 -x -0.5 -z 0.05" />
+  <node name="spawn_bin" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_robotiq_gazebo)/urdf/bin.urdf -urdf -model bin -x -0.5 -y -0.2 -z 0.05" />
   <!-- the red blocks spawner node -->
   <node name="blocks_spawner" pkg="ur_robotiq_gazebo" type="blocks_spawner" output="screen" />
 
