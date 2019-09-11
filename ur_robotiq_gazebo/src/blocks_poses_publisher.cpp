@@ -11,7 +11,8 @@
 #include <string>
 #include <std_msgs/Int8MultiArray.h>
 #include <gazebo_msgs/ModelStates.h>
-
+#include <geometry_msgs/Point.h>
+#include <ur_rl_msgs/blocks_poses.h>
 
 // global variables
 int g_quantity;
@@ -109,8 +110,8 @@ int main(int argc, char** argv) {
         , 1, currentCallback);
     ros::Subscriber model_states_subscriber = nh.subscribe("/gazebo/model_states", 1, modelStatesCallback);
     // initialize publisher for "/cylinder_blocks_poses"
-    // ros::Publisher poses_publisher = nh.advertise<ur5_notebook::blocks_poses>("blocks_poses", 1);
-    // ur5_notebook::blocks_poses current_poses_msg;
+    ros::Publisher poses_publisher = nh.advertise<ur_rl_msgs::blocks_poses>("blocks_poses", 1);
+    ur_rl_msgs::blocks_poses current_poses_msg;
 
     // publishing loop
     while (ros::ok()) {
@@ -120,7 +121,7 @@ int main(int argc, char** argv) {
             g_poses_updated = false;  // set flag to false
             // there is tiny possibility that g_x is not in the length of g_cylinder_quantity
             int local_quantity = g_x.size();  // so get length of g_x
-            /*
+            
             current_poses_msg.x.resize(local_quantity);
             current_poses_msg.y.resize(local_quantity);
             current_poses_msg.z.resize(local_quantity);
@@ -128,7 +129,8 @@ int main(int argc, char** argv) {
             current_poses_msg.y = g_y;
             current_poses_msg.z = g_z;
             poses_publisher.publish(current_poses_msg);
-            */
+            
+            
         }
         ros::spinOnce();
     }
