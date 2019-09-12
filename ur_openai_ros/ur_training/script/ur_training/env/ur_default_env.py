@@ -27,12 +27,12 @@ from gazebo_msgs.srv import GetWorldProperties
 rospy.loginfo("register...")
 #register the training environment in the gym as an available one
 reg = gym.envs.register(
-    id='URTest-v0',
-    entry_point='ur_training.env.ur_test_env:URTestEnv', # Its directory associated with importing in other sources like from 'ur_training.env.ur_sim_env import *' 
+    id='URDefault-v0',
+    entry_point='ur_training.env.ur_default_env:URDefaultEnv', # Its directory associated with importing in other sources like from 'ur_training.env.ur_sim_env import *' 
     #timestep_limit=100000,
     )
 
-class URTestEnv(robot_gazebo_env_goal.RobotGazeboEnv):
+class URDefaultEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     def __init__(self):
     	# We assume that a ROS node has already been created before initialising the environment
         # Init GAZEBO Objects

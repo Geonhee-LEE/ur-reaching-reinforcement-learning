@@ -12,8 +12,7 @@ import random
 import time
 from ur_training.algorithm.qlearn import *
 # import our training environment
-from ur_training.env.ur_test_env import URTestEnv
-
+from ur_training.env.ur_default_env import URDefaultEnv
 from gym import wrappers
 from std_msgs.msg import Float64
 # ROS packages required
@@ -37,7 +36,7 @@ def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
 	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.INFO)
     # Create the Gym environment
-	env = gym.make('URTest-v0')
+	env = gym.make('URDefault-v0')
 	env._max_episode_steps = 10000
 	rospy.logdebug ( "Gym environment done")
 	reward_pub = rospy.Publisher('/ur/reward', Float64, queue_size=1)
