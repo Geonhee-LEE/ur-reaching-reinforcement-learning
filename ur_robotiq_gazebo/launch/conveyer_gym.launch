@@ -46,6 +46,7 @@
                     -sdf -x $(arg x) -z $(arg z) -gazebo -model short_table_clone"/-->
 
 
+
   <!-- Load controllers -->
   <rosparam file="$(find ur_robotiq_gazebo)/controller/arm_controller.yaml" command="load"/>
   <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn ur_shoulder_pan_vel_controller ur_shoulder_lift_vel_controller ur_elbow_vel_controller ur_wrist_1_vel_controller ur_wrist_2_vel_controller ur_wrist_3_vel_controller gripper_controller" respawn="false" output="screen"/>
