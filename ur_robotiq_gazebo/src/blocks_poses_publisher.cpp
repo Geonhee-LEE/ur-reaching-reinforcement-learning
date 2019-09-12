@@ -1,10 +1,10 @@
-// this node will publish the topic "cylinder_blocks_poses"
-// including all current cylinder blocks, pose is 3-D position
+// this node will publish the topic "blocks_poses"
+// including all current blocks, pose is 3-D position
 
 // ros communication:
-    // subscribe to topic "/current_cylinder_blocks"
+    // subscribe to topic "/current_blocks"
     // subscribe to topic "/gazebo/model_states"
-    // publish the topic "/cylinder_blocks_poses"
+    // publish the topic "/blocks_poses"
 
 #include <ros/ros.h>
 #include <vector>
@@ -17,6 +17,7 @@
 // global variables
 int g_quantity;
 int tracking_id;
+geometry_msgs::Point target_point_msg;
 std::vector<int8_t> g_current_blocks;
 std::vector<double> g_x;
 std::vector<double> g_y;
@@ -31,9 +32,9 @@ std::string intToString(int a)
     return ss.str();
 }
 
-void currentCallback(const std_msgs::Int8MultiArray& current_blocks) 
+void currentBlockCallback(const std_msgs::Int8MultiArray& current_blocks) 
 {
-    // this topic contains information of what cylinder blocks have been spawned
+    // this topic contains information of what  blocks have been spawned
     if (!g_current_callback_started) 
     {
         // set first time started flag to true
@@ -42,17 +43,18 @@ void currentCallback(const std_msgs::Int8MultiArray& current_blocks)
     }
     g_quantity = current_blocks.data.size(); // Block spawner publish info about spawnd blocks
     
+    // Set g_current_blocks with current_blocks from blocks_spawner  
     g_current_blocks.resize(g_quantity); // resize: size of 'g_current_block' is changed to 'n', exteded variables is initialized to the default value.
     g_current_blocks = current_blocks.data;
 }
 
 void modelStatesCallback(const gazebo_msgs::ModelStates& current_model_states) 
 {
-    // this callback update global values of cylinder positions
+    // modelStatesCallback() updates global values of block positions
     if (g_current_callback_started) 
     {
-        // only update when currentCylinderCallback has been invoked the first time
-        // get cylinder blocks positions according to settings in g_current_cylinder_blocks
+        // only update when currentBlockCallback has been invoked the first time
+        // get blocks positions according to settings in g_current_blocks
         std::vector<double> box_x;
         std::vector<double> box_y;
         std::vector<double> box_z;
@@ -60,11 +62,11 @@ void modelStatesCallback(const gazebo_msgs::ModelStates& current_model_states)
         box_y.resize(g_quantity);
         box_z.resize(g_quantity);
 
-        // Find position of all current block in topic message
+        // Find positiond of all current block in topic message
         bool poses_completed = true;
         for (int i=0; i<g_quantity; i++) 
         {
-            // Get index of ith cylinder
+            // Get index of ith block
             std::string indexed_model_name;
                 
             indexed_model_name = "red_blocks_" + intToString(i);
@@ -101,11 +103,18 @@ void modelStatesCallback(const gazebo_msgs::ModelStates& current_model_states)
             else 
             {
                 ROS_ERROR("fail to find model name in the model_states topic" );
-                // in the test run, there is chance that the last cylinder is not in the topic message
-                // and g_cylinder_quantity (fron spawner node) is larger than the cylinder quantity here
+                // in the test run, there is chance that the last block is not in the topic message
+                // and g_quantity (fron spawner node) is larger than the block quantity here
                 // because /gazebo/model_states are sampled at a high rate of about 1000Hz
-                // so the position data should be aborted if fail to find the last cylinder
+                // so the position data should be aborted if fail to find the last block
                 poses_completed = false;
+            }
+
+            if(i == g_quantity -1)
+            {
+                target_point_msg.x = current_model_states.pose[index].position.x;
+                target_point_msg.y = current_model_states.pose[index].position.y;
+                target_point_msg.z = current_model_states.pose[index].position.z;
             }
         }
         if (poses_completed) 
@@ -131,11 +140,12 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "blocks_poses_publisher");
     ros::NodeHandle nh;
 
-    // initialize subscribers for "/current_cylinder_blocks" and "/gazebo/model_states"
-    ros::Subscriber current_subscriber = nh.subscribe("/current_blocks", 1, currentCallback);
+    // initialize subscribers for "/current_blocks" and "/gazebo/model_states"
+    ros::Subscriber current_subscriber = nh.subscribe("/current_blocks", 1, currentBlockCallback);
     ros::Subscriber model_states_subscriber = nh.subscribe("/gazebo/model_states", 1, modelStatesCallback);
-    // initialize publisher for "/cylinder_blocks_poses"
+    // initialize publisher for "/blocks_poses"
     ros::Publisher poses_publisher = nh.advertise<ur_rl_msgs::blocks_poses>("blocks_poses", 1);
+    ros::Publisher target_pose_publisher = nh.advertise<geometry_msgs::Point>("target_blocks_pose", 1);
     ur_rl_msgs::blocks_poses current_poses_msg;
 
     // publishing loop
@@ -143,10 +153,10 @@ int main(int argc, char** argv)
     {
         if (g_poses_updated) 
         {
-            // only publish when cylinder positions are updated
+            // only publish when blocks positions are updated
             // no need to publish repeated data
             g_poses_updated = false;  // set flag to false
-            // there is tiny possibility that g_x is not in the length of g_cylinder_quantity
+            // there is tiny possibility that g_x is not in the length of g_blocks_quantity
             int local_quantity = g_x.size();  // so get length of g_x
             
             current_poses_msg.x.resize(local_quantity);
@@ -156,6 +166,7 @@ int main(int argc, char** argv)
             current_poses_msg.y = g_y;
             current_poses_msg.z = g_z;
             poses_publisher.publish(current_poses_msg);      
+            target_pose_publisher.publish(target_point_msg);      
             
         }
         ros::spinOnce();
