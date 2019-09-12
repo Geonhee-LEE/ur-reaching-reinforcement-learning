@@ -26,9 +26,11 @@ First launch the gazebo and gym interface and node publishing block point.
  
 
 > Latest block's point 
-``` rostopic echo /target_blocks_pose
+``` 
+rostopic echo /target_blocks_pose
 ```
 
 > Total block's points
-``` rostopic echo /blocks_poses 
+``` 
+rostopic echo /blocks_poses 
 ```
