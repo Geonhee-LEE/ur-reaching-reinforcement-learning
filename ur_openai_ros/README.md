@@ -1,4 +1,4 @@
-# How to launch
+# How to launch basic env
  First launch the simulator
   ` roslaunch ur_robotiq_gazebo gym.launch`
  
