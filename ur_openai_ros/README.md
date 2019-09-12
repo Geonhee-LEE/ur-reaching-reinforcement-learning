@@ -1,9 +1,9 @@
-# How to launch basic env
+# How to launch original env
  First launch the simulator
   ` roslaunch ur_robotiq_gazebo gym.launch`
  
  And run the training launch
-  `roslaunch ur_training  main.launch`
+  `roslaunch ur_training  default.launch`
 
 
 
