@@ -1,0 +1,8 @@
+gazebo_ros_control/pid_gains:
+  shoulder_pan_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+  shoulder_lift_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+  elbow_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+  wrist_1_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+  wrist_2_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+  wrist_3_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+  gripper_finger1_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
