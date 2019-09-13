@@ -15,9 +15,6 @@ class JointTrajPub(object):
         """
         Publish trajectory_msgs::JointTrajectory for velocity control
         """
-        self.vel_cmd = JointTrajectory()
-        self.vel_cmd.joint_names = [ "shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint" ]
-        self.vel_cmd.points = JointTrajectoryPoint()
         self._joint_traj_pub = rospy.Publisher('/vel_traj_controller/command', JointTrajectory, queue_size=1)
         
     def set_init_pose(self, init_pose):
@@ -52,15 +49,16 @@ class JointTrajPub(object):
 
     def move_joints(self, joints_array):
         print("move_joints")
-        self.vel_cmd.header.stamp = rospy.Time.now()
+        vel_cmd = JointTrajectory()
+        vel_cmd.joint_names = [ "shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint" ]
+        vel_cmd.header.stamp = rospy.Time.now()
         # create a JTP instance and configure it
-        #jtp = JointTrajectoryPoint(positions=[0]*6, velocities=[joints_array[0], joints_array[1], joints_array[2], joints_array[3], joints_array[4], joints_array[5] ], time_from_start=rospy.Duration(.0))
-        jtp = JointTrajectoryPoint(positions=[0]*6, velocities=[-3]*6, time_from_start=rospy.Duration(.0))
+        jtp = JointTrajectoryPoint(positions=[0]*6, velocities=[joints_array[0], joints_array[1], joints_array[2], joints_array[3], joints_array[4], joints_array[5] ], time_from_start=rospy.Duration(.0))
         #jtp.velocities = [joints_array[0], joints_array[1], joints_array[2], joints_array[3], joints_array[4], joints_array[5] ]
         
         # setup the reset of the pt
-        self.vel_cmd.points =[jtp]
-        self._joint_traj_pub.publish(self.vel_cmd)
+        vel_cmd.points =[jtp]
+        self._joint_traj_pub.publish(vel_cmd)
 
     def start_loop(self, rate_value = 2.0):
         rospy.logdebug("Start Loop")

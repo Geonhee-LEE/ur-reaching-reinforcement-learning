@@ -461,7 +461,7 @@ class URState(object):
             # We convert to int because anyway it will be round floats. We add Right True to include limits
             # Ex: [-20, 0, 20], value=-20 ==> index=0, In right = False, would be index=1
             state_discrete[i] = int(numpy.digitize(observation[i], self._bins[i], right=True))
-            rospy.logdebug("bin="+str(self._bins[i])+"obs="+str(observation[i])+",end_val="+str(state_discrete[i]))
+            #rospy.logdebug("bin="+str(self._bins[i])+"obs="+str(observation[i])+",end_val="+str(state_discrete[i]))
 
         rospy.logdebug(str(state_discrete))
         return state_discrete

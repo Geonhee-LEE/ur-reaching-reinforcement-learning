@@ -91,7 +91,6 @@ def main():
 		rospy.loginfo ("STARTING Episode #"+str(x))
         # for each episode, we test the robot for nsteps
 		for i in range(nsteps):
-		    rospy.loginfo ("env.step(action)")
             # Pick an action based on the current state
 		    action = qlearn.chooseAction(state)
             
@@ -99,7 +98,6 @@ def main():
 		    rospy.logdebug("###################### Start Step...["+str(i)+"]")
 		    rospy.logdebug("Action Space=="+str(range(env.action_space.n)))
 		    rospy.logdebug("Action to Perform >> "+str(action))
-		    print('env.step(action)')
 		    nextState, reward, done, info = env.step(action)
 		    rospy.logdebug("END Step...")
 		    rospy.logdebug("Reward ==> " + str(reward))
@@ -133,7 +131,7 @@ def main():
 		rospy.logwarn( ("EP: "+str(x+1)+" - [alpha: "+str(round(qlearn.alpha,2))+" - gamma: "+str(round(qlearn.gamma,2))+" - epsilon: "+str(round(qlearn.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s)))
 		#raw_input("Press_Key_to_Next_EPISODE>>>>>>>>>>>>>>>>>>>>>><")
 
-	rospy.loginfo ( ("\n|"+str(nepisodes)+"|"+str(qlearn.alpha)+"|"+str(qlearn.gamma)+"|"+str(initial_epsilon)+"*"+str(epsilon_discount)+"|"+str(highest_reward)+"| PICTURE |"))
+	#rospy.loginfo ( ("\n|"+str(nepisodes)+"|"+str(qlearn.alpha)+"|"+str(qlearn.gamma)+"|"+str(initial_epsilon)+"*"+str(epsilon_discount)+"|"+str(highest_reward)+"| PICTURE |"))
 
 	l = last_time_steps.tolist()
 	l.sort()
