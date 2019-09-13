@@ -90,4 +90,13 @@ class ControllersConnection():
                                 'ur_wrist_1_vel_controller'
                                 'ur_wrist_2_vel_controller'
                                 'ur_wrist_3_vel_controller']
+        else:
+            controllers_reset = ['joint_state_controller',
+                                'gripper_controller',
+                                'ur_shoulder_pan_vel_controller'
+                                'ur_shoulder_lift_vel_controller'
+                                'ur_elbow_vel_controller'
+                                'ur_wrist_1_vel_controller'
+                                'ur_wrist_2_vel_controller'
+                                'ur_wrist_3_vel_controller']
         self.reset_controllers(controllers_reset)

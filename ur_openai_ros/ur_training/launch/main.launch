@@ -8,8 +8,8 @@
 <launch>
 
     <!-- Load the parameters for the algorithm -->
-    <rosparam command="load" file="$(find ur_training)/config/qlearn_params.yaml" />
+    <rosparam command="load" file="$(find ur_training)/config/default_params.yaml" />
 
     <!-- Launch the training system -->
-    <node pkg="ur_training" name="ur_gym" type="start_training_v2.py" output="screen"/>
+    <node pkg="ur_training" name="ur_training" type="default.py" output="screen"/>
 </launch>

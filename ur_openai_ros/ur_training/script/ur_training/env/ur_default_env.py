@@ -192,6 +192,8 @@ class URDefaultEnv(robot_gazebo_env_goal.RobotGazeboEnv):
         	self._joint_traj_pubisher.check_publishers_connection()
     	elif sys.argv[1] == 'vel':
     		self._joint_pubisher.check_publishers_connection()
+    	else:
+        	self._joint_pubisher.check_publishers_connection()
     	
 
     	# 5th: Check all subscribers work.
@@ -226,6 +228,8 @@ class URDefaultEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     	if sys.argv[1] == 'traj_vel':
     		self._joint_traj_pubisher.move_joints(action)
     	elif sys.argv[1] == 'vel':
+    		self._joint_pubisher.move_joints(action)
+    	else:
     		self._joint_pubisher.move_joints(action)
     		
     def step(self, action):
