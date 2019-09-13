@@ -115,8 +115,6 @@ class JointPub(object):
           publisher_object.publish(joint_value)
           i += 1
 
-
-
     def start_loop(self, rate_value = 2.0):
         rospy.logdebug("Start Loop")
         pos1 = [-2.873, 0.0, 6.28, 3.015, 1.21, 1.264, -0.97]
@@ -147,7 +145,7 @@ class JointPub(object):
             #pos_x = [0.0, 0.0, x]
             pos_x = [x, 0.0, 0.0]
             #pos_x = [0.0, x, 0.0]
-            print x
+            print (x)
             rate.sleep()
 
 if __name__=="__main__":

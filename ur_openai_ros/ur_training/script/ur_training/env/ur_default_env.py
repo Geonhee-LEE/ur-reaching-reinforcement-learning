@@ -3,10 +3,12 @@
     By Miguel Angel Rodriguez <duckfrost@theconstructsim.com>
     Visit our website at www.theconstructsim.com
 '''
+import sys
+import time
+
 import gym
 import rospy
 import numpy as np
-import time
 
 from gym import utils, spaces
 from geometry_msgs.msg import Pose
@@ -19,6 +21,7 @@ from ur_training.env import robot_gazebo_env_goal
 # About reset GAZEBO simultor
 from gazebo_connection import GazeboConnection
 from joint_publisher import JointPub
+from joint_traj_publisher import JointTrajPub
 from ur_state import URState
 from controllers_connection import ControllersConnection
 from gazebo_msgs.srv import SetModelState, SetModelStateRequest, GetModelState
@@ -137,6 +140,7 @@ class URDefaultEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     	    	    	    	    	    	self.desired_pose.position.z)
 
     	self._joint_pubisher = JointPub()
+    	self._joint_traj_pubisher = JointTrajPub()
     	
     	"""
     	For this version, we consider 6 actions
@@ -182,11 +186,13 @@ class URDefaultEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     	init_pos = self._ur_state.init_joints_pose(self.init_joint_pose)
 
     	# 4th: We Set the init pose to the jump topic so that the jump control can update
-    	rospy.logdebug("Publish init_pose for Jump Control...>>>" + str(init_pos))
     	# We check the jump publisher has connection
-    	self._joint_pubisher.check_publishers_connection()
-    	# We move the joints to position
-    	self._joint_pubisher.move_joints(init_pos)
+
+    	if sys.argv[1] == 'traj_vel':
+        	self._joint_traj_pubisher.check_publishers_connection()
+    	elif sys.argv[1] == 'vel':
+    		self._joint_pubisher.check_publishers_connection()
+    	
 
     	# 5th: Check all subscribers work.
     	# Get the state of the Robot defined by its RPY orientation, distance from
@@ -208,10 +214,22 @@ class URDefaultEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     	observation = self._ur_state.get_observations()
     	state = self.get_state(observation)
 
+        print('Reset final')
     	return state
 
+    def _act(self, action):
+        if len(sys.argv) < 3:
+            print("len(sys.argv) < 3")
+        else:
+            print(sys.argv[1], sys.argv[2])
+
+    	if sys.argv[1] == 'traj_vel':
+    		self._joint_traj_pubisher.move_joints(action)
+    	elif sys.argv[1] == 'vel':
+    		self._joint_pubisher.move_joints(action)
+    		
     def step(self, action):
-    	rospy.logdebug("URTest step func")
+    	rospy.logdebug("UR step func")
 
     	# Given the action selected by the learning algorithm,
     	# we perform the corresponding movement of the robot
@@ -221,7 +239,8 @@ class URDefaultEnv(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# We move it to that pos
     	self._gz_conn.unpauseSim()
-    	self._joint_pubisher.move_joints(next_action_position)
+    	self._act(next_action_position)
+    	
     	# Then we send the command to the robot and let it go
     	# for running_step seconds
     	time.sleep(self.running_step)
@@ -247,7 +266,6 @@ class URDefaultEnv(robot_gazebo_env_goal.RobotGazeboEnv):
     	:return: state
     	"""
     	return self._ur_state.get_state_as_string(observation)
-
 
     def _init_obj_pose(self):
         """Inits object pose for arrangement at reset time

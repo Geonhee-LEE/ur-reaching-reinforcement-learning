@@ -57,18 +57,18 @@ init_joint_pose:
   wr3: -0.97
 
 joint_limits_array:
-  shp_max: 1.6
-  shp_min: -6.6
-  shl_max: 1.6
-  shl_min: -1.6
-  elb_max: 0.0
-  elb_min: -1.6
-  wr1_max: 0.0
-  wr1_min: -1.6
-  wr2_max: 0.0
-  wr2_min: -1.6
-  wr3_max: 0.0
-  wr3_min: -1.6
+  shp_max: 3.0
+  shp_min: -3.0
+  shl_max: 3.0
+  shl_min: -3.0
+  elb_max: 3.0
+  elb_min: -3.0
+  wr1_max: 3.0
+  wr1_min: -3.0
+  wr2_max: 3.0
+  wr2_min: -3.0
+  wr3_max: 3.0
+  wr3_min: -3.0
 
 episode_done_criteria:
   - minimum_height
@@ -79,5 +79,3 @@ maximum_base_linear_acceleration: 3000.0 # Based on making fall from a body heig
 maximum_base_angular_velocity: 20.0 # Based on free fall, one body length, at 45 degree angle max/min imu readings 20.0
 
 maximum_joint_effort: 10.0 # Based on observation of Falling knee flexed
-
-jump_increment: 0.8 # Increase in Radians for the jump motion. The bigger the higher the jump.

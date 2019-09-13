@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import sys
 import rospy
 from controller_manager_msgs.srv import SwitchController, SwitchControllerRequest, SwitchControllerResponse
 
@@ -70,12 +70,24 @@ class ControllersConnection():
         return reset_result
 
     def reset_ur_joint_controllers(self):
-        controllers_reset = ['joint_state_controller',
-                             'gripper_controller',
-                             'ur_shoulder_pan_vel_controller'
-                             'ur_shoulder_lift_vel_controller'
-                             'ur_elbow_vel_controller'
-                             'ur_wrist_1_vel_controller'
-                             'ur_wrist_2_vel_controller'
-                             'ur_wrist_3_vel_controller']
+        if len(sys.argv) < 3:
+            print("len(sys.argv) < 3")
+        else:
+            print(sys.argv[1], sys.argv[2])
+        
+        if sys.argv[1] == 'traj_vel':
+            print('traj_vel')
+            controllers_reset = ['joint_state_controller',
+                                'gripper_controller',
+                                'vel_traj_controller']
+        elif sys.argv[1] == 'vel':
+            print('vel')
+            controllers_reset = ['joint_state_controller',
+                                'gripper_controller',
+                                'ur_shoulder_pan_vel_controller'
+                                'ur_shoulder_lift_vel_controller'
+                                'ur_elbow_vel_controller'
+                                'ur_wrist_1_vel_controller'
+                                'ur_wrist_2_vel_controller'
+                                'ur_wrist_3_vel_controller']
         self.reset_controllers(controllers_reset)

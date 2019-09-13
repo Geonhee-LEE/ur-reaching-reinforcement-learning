@@ -6,10 +6,11 @@
 -->
 
 <launch>
+  <arg name="controller" default="vel"/> <!-- 'vel' or 'traj_vel'-->
 
-    <!-- Load the parameters for the algorithm -->
-    <rosparam command="load" file="$(find ur_training)/config/default_params.yaml" />
+  <!-- Load the parameters for the algorithm -->
+  <rosparam command="load" file="$(find ur_training)/config/default_params.yaml" />
 
-    <!-- Launch the training system -->
-    <node pkg="ur_training" name="ur_gym" type="default.py" output="screen"/>
+  <!-- Launch the training system -->
+  <node pkg="ur_training" name="ur_gym" type="default.py" output="screen" args="$(arg controller)"/>
 </launch>

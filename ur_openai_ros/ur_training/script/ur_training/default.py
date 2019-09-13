@@ -34,7 +34,7 @@ def fill_qLearn_message(qlearn_dict):
 
 def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.INFO)
+	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.DEBUG)
     # Create the Gym environment
 	env = gym.make('URDefault-v0')
 	env._max_episode_steps = 10000
@@ -91,7 +91,7 @@ def main():
 		rospy.loginfo ("STARTING Episode #"+str(x))
         # for each episode, we test the robot for nsteps
 		for i in range(nsteps):
-
+		    rospy.loginfo ("env.step(action)")
             # Pick an action based on the current state
 		    action = qlearn.chooseAction(state)
             
@@ -99,6 +99,7 @@ def main():
 		    rospy.logdebug("###################### Start Step...["+str(i)+"]")
 		    rospy.logdebug("Action Space=="+str(range(env.action_space.n)))
 		    rospy.logdebug("Action to Perform >> "+str(action))
+		    print('env.step(action)')
 		    nextState, reward, done, info = env.step(action)
 		    rospy.logdebug("END Step...")
 		    rospy.logdebug("Reward ==> " + str(reward))
