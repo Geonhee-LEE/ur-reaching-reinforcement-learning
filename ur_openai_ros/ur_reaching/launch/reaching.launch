@@ -1,0 +1,15 @@
+<!--
+    Date of creation: 5/II/2018
+    Application created by: Miguel Angel Rodriguez <duckfrost@theconstructsim.com>
+    The Construct http://www.theconstructsim.com
+    License LGPLV3 << Basically means you can do whatever you want with this!
+-->
+
+<launch>
+
+    <!-- Load the parameters for the algorithm -->
+    <rosparam command="load" file="$(find ur_reaching)/config/reaching_params.yaml" />
+
+    <!-- Launch the training system -->
+    <node pkg="ur_reaching" name="ur_reaching" type="reaching_main.py" output="screen"/>
+</launch>
