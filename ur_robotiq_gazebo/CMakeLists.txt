@@ -24,7 +24,7 @@ catkin_package(
 # Specify locations of header files.
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-
+#### Multiple blocks
 # Declare the executable, along with its source files.
 add_executable(blocks_spawner src/blocks_spawner.cpp)
 # Specify libraries against which to link.
@@ -34,6 +34,16 @@ add_executable(blocks_poses_publisher src/blocks_poses_publisher.cpp)
 target_link_libraries(blocks_poses_publisher ${catkin_LIBRARIES})
 add_dependencies(blocks_poses_publisher ${catkin_EXPORTED_TARGETS})
 
+
+#### A block
+# Declare the executable, along with its source files.
+add_executable(block_spawner src/block_spawner.cpp)
+# Specify libraries against which to link.
+target_link_libraries(block_spawner ${catkin_LIBRARIES})
+
+add_executable(block_pose_publisher src/block_pose_publisher.cpp)
+target_link_libraries(block_pose_publisher ${catkin_LIBRARIES})
+add_dependencies(block_pose_publisher ${catkin_EXPORTED_TARGETS})
 #############
 ## Install ##
 #############

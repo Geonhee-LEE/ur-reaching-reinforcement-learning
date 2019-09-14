@@ -64,10 +64,10 @@
 
 
   <!-- the red blocks spawner node -->
-  <node name="blocks_spawner" pkg="ur_robotiq_gazebo" type="blocks_spawner" output="screen" />
+  <node name="block_spawner" pkg="ur_robotiq_gazebo" type="block_spawner" output="screen" />
 
   <!-- the block's poses publisher node -->
-  <node name="blocks_poses_publisher" pkg="ur_robotiq_gazebo" type="blocks_poses_publisher" output="screen" />
+  <node name="block_pose_publisher" pkg="ur_robotiq_gazebo" type="block_pose_publisher" output="screen" />
 
 
   <!-- Run moveit 
