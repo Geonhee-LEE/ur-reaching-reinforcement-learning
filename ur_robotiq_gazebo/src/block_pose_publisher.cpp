@@ -67,20 +67,8 @@ void modelStatesCallback(const gazebo_msgs::ModelStates& current_model_states)
         for (int i=0; i<g_quantity; i++) 
         {
             // Get index of ith block
-            std::string indexed_model_name;
-                
-            indexed_model_name = "red_blocks_" + intToString(i);
-            /*
-            if (g_current_blocks[i] == 0) 
-            {
-                indexed_model_name = "red_blocks_" + intToString(i);
-                tracking_id = i;
-            }
-            else 
-            {
-                indexed_model_name = "red_blocks_" + intToString(tracking_id);
-            }
-            */
+            std::string indexed_model_name;                
+            indexed_model_name = "red_blocks_" + intToString(0); // A red block index
 
             // For matching the model we want, for loop is executed
             int index = -1;
@@ -93,23 +81,6 @@ void modelStatesCallback(const gazebo_msgs::ModelStates& current_model_states)
                 }
             }
             
-            if (index != -1) 
-            {
-                // this model name has been successfully indexed
-                box_x[i] = current_model_states.pose[index].position.x;
-                box_y[i] = current_model_states.pose[index].position.y;
-                box_z[i] = current_model_states.pose[index].position.z;
-            }
-            else 
-            {
-                ROS_ERROR("fail to find model name in the model_states topic" );
-                // in the test run, there is chance that the last block is not in the topic message
-                // and g_quantity (fron spawner node) is larger than the block quantity here
-                // because /gazebo/model_states are sampled at a high rate of about 1000Hz
-                // so the position data should be aborted if fail to find the last block
-                poses_completed = false;
-            }
-
             if(i == g_quantity -1)
             {
                 target_point_msg.x = current_model_states.pose[index].position.x;

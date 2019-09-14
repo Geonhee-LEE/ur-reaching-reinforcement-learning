@@ -119,7 +119,7 @@
     red_xmlStr = red_strStream.str();
     // ROS_INFO_STREAM("urdf: \n" <<red_xmlStr);
     // prepare the pawn model service message
-    spawn_model_req.initial_pose.position.x = 2;
+    spawn_model_req.initial_pose.position.x = 1;  // block start position
     spawn_model_req.initial_pose.position.z = 0.2;
     spawn_model_req.initial_pose.orientation.x=0.0;
     spawn_model_req.initial_pose.orientation.y=0.0;
@@ -129,18 +129,18 @@
 
     ros::Time time_temp(0, 0);
     ros::Duration duration_temp(0, 1000000);
-    apply_wrench_req.wrench.force.x = -5.1;
+    apply_wrench_req.wrench.force.x = -5.1; //block velocity according to force below -5.1
     apply_wrench_req.wrench.force.y = 0.0;
     apply_wrench_req.wrench.force.z = 0.0;
     apply_wrench_req.start_time = time_temp;
     apply_wrench_req.duration = duration_temp;
     apply_wrench_req.reference_frame = "world";
 
-    int i =0;
+    int i = 0;
 
     while (ros::ok())
     {
-        std::string index = intToString(i);
+        std::string index = intToString(0);
         std::string model_name;
 
         spawn_model_req.initial_pose.position.y = -1 + (float)rand()/(float)(RAND_MAX) * 0.4;  // random between -0.4 to 0.4
@@ -177,10 +177,12 @@
         call_service = wrenchClient.call(apply_wrench_req, apply_wrench_resp);
         if (call_service) 
         {
-            if (apply_wrench_resp.success) {
+            if (apply_wrench_resp.success) 
+            {
                 ROS_INFO_STREAM(model_name << " speed initialized");
             }
-            else {
+            else 
+            {
                 ROS_INFO_STREAM(model_name << " fail to initialize speed");
             }
         }
@@ -189,6 +191,15 @@
             ROS_ERROR("fail to connect with gazebo server");
             return 0;
         }
+
+        if( i == 0)
+        {
+            current_blocks_msg.data.push_back(i);
+            i = i + 1;
+        }
+        // publish current cylinder blocks status, all cylinder blocks will be published
+        // no matter if it's successfully spawned, or successfully initialized in speed
+        current_blocks_publisher.publish(current_blocks_msg);
 
         ros::spinOnce();
         ros::Duration(20.0).sleep();  // frequency control, spawn one cylinder in each loop
