@@ -6,7 +6,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="pause" default="true"/>  <!-- Start Gazebo with a blank world -->
-  <arg name="controller" default="vel"/> <!-- 'vel' or 'traj_vel'-->
+  <arg name="controller" default="vel"/> <!-- 'vel' or 'traj_vel' or 'follow'-->
 
   <!-- Object pose -->
   <arg name="x" default="0"/>
@@ -52,10 +52,15 @@
   <rosparam file="$(find ur_robotiq_gazebo)/controller/arm_controller.yaml" command="load"/>
 
   <!-- Load each velocity controllers for UR5 joints-->  
-  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn ur_shoulder_pan_vel_controller ur_shoulder_lift_vel_controller ur_elbow_vel_controller ur_wrist_1_vel_controller ur_wrist_2_vel_controller ur_wrist_3_vel_controller gripper_controller" respawn="false" output="screen" if="$(eval controller == 'vel')" />
+  <node name="vel_controller_spawner" pkg="controller_manager" type="controller_manager" 
+    args="spawn ur_shoulder_pan_vel_controller ur_shoulder_lift_vel_controller ur_elbow_vel_controller ur_wrist_1_vel_controller ur_wrist_2_vel_controller ur_wrist_3_vel_controller gripper_controller" respawn="false" output="screen" 
+    if="$(eval controller == 'vel')" />
   
   <!-- Load the traj velocity controller for UR5 joints-->
-  <node name="arm_traj_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn vel_traj_controller gripper_controller" respawn="false" output="screen" if="$(eval controller == 'traj_vel')"/>
+  <node name="arm_traj_controller_spawner" pkg="controller_manager" type="controller_manager" 
+    args="spawn vel_traj_controller gripper_controller" respawn="false" output="screen" 
+    if="$(eval controller == 'traj_vel')"/>
+
 
   <!-- spawn the conveyor_belt in gazebo -->
   <node name="spawn_conveyor_belt" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_robotiq_gazebo)/urdf/conveyor_belt.urdf -urdf -model conveyor_belt -x 0.0 -y -1.0 -z 0" />
@@ -70,15 +75,15 @@
   <node name="block_pose_publisher" pkg="ur_robotiq_gazebo" type="block_pose_publisher" output="screen" />
 
 
-  <!-- Run moveit 
+  <!-- Run moveit -->
   <include file="$(find ur_robotiq_moveit_config)/launch/move_group.launch">
     <arg name="debug" default="$(arg debug)" />
   </include>
 
-  < Run Rviz >
+  <!-- Run Rviz -->
   <include file="$(find ur_robotiq_moveit_config)/launch/moveit_rviz.launch">
     <arg name="debug" default="$(arg debug)" />
     <arg name="config" default="true" />
-  </include-->
+  </include>
 
 </launch>

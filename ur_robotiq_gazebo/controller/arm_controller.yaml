@@ -27,7 +27,7 @@ arm_controller:
     wrist_1_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
     wrist_2_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
     wrist_3_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
-
+     
 vel_traj_controller:
   type: velocity_controllers/JointTrajectoryController
   joints:
@@ -58,6 +58,7 @@ vel_traj_controller:
       wrist_2_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
       wrist_3_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
 
+      
 gripper_controller:
   type: position_controllers/JointTrajectoryController
   joints:

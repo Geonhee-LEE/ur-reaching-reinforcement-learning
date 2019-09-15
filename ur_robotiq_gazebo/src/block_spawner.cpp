@@ -1,3 +1,4 @@
+// http://gazebosim.org/tutorials?tut=ros_comm&cat=connect_ros#DeleteModel
 // spawn the red blocks on the conveyor belt
 // and give them initial speed (by apply_body_wrench) to slide on conveyor
 
