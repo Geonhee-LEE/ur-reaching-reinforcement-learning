@@ -67,4 +67,11 @@
     <param name="planning_scene_monitor/publish_state_updates" value="$(arg publish_monitored_planning_scene)" />
     <param name="planning_scene_monitor/publish_transforms_updates" value="$(arg publish_monitored_planning_scene)" />
   </node>
+
+  <!-- Run Rviz -->
+  <include file="$(find ur_robotiq_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="debug" default="$(arg debug)" />
+    <arg name="config" default="true" />
+  </include>
+
 </launch>

@@ -1,5 +1,5 @@
 controller_list:
-  - name: "arm_controller"
+  - name: "vel_traj_controller"
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
     default: true
