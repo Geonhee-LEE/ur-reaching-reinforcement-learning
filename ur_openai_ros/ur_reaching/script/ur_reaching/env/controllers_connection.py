@@ -7,10 +7,22 @@ class ControllersConnection():
     
     def __init__(self, namespace):
 
-        self.switch_service_name = '/'+namespace+'/controller_manager/switch_controller'
+        self.switch_service_name = '/controller_manager/switch_controller'
         self.switch_service = rospy.ServiceProxy(self.switch_service_name, SwitchController)
 
-    def switch_controllers(self, controllers_on, controllers_off, strictness=1):
+        self.vel_traj_controller = ['joint_state_controller',
+                            'gripper_controller',
+                            'vel_traj_controller']
+        self.vel_controller = ["joint_state_controller",
+                                "gripper_controller",
+                                "ur_shoulder_pan_vel_controller",
+                                "ur_shoulder_lift_vel_controller",
+                                "ur_elbow_vel_controller",
+                                "ur_wrist_1_vel_controller",
+                                "ur_wrist_2_vel_controller",
+                                "ur_wrist_3_vel_controller"]
+
+    def switch_controllers(self, controllers_on, controllers_off, strictness=2):
         """
         Give the controllers you wan to switch on or off.
         :param controllers_on: ["name_controler_1", "name_controller2",...,"name_controller_n"]
@@ -22,7 +34,7 @@ class ControllersConnection():
         try:
             switch_request_object = SwitchControllerRequest()
             switch_request_object.start_controllers = controllers_on
-            switch_request_object.start_controllers = controllers_off
+            switch_request_object.stop_controllers = controllers_off
             switch_request_object.strictness = strictness
 
             switch_result = self.switch_service(switch_request_object)
@@ -36,14 +48,23 @@ class ControllersConnection():
             ---
             bool ok
             """
-            rospy.logdebug("Switch Result==>"+str(switch_result.ok))
+            rospy.loginfo("Switch Result==>"+str(switch_result.ok))
 
             return switch_result.ok
 
         except rospy.ServiceException, e:
-            print (self.switch_service_name+" service call failed")
+            print (self.switch_service_name + " service call failed")
 
             return None
+
+    def reset_ur_joint_controllers(self, ctrl_type):
+        
+        if ctrl_type == 'traj_vel':
+            controllers_reset = self.vel_traj_controller
+        elif ctrl_type == 'vel':
+            controllers_reset = self.vel_controller
+
+        self.reset_controllers(controllers_reset)
 
     def reset_controllers(self, controllers_reset):
         """
@@ -69,34 +90,3 @@ class ControllersConnection():
 
         return reset_result
 
-    def reset_ur_joint_controllers(self):
-        if len(sys.argv) < 3:
-            print("len(sys.argv) < 3")
-        else:
-            print(sys.argv[1], sys.argv[2])
-        
-        if sys.argv[1] == 'traj_vel':
-            print('traj_vel')
-            controllers_reset = ['joint_state_controller',
-                                'gripper_controller',
-                                'vel_traj_controller']
-        elif sys.argv[1] == 'vel':
-            print('vel')
-            controllers_reset = ['joint_state_controller',
-                                'gripper_controller',
-                                'ur_shoulder_pan_vel_controller'
-                                'ur_shoulder_lift_vel_controller'
-                                'ur_elbow_vel_controller'
-                                'ur_wrist_1_vel_controller'
-                                'ur_wrist_2_vel_controller'
-                                'ur_wrist_3_vel_controller']
-        else:
-            controllers_reset = ['joint_state_controller',
-                                'gripper_controller',
-                                'ur_shoulder_pan_vel_controller'
-                                'ur_shoulder_lift_vel_controller'
-                                'ur_elbow_vel_controller'
-                                'ur_wrist_1_vel_controller'
-                                'ur_wrist_2_vel_controller'
-                                'ur_wrist_3_vel_controller']
-        self.reset_controllers(controllers_reset)

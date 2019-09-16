@@ -6,10 +6,11 @@
 -->
 
 <launch>
+   <arg name="controller" default="vel"/> <!-- 'vel' or 'traj_vel'-->
 
     <!-- Load the parameters for the algorithm -->
     <rosparam command="load" file="$(find ur_reaching)/config/reaching_params.yaml" />
 
     <!-- Launch the training system -->
-    <node pkg="ur_reaching" name="ur_reaching" type="reaching_main.py" output="screen"/>
+    <node pkg="ur_reaching" name="ur_reaching" type="reaching_main.py" output="screen" args="$(arg controller)"/>
 </launch>

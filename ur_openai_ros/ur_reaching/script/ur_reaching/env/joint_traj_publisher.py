@@ -9,6 +9,7 @@ from std_msgs.msg import Float64
 from geometry_msgs.msg import Vector3
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
+from controllers_connection import ControllersConnection
 
 class JointTrajPub(object):
     def __init__(self):
@@ -16,7 +17,8 @@ class JointTrajPub(object):
         Publish trajectory_msgs::JointTrajectory for velocity control
         """
         self._joint_traj_pub = rospy.Publisher('/vel_traj_controller/command', JointTrajectory, queue_size=1)
-        
+    	self._ctrl_conn = ControllersConnection(namespace="")
+
     def set_init_pose(self, init_pose):
         """
         Sets joints to initial position [0,0,0]
@@ -30,9 +32,9 @@ class JointTrajPub(object):
         Checks that all the publishers are working
         :return:
         """
-        rate = rospy.Rate(10)  # 10hz
+        rate = rospy.Rate(1)  # 1hz
         while (self._joint_traj_pub.get_num_connections() == 0):
-            rospy.logdebug("No susbribers to joint yet so we wait and try again")
+            rospy.logdebug("No subscribers to vel_traj_controller yet so we wait and try again")
             try:
                 rate.sleep()
             except rospy.ROSInterruptException:
@@ -48,13 +50,12 @@ class JointTrajPub(object):
         self.move_joints(msg.joint_state.position)
 
     def move_joints(self, joints_array):
-        print("move_joints")
         vel_cmd = JointTrajectory()
         vel_cmd.joint_names = [ "shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint" ]
         vel_cmd.header.stamp = rospy.Time.now()
         # create a JTP instance and configure it
-        jtp = JointTrajectoryPoint(positions=[0]*6, velocities=[joints_array[0], joints_array[1], joints_array[2], joints_array[3], joints_array[4], joints_array[5] ], time_from_start=rospy.Duration(.0))
-        #jtp.velocities = [joints_array[0], joints_array[1], joints_array[2], joints_array[3], joints_array[4], joints_array[5] ]
+        jtp = JointTrajectoryPoint(positions=[0]*6, velocities=[0]*6 , time_from_start=rospy.Duration(.0))
+        jtp.velocities = [joints_array[0], joints_array[1], joints_array[2], joints_array[3], joints_array[4], joints_array[5] ]
         
         # setup the reset of the pt
         vel_cmd.points =[jtp]

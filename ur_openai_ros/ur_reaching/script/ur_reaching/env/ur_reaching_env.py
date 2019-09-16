@@ -111,6 +111,9 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	# stablishes connection with simulator
     	self._gz_conn = GazeboConnection()
     	self._ctrl_conn = ControllersConnection(namespace="")
+		
+    	self._ctrl_type =  sys.argv[1]
+    	self.pre_ctrl_type =  self._ctrl_type
 
     	self._ur_state = URState(   max_height=self.max_height,
     	    	    	    	    min_height=self.min_height,
@@ -141,6 +144,9 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	self._joint_pubisher = JointPub()
     	self._joint_traj_pubisher = JointTrajPub()
+		
+		# Switch flag: if controller is switched, publisher connection occurs error without reset
+    	self.switch_flag = True 
     	
     	"""
     	For this version, we consider 6 actions
@@ -178,22 +184,34 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
     	rospy.logdebug("reset_ur_joint_controllers...")
-    	self._ctrl_conn.reset_ur_joint_controllers()
+    	if self._ctrl_type != self.pre_ctrl_type:
+    		print('self._ctrl_type != self.pre_ctrl_type', self._ctrl_type, self.pre_ctrl_type)
+    		if self._ctrl_type == 'vel':
+    			self._ctrl_conn.switch_controllers(controllers_on= self._ctrl_conn.vel_controller, 
+									controllers_off = self._ctrl_conn.vel_traj_controller)
+    		elif self._ctrl_type == 'traj_vel':
+    			self._ctrl_conn.switch_controllers(controllers_off= self._ctrl_conn.vel_controller, 
+									controllers_on = self._ctrl_conn.vel_traj_controller)
+    	else:
+    		self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
+        print("self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)")
 
     	# 3rd: resets the robot to initial conditions
     	rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
     	# We save that position as the current joint desired position
     	init_pos = self._ur_state.init_joints_pose(self.init_joint_pose)
+        print("init_pos")
 
     	# 4th: We Set the init pose to the jump topic so that the jump control can update
     	# We check the jump publisher has connection
 
-    	if sys.argv[1] == 'traj_vel':
+    	if self._ctrl_type == 'traj_vel':
         	self._joint_traj_pubisher.check_publishers_connection()
-    	elif sys.argv[1] == 'vel':
+    	elif self._ctrl_type == 'vel':
     		self._joint_pubisher.check_publishers_connection()
     	else:
-        	self._joint_pubisher.check_publishers_connection()
+        	rospy.logwarn("Controller type is wrong!!!!")
+        print("check_publishers_connection ")
     	
 
     	# 5th: Check all subscribers work.
@@ -220,19 +238,15 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	return state
 
     def _act(self, action):
-        if len(sys.argv) < 3:
-            print("len(sys.argv) < 3")
-        else:
-            print(sys.argv[1], sys.argv[2])
-
-    	if sys.argv[1] == 'traj_vel':
+    	if self._ctrl_type == 'traj_vel':
+    		self.pre_ctrl_type = 'traj_vel'
     		self._joint_traj_pubisher.move_joints(action)
-    	elif sys.argv[1] == 'vel':
+    	elif self._ctrl_type == 'vel':
+        	self.pre_ctrl_type = 'vel'
     		self._joint_pubisher.move_joints(action)
     	else:
     		self._joint_pubisher.move_joints(action)
-		
-    		
+				
     def step(self, action):
     	rospy.logdebug("UR step func")
 

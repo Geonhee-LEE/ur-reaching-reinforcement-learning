@@ -17,6 +17,12 @@ from geometry_msgs.msg import Point, Quaternion, Vector3
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String
 
+# MoveIt
+import moveit_commander
+import moveit_msgs.msg
+import geometry_msgs.msg
+from move_group_python_interface import MoveGroupPythonInteface
+
 class URState(object):
 
     def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):

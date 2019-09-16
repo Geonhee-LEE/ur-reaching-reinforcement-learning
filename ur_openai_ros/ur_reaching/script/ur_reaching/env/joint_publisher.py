@@ -7,6 +7,7 @@ import copy
 from std_msgs.msg import String
 from std_msgs.msg import Float64
 from geometry_msgs.msg import Vector3
+from controllers_connection import ControllersConnection
 
 class JointPub(object):
     def __init__(self):
@@ -25,7 +26,8 @@ class JointPub(object):
         self.publishers_array.append(self._wrist_1_joint_pub)
         self.publishers_array.append(self._wrist_2_joint_pub)
         self.publishers_array.append(self._wrist_3_joint_pub)
-
+    	
+        self._ctrl_conn = ControllersConnection(namespace="")
 
     def set_init_pose(self, init_pose):
         """
@@ -40,7 +42,7 @@ class JointPub(object):
         Checks that all the publishers are working
         :return:
         """
-        rate = rospy.Rate(10)  # 10hz
+        rate = rospy.Rate(1)  # 1hz
         while (self._shoulder_pan_joint_pub.get_num_connections() == 0):
             rospy.logdebug("No susbribers to _shoulder_pan_joint_pub yet so we wait and try again")
             try:

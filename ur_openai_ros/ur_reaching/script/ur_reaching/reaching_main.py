@@ -34,7 +34,7 @@ def fill_qLearn_message(qlearn_dict):
 
 def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.DEBUG)
+	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.INFO)
     # Create the Gym environment
 	env = gym.make('URReaching-v0')
 	env._max_episode_steps = 10000
@@ -122,8 +122,12 @@ def main():
 		        break
 
 		    rospy.logdebug("###################### END Step...["+str(i)+"]")
+		    
             #raw_input("Press_Key_to_Next_STEP...")
-
+		if env._ctrl_type == 'vel':    			
+			env._ctrl_type = 'traj_vel'
+		elif env._ctrl_type == 'traj_vel':    			
+			env._ctrl_type = 'vel'
 		m, s = divmod(int(time.time() - start_time), 60)
 		h, m = divmod(m, 60)
 		episode_reward_msg.data = cumulated_reward
