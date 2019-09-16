@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ur_robotiq_moveit)
+project(ur_robotiq_moveit_api)
 
 find_package(catkin REQUIRED)
 

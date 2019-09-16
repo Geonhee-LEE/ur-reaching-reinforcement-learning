@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>ur_robotiq_moveit</name>
+  <name>ur_robotiq_moveit_api</name>
   <version>1.0.0</version>
   <description>
       Universal robot arm manipulation.

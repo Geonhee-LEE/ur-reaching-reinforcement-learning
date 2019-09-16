@@ -8,6 +8,7 @@ import geometry_msgs.msg
 from math import pi
 from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
+from controller_manager_msgs.srv import SwitchController, SwitchControllerRequest, SwitchControllerResponse
 ## END_SUB_TUTORIAL
 
 def all_close(goal, actual, tolerance):
@@ -32,36 +33,27 @@ def all_close(goal, actual, tolerance):
 
   return True
 
-class MoveGroupPythonIntefaceTutorial(object):
-  """MoveGroupPythonIntefaceTutorial"""
+class MoveGroupPythonInteface(object):
+  """MoveGroupPythonInteface"""
   def __init__(self):
-    super(MoveGroupPythonIntefaceTutorial, self).__init__()
+    super(MoveGroupPythonInteface, self).__init__()
 
-    ## BEGIN_SUB_TUTORIAL setup
-    ##
     ## First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)
-    rospy.init_node('move_group_python_interface_tutorial',
-                    anonymous=True)
+    rospy.init_node('move_group_python_interface', anonymous=True)
 
-    ## Instantiate a `RobotCommander`_ object. This object is the outer-level interface to
-    ## the robot:
-    robot = moveit_commander.RobotCommander()
+    ## Instantiate a `RobotCommander`_ object. This object is the outer-level interface to the robot:
+    robot_commander = moveit_commander.RobotCommander()
 
-    ## Instantiate a `PlanningSceneInterface`_ object.  This object is an interface
-    ## to the world surrounding the robot:
+    ## Instantiate a `PlanningSceneInterface`_ object.  This object is an interface to the world surrounding the robot:
     scene = moveit_commander.PlanningSceneInterface()
 
-    ## Instantiate a `MoveGroupCommander`_ object.  This object is an interface
-    ## to one group of joints.  In this case the group is the joints in the UR5
-    ## arm so we set ``group_name = manipulator``. If you are using a different robot,
-    ## you should change this value to the name of your robot arm planning group.
-    ## This interface can be used to plan and execute motions on the UR5:
+    ## Instantiate a `MoveGroupCommander`_ object.  
+    ## This object is an interface to one group of joints.
     group_name = "manipulator"
-    group = moveit_commander.MoveGroupCommander(group_name)
+    group_commander = moveit_commander.MoveGroupCommander(group_name)
 
-    ## We create a `DisplayTrajectory`_ publisher which is used later to publish
-    ## trajectories for RViz to visualize:
+    ## We create a `DisplayTrajectory`_ publisher which is used later to publish trajectories for RViz to visualize:
     display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',
                                                    moveit_msgs.msg.DisplayTrajectory,
                                                    queue_size=20)
@@ -71,50 +63,55 @@ class MoveGroupPythonIntefaceTutorial(object):
     ## BEGIN_SUB_TUTORIAL basic_info
     ##
     ## Getting Basic Information
-    ## ^^^^^^^^^^^^^^^^^^^^^^^^^
     # We can get the name of the reference frame for this robot:
-    planning_frame = group.get_planning_frame()
+    planning_frame = group_commander.get_planning_frame()
     print ("============ Reference frame: %s" % planning_frame)
 
     # We can also print (the name of the end-effector link for this group:
-    eef_link = group.get_end_effector_link()
+    eef_link = group_commander.get_end_effector_link()
     print ("============ End effector: %s" % eef_link)
 
     # We can get a list of all the groups in the robot:
-    group_names = robot.get_group_names()
-    print ("============ Robot Groups:", robot.get_group_names())
+    group_names = robot_commander.get_group_names()
+    print ("============ Robot Groups:", robot_commander.get_group_names())
 
     # Sometimes for debugging it is useful to print (the entire state of the
     # robot:
     print ("============ Printing robot state")
-    print (robot.get_current_state())
+    print (robot_commander.get_current_state())
     print ("")
     ## END_SUB_TUTORIAL
 
     # Misc variables
     self.box_name = ''
-    self.robot = robot
+    self.robot_commander = robot_commander
     self.scene = scene
-    self.group = group
+    self.group_commander = group_commander
     self.display_trajectory_publisher = display_trajectory_publisher
     self.planning_frame = planning_frame
     self.eef_link = eef_link
     self.group_names = group_names
 
+  def get_pose(self):
+    # self.group_commander.get_current_pose().pose
+    return self.group_commander.get_current_pose().pose
+
+  def get_joint_values(self):
+    # self.group_commander.get_current_joint_values()
+    return robot_commander.get_current_state().joint_state.position[0:6] 
+
   def go_to_joint_state(self):
     # Copy class variables to local variables to make the web tutorials more clear.
     # In practice, you should use the class variables directly unless you have a good
     # reason not to.
-    group = self.group
+    group_commander = self.group_commander
 
     ## BEGIN_SUB_TUTORIAL plan_to_joint_state
     ##
     ## Planning to a Joint Goal
     ## ^^^^^^^^^^^^^^^^^^^^^^^^
-    ## The UR5's zero configuration is at a `singularity <https://www.quora.com/Robotics-What-is-meant-by-kinematic-singularity>`_ so the first
-    ## thing we want to do is move it to a slightly better configuration.
     # We can get the joint values from the group and adjust some of the values:
-    joint_goal = group.get_current_joint_values()
+    joint_goal = group_commander.get_current_joint_values()
     joint_goal[0] = 0
     joint_goal[1] = -pi/4
     joint_goal[2] = 0
@@ -124,24 +121,24 @@ class MoveGroupPythonIntefaceTutorial(object):
 
     # The go command can be called with joint values, poses, or without any
     # parameters if you have already set the pose or joint target for the group
-    group.go(joint_goal, wait=True)
+    group_commander.go(joint_goal, wait=True)
 
     # Calling ``stop()`` ensures that there is no residual movement
-    group.stop()
+    group_commander.stop()
 
     ## END_SUB_TUTORIAL
 
     # For testing:
     # Note that since this section of code will not be included in the tutorials
     # we use the class variable rather than the copied state variable
-    current_joints = self.group.get_current_joint_values()
+    current_joints = self.group_commander.get_current_joint_values()
     return all_close(joint_goal, current_joints, 0.01)
 
   def go_to_pose_goal(self):
     # Copy class variables to local variables to make the web tutorials more clear.
     # In practice, you should use the class variables directly unless you have a good
     # reason not to.
-    group = self.group
+    group_commander = self.group_commander
 
     ## BEGIN_SUB_TUTORIAL plan_to_pose
     ##
@@ -154,30 +151,29 @@ class MoveGroupPythonIntefaceTutorial(object):
     pose_goal.position.x = 0.4
     pose_goal.position.y = 0.1
     pose_goal.position.z = 0.4
-    group.set_pose_target(pose_goal)
+    group_commander.set_pose_target(pose_goal)
 
     ## Now, we call the planner to compute the plan and execute it.
-    plan = group.go(wait=True)
+    plan = group_commander.go(wait=True)
     # Calling `stop()` ensures that there is no residual movement
-    group.stop()
+    group_commander.stop()
     # It is always good to clear your targets after planning with poses.
     # Note: there is no equivalent function for clear_joint_value_targets()
-    group.clear_pose_targets()
+    group_commander.clear_pose_targets()
 
     ## END_SUB_TUTORIAL
 
     # For testing:
     # Note that since this section of code will not be included in the tutorials
     # we use the class variable rather than the copied state variable
-    current_pose = self.group.get_current_pose().pose
+    current_pose = self.group_commander.get_current_pose().pose
     return all_close(pose_goal, current_pose, 0.01)
-
 
   def plan_cartesian_path(self, scale=1):
     # Copy class variables to local variables to make the web tutorials more clear.
     # In practice, you should use the class variables directly unless you have a good
     # reason not to.
-    group = self.group
+    group_commander = self.group_commander
 
     ## BEGIN_SUB_TUTORIAL plan_cartesian_path
     ##
@@ -188,7 +184,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     ##
     waypoints = []
 
-    wpose = group.get_current_pose().pose
+    wpose = group_commander.get_current_pose().pose
     wpose.position.z -= scale * 0.1  # First move up (z)
     wpose.position.y += scale * 0.2  # and sideways (y)
     waypoints.append(copy.deepcopy(wpose))
@@ -202,7 +198,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     # We want the Cartesian path to be interpolated at a resolution of 1 cm
     # which is why we will specify 0.01 as the eef_step in Cartesian
     # translation.  We will disable the jump threshold by setting it to 0.0 disabling:
-    (plan, fraction) = group.compute_cartesian_path(
+    (plan, fraction) = group_commander.compute_cartesian_path(
                                        waypoints,   # waypoints to follow
                                        0.01,        # eef_step
                                        0.0)         # jump_threshold
@@ -216,7 +212,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     # Copy class variables to local variables to make the web tutorials more clear.
     # In practice, you should use the class variables directly unless you have a good
     # reason not to.
-    robot = self.robot
+    robot_commander = self.robot_commander
     display_trajectory_publisher = self.display_trajectory_publisher
 
     ## BEGIN_SUB_TUTORIAL display_trajectory
@@ -231,7 +227,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     ## We populate the trajectory_start with our current robot state to copy over
     ## any AttachedCollisionObjects and add our plan to the trajectory.
     display_trajectory = moveit_msgs.msg.DisplayTrajectory()
-    display_trajectory.trajectory_start = robot.get_current_state()
+    display_trajectory.trajectory_start = robot_commander.get_current_state()
     display_trajectory.trajectory.append(plan)
     # Publish
     display_trajectory_publisher.publish(display_trajectory);
@@ -242,7 +238,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     # Copy class variables to local variables to make the web tutorials more clear.
     # In practice, you should use the class variables directly unless you have a good
     # reason not to.
-    group = self.group
+    group_commander = self.group_commander
 
     ## BEGIN_SUB_TUTORIAL execute_plan
     ##
@@ -250,7 +246,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     ## ^^^^^^^^^^^^^^^^
     ## Use execute if you would like the robot to follow
     ## the plan that has already been computed:
-    group.execute(plan, wait=True)
+    group_commander.execute(plan, wait=True)
 
     ## **Note:** The robot's current joint state must be within some tolerance of the
     ## first waypoint in the `RobotTrajectory`_ or ``execute()`` will fail
@@ -310,7 +306,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     ## First, we will create a box in the planning scene at the location of the left finger:
     box_pose = geometry_msgs.msg.PoseStamped()
-    box_pose.header.frame_id = "wrist3"
+    box_pose.header.frame_id = "wrist_3_link"
     box_pose.pose.orientation.w = 1.0
     box_name = "box"
     scene.add_box(box_name, box_pose, size=(0.1, 0.1, 0.1))
@@ -326,7 +322,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     # In practice, you should use the class variables directly unless you have a good
     # reason not to.
     box_name = self.box_name
-    robot = self.robot
+    robot_commander = self.robot_commander
     scene = self.scene
     eef_link = self.eef_link
     group_names = self.group_names
@@ -342,7 +338,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     ## robot, we set ``grasping_group = 'hand'``. If you are using a different robot,
     ## you should change this value to the name of your end effector group name.
     grasping_group = 'gripper'
-    touch_links = robot.get_link_names(group=grasping_group)
+    touch_links = robot_commander.get_link_names(group=grasping_group)
     scene.attach_box(eef_link, box_name, touch_links=touch_links)
     ## END_SUB_TUTORIAL
 
@@ -388,12 +384,11 @@ class MoveGroupPythonIntefaceTutorial(object):
     # We wait for the planning scene to update.
     return self.wait_for_state_update(box_is_attached=False, box_is_known=False, timeout=timeout)
 
-
 def main():
   try:
     print ("============ Press `Enter` to begin the tutorial by setting up the moveit_commander (press ctrl-d to exit) ...")
     raw_input()
-    tutorial = MoveGroupPythonIntefaceTutorial()
+    tutorial = MoveGroupPythonInteface()
 
     print ("============ Press `Enter` to execute a movement using a joint state goal ...")
     raw_input()
