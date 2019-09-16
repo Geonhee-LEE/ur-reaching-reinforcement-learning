@@ -194,7 +194,6 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 									controllers_on = self._ctrl_conn.vel_traj_controller)
     	else:
     		self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
-        print("self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)")
 
     	# 3rd: resets the robot to initial conditions
     	rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))

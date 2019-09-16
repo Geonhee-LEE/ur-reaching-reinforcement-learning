@@ -46,6 +46,8 @@ class JointPub(object):
         while (self._shoulder_pan_joint_pub.get_num_connections() == 0):
             rospy.logdebug("No susbribers to _shoulder_pan_joint_pub yet so we wait and try again")
             try:
+                print ("on: ", self._ctrl_conn.vel_controller, "off: ", self._ctrl_conn.vel_traj_controller)
+                self._ctrl_conn.switch_controllers(controllers_on=self._ctrl_conn.vel_controller, controllers_off=self._ctrl_conn.vel_traj_controller)
                 rate.sleep()
             except rospy.ROSInterruptException:
                 # This is to avoid error when world is rested, time when backwards.

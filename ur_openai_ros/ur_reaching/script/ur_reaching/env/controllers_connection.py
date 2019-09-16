@@ -22,7 +22,7 @@ class ControllersConnection():
                                 "ur_wrist_2_vel_controller",
                                 "ur_wrist_3_vel_controller"]
 
-    def switch_controllers(self, controllers_on, controllers_off, strictness=2):
+    def switch_controllers(self, controllers_on, controllers_off, strictness=1):
         """
         Give the controllers you wan to switch on or off.
         :param controllers_on: ["name_controler_1", "name_controller2",...,"name_controller_n"]
@@ -63,6 +63,8 @@ class ControllersConnection():
             controllers_reset = self.vel_traj_controller
         elif ctrl_type == 'vel':
             controllers_reset = self.vel_controller
+        else:
+            controllers_reset = self.vel_controller
 
         self.reset_controllers(controllers_reset)
 
@@ -74,19 +76,23 @@ class ControllersConnection():
         """
         reset_result = False
 
-        result_off_ok = self.switch_controllers(controllers_on = [],
-                                controllers_off = controllers_reset)
+        rate = rospy.Rate(1)  # 1hz
+        while self.switch_controllers(controllers_on = [], controllers_off = controllers_reset) is not True:
+            try:
+                rate.sleep()
+            except rospy.ROSInterruptException:
+                # This is to avoid error when world is rested, time when backwards.
+                pass
+            
+        while self.switch_controllers(controllers_on=controllers_reset, controllers_off=[]) is not True:
+            try:
+                rate.sleep()
+            except rospy.ROSInterruptException:
+                # This is to avoid error when world is rested, time when backwards.
+                pass
+        
+        rospy.logdebug("Controllers Reseted==>"+str(controllers_reset))
 
-        if result_off_ok:
-            result_on_ok = self.switch_controllers(controllers_on=controllers_reset,
-                                                    controllers_off=[])
-            if result_on_ok:
-                rospy.logdebug("Controllers Reseted==>"+str(controllers_reset))
-                reset_result = True
-            else:
-                rospy.logdebug("result_on_ok==>" + str(result_on_ok))
-        else:
-            rospy.logdebug("result_off_ok==>" + str(result_off_ok))
 
         return reset_result
 

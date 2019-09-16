@@ -37,6 +37,8 @@ class JointTrajPub(object):
             rospy.logdebug("No subscribers to vel_traj_controller yet so we wait and try again")
             try:
                 rate.sleep()
+                #print ("on: ", self._ctrl_conn.vel_traj_controller, "off: ", self._ctrl_conn.vel_controller)
+                #self._ctrl_conn.switch_controllers(self._ctrl_conn.vel_traj_controller, self._ctrl_conn.vel_controller)
             except rospy.ROSInterruptException:
                 # This is to avoid error when world is rested, time when backwards.
                 pass

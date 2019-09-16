@@ -83,7 +83,7 @@ class URState(object):
         # We use it to get the contact force, to know if its in the air or stumping too hard.
         rospy.Subscriber("/lowerleg_contactsensor_state", ContactsState, self.contact_callback)
         # We use it to get the joints positions and calculate the reward associated to it
-        rospy.Subscriber("/ur/joint_states", JointState, self.joints_state_callback)
+        rospy.Subscriber("/joint_states", JointState, self.joints_state_callback)
 
     def check_all_systems_ready(self):
         """
