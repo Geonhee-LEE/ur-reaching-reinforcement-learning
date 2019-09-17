@@ -22,7 +22,7 @@ class ControllersConnection():
                                 "ur_wrist_2_vel_controller",
                                 "ur_wrist_3_vel_controller"]
 
-    def switch_controllers(self, controllers_on, controllers_off, strictness=2):
+    def switch_controllers(self, controllers_on, controllers_off, strictness=1):
         """
         Give the controllers you wan to switch on or off.
         :param controllers_on: ["name_controler_1", "name_controller2",...,"name_controller_n"]

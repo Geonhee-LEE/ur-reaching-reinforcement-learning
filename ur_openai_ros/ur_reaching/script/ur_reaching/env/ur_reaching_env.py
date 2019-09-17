@@ -184,6 +184,7 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
     	rospy.logdebug("reset_ur_joint_controllers...")
+    	"""
     	if self._ctrl_type != self.pre_ctrl_type:
     		print('self._ctrl_type != self.pre_ctrl_type', self._ctrl_type, self.pre_ctrl_type)
     		if self._ctrl_type == 'vel':
@@ -195,6 +196,8 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	else:
     		self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
         print("self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)")
+    	"""
+    	self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
 
     	# 3rd: resets the robot to initial conditions
     	rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))

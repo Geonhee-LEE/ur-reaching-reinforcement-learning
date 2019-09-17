@@ -124,10 +124,6 @@ def main():
 		    rospy.logdebug("###################### END Step...["+str(i)+"]")
 		    
             #raw_input("Press_Key_to_Next_STEP...")
-		if env._ctrl_type == 'vel':    			
-			env._ctrl_type = 'traj_vel'
-		elif env._ctrl_type == 'traj_vel':    			
-			env._ctrl_type = 'vel'
 		m, s = divmod(int(time.time() - start_time), 60)
 		h, m = divmod(m, 60)
 		episode_reward_msg.data = cumulated_reward
