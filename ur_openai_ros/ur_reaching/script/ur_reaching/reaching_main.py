@@ -11,32 +11,20 @@ import numpy
 import random
 import time
 # import our training environment
-from ur_reaching.env.ur_reaching_env import URReaching
+from ur_reaching.env.ur_reaching_env import URSimReaching
 from ur_reaching.algorithm.qlearn import QLearn
 from gym import wrappers
 from std_msgs.msg import Float64
 # ROS packages required
 import rospy
 import rospkg
-from hopper_training.msg import QLearnMatrix, QLearnElement, QLearnPoint
-
-
-def fill_qLearn_message(qlearn_dict):
-    q_learn_message = QLearnMatrix()
-    for q_object, q_reward in qlearn_dict.iteritems():
-        q_learn_element = QLearnElement()
-        q_learn_element.qlearn_point.state_tag.data = q_object[0]
-        q_learn_element.qlearn_point.action_number.data = q_object[1]
-        q_learn_element.reward.data = q_reward
-        q_learn_message.q_learn_matrix.append(q_learn_element)
-    return q_learn_message
 
 
 def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.INFO)
+	rospy.init_node('ur_gym', anonymous=True, log_level=rospy.DEBUG)
     # Create the Gym environment
-	env = gym.make('URReaching-v0')
+	env = gym.make('URSimReaching-v0')
 	env._max_episode_steps = 10000
 	rospy.logdebug ( "Gym environment done")
 	reward_pub = rospy.Publisher('/ur/reward', Float64, queue_size=1)
@@ -46,10 +34,6 @@ def main():
 	rospack = rospkg.RosPack()
 	pkg_path = rospack.get_path('ur_reaching')
 	outdir = pkg_path + '/training_results'
-	# Gym wrapper for monitoring
-	#env = wrappers.Monitor(env, outdir, force=True)
-	#rospy.logdebug("Monitor Wrapper started")
-	
 	last_time_steps = numpy.ndarray(0)
 
 	# Loads parameters from the ROS param server
@@ -93,7 +77,7 @@ def main():
 		for i in range(nsteps):
             # Pick an action based on the current state
 		    action = qlearn.chooseAction(state)
-            
+
             # Execute the action in the environment and get feedback
 		    rospy.logdebug("###################### Start Step...["+str(i)+"]")
 		    rospy.logdebug("Action Space=="+str(range(env.action_space.n)))

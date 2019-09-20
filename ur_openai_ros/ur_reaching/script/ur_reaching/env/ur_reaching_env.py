@@ -1,46 +1,67 @@
 #!/usr/bin/env python
 '''
-    By Miguel Angel Rodriguez <duckfrost@theconstructsim.com>
-    Visit our website at www.theconstructsim.com
+    By Geonhee Lee <gunhee6392@gmail.com>
 '''
+# Python
+import copy
+import numpy as np
+import math
 import sys
 import time
 
-import gym
+# ROS 
 import rospy
-import numpy as np
+import tf
+from joint_publisher import JointPub
+from joint_traj_publisher import JointTrajPub
 
+# Gazebo
+from gazebo_msgs.srv import SetModelState, SetModelStateRequest, GetModelState
+from gazebo_msgs.srv import GetWorldProperties
+
+# For reset GAZEBO simultor
+from gazebo_connection import GazeboConnection
+from controllers_connection import ControllersConnection
+
+# ROS msg
+from geometry_msgs.msg import Pose, Point, Quaternion, Vector3
+from sensor_msgs.msg import JointState
+from std_msgs.msg import String
+
+# Gym
+import gym
 from gym import utils, spaces
-from geometry_msgs.msg import Pose
 from gym.utils import seeding
 # For register my env
 from gym.envs.registration import register
 
 # For inherit RobotGazeboEnv
 from ur_reaching.env import robot_gazebo_env_goal
-# About reset GAZEBO simultor
-from gazebo_connection import GazeboConnection
-from joint_publisher import JointPub
-from joint_traj_publisher import JointTrajPub
-from ur_state import URState
-from controllers_connection import ControllersConnection
-from gazebo_msgs.srv import SetModelState, SetModelStateRequest, GetModelState
-from gazebo_msgs.srv import GetWorldProperties
+
+# UR5 Utils
+from ur_reaching.env.ur_setups import setups
+from ur_reaching.env import ur_utils
+
 
 rospy.loginfo("register...")
 #register the training environment in the gym as an available one
 reg = gym.envs.register(
-    id='URReaching-v0',
-    entry_point='ur_reaching.env.ur_reaching_env:URReaching', # Its directory associated with importing in other sources like from 'ur_reaching.env.ur_sim_env import *' 
+    id='URSimReaching-v0',
+    entry_point='ur_reaching.env.ur_reaching_env:URSimReaching', # Its directory associated with importing in other sources like from 'ur_reaching.env.ur_sim_env import *' 
     #timestep_limit=100000,
     )
 
-class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
+class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     def __init__(self):
-    	# We assume that a ROS node has already been created before initialising the environment
+    	rospy.logdebug("Starting URSimReaching Class object...")
+
         # Init GAZEBO Objects
         self.set_obj_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
         self.get_world_state = rospy.ServiceProxy('/gazebo/get_world_properties', GetWorldProperties)
+
+		# Subscribe joint state and target pose
+        rospy.Subscriber("/joint_states", JointState, self.joints_state_callback)
+        rospy.Subscriber("/target_blocks_pose", Point, self.target_point_cb)
 
     	# Gets training parameters from param server
     	self.desired_pose = Pose()
@@ -48,17 +69,11 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	self.desired_pose.position.y = rospy.get_param("/desired_pose/y")
     	self.desired_pose.position.z = rospy.get_param("/desired_pose/z")
     	self.running_step = rospy.get_param("/running_step")
-    	self.max_incl = rospy.get_param("/max_incl")
     	self.max_height = rospy.get_param("/max_height")
     	self.min_height = rospy.get_param("/min_height")
-    	self.joint_increment_value = rospy.get_param("/joint_increment_value")
-    	self.done_reward = rospy.get_param("/done_reward")
-    	self.alive_reward = rospy.get_param("/alive_reward")
-    	self.desired_force = rospy.get_param("/desired_force")
-    	self.desired_yaw = rospy.get_param("/desired_yaw")
-
-    	self.list_of_observations = rospy.get_param("/list_of_observations")
+    	self.observations = rospy.get_param("/observations")
     	
+		# Joint limitation
     	shp_max = rospy.get_param("/joint_limits_array/shp_max")
     	shp_min = rospy.get_param("/joint_limits_array/shp_min")
     	shl_max = rospy.get_param("/joint_limits_array/shl_max")
@@ -85,18 +100,6 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	    	    	     "wr3_min": wr3_min
     	    	    	     }
 
-    	self.discrete_division = rospy.get_param("/discrete_division")
-
-    	self.maximum_base_linear_acceleration = rospy.get_param("/maximum_base_linear_acceleration")
-    	self.maximum_base_angular_velocity = rospy.get_param("/maximum_base_angular_velocity")
-    	self.maximum_joint_effort = rospy.get_param("/maximum_joint_effort")
-
-    	self.weight_r1 = rospy.get_param("/weight_r1")
-    	self.weight_r2 = rospy.get_param("/weight_r2")
-    	self.weight_r3 = rospy.get_param("/weight_r3")
-    	self.weight_r4 = rospy.get_param("/weight_r4")
-    	self.weight_r5 = rospy.get_param("/weight_r5")
-
     	shp_init_value = rospy.get_param("/init_joint_pose/shp")
     	shl_init_value = rospy.get_param("/init_joint_pose/shl")
     	elb_init_value = rospy.get_param("/init_joint_pose/elb")
@@ -112,52 +115,23 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	self._gz_conn = GazeboConnection()
     	self._ctrl_conn = ControllersConnection(namespace="")
 		
+		# Controller type for ros_control
     	self._ctrl_type =  sys.argv[1]
     	self.pre_ctrl_type =  self._ctrl_type
 
-    	self._ur_state = URState(   max_height=self.max_height,
-    	    	    	    	    min_height=self.min_height,
-    	    	    	    	    abs_max_roll=self.max_incl,
-    	    	    	    	    abs_max_pitch=self.max_incl,
-    	    	    	    	    joint_increment_value=self.joint_increment_value,
-    	    	    	    	    list_of_observations=self.list_of_observations,
-    	    	    	    	    joint_limits=self.joint_limits,
-    	    	    	    	    episode_done_criteria=self.episode_done_criteria,
-    	    	    	    	    done_reward=self.done_reward,
-    	    	    	    	    alive_reward=self.alive_reward,
-    	    	    	    	    desired_force=self.desired_force,
-    	    	    	    	    desired_yaw=self.desired_yaw,
-    	    	    	    	    weight_r1=self.weight_r1,
-    	    	    	    	    weight_r2=self.weight_r2,
-    	    	    	    	    weight_r3=self.weight_r3,
-    	    	    	    	    weight_r4=self.weight_r4,
-    	    	    	    	    weight_r5=self.weight_r5,
-    	    	    	    	    discrete_division=self.discrete_division,
-    	    	    	    	    maximum_base_linear_acceleration=self.maximum_base_linear_acceleration,
-    	    	    	    	    maximum_base_angular_velocity=self.maximum_base_angular_velocity,
-    	    	    	    	    maximum_joint_effort=self.maximum_joint_effort
-    	    	    	    	)
+        # We init the observations
+        self.base_orientation = Quaternion()
+    	self.target_point = Point()
+        self.joints_state = JointState()
 
-    	self._ur_state.set_desired_world_point( self.desired_pose.position.x,
-    	    	    	    	    	    	self.desired_pose.position.y,
-    	    	    	    	    	    	self.desired_pose.position.z)
-
+        # Arm/Control parameters
+        self._ik_params = setups['UR5_6dof']['ik_params']
+		
+		# ROS msg type
     	self._joint_pubisher = JointPub()
     	self._joint_traj_pubisher = JointTrajPub()
-		
-		# Switch flag: if controller is switched, publisher connection occurs error without reset
-    	self.switch_flag = True 
-    	
-    	"""
-    	For this version, we consider 6 actions
-    	1) Increment/Decrement shp_joint_value
-    	2) Increment/Decrement shl_joint_value
-    	3) Increment/Decrement elb_joint_value
-    	4) Increment/Decrement wr1_joint_value
-    	5) Increment/Decrement wr2_joint_value
-    	6) Increment/Decrement wr3_joint_value
-    	"""
-        # Gym interface
+
+        # Gym interface and action
     	self.action_space = spaces.Discrete(6)
     	self.reward_range = (-np.inf, np.inf)
     	self._seed()
@@ -167,6 +141,194 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	self.np_random, seed = seeding.np_random(seed)
     	return [seed]
     	
+    def target_point_cb(self, msg):
+    	self.target_point = msg
+
+    def check_all_systems_ready(self):
+        """
+        We check that all systems are ready
+        :return:
+        """
+        joint_states_msg = None
+        while joint_states_msg is None and not rospy.is_shutdown():
+            try:
+                joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=0.1)
+                self.joints_state = joint_states_msg
+                rospy.logdebug("Current joint_states READY")
+            except Exception as e:
+                rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
+		
+        target_pose_msg = None
+        while target_pose_msg is None and not rospy.is_shutdown():
+            try:
+                target_pose_msg = rospy.wait_for_message("/target_blocks_pose", Point, timeout=0.1)
+                self.target_point = target_pose_msg
+                rospy.logdebug("Reading target pose READY")
+            except Exception as e:
+                rospy.logdebug("Reading target pose not ready yet, retrying==>"+str(e))
+
+        rospy.logdebug("ALL SYSTEMS READY")
+
+    def get_xyz(self, q):
+        """Get x,y,z coordinates 
+        Args:
+            q: a numpy array of joints angle positions.
+        Returns:
+            xyz are the x,y,z coordinates of an end-effector in a Cartesian space.
+        """
+        mat = ur_utils.forward(q, self._ik_params)
+        xyz = mat[:3, 3]
+        return xyz
+
+    def get_orientation(self, q):
+        """Get Euler angles 
+        Args:
+            q: a numpy array of joints angle positions.
+        Returns:
+            xyz are the x,y,z coordinates of an end-effector in a Cartesian space.
+        """
+        mat = ur_utils.forward(q, self._ik_params)
+        orientation = mat[0:3, 0:3]
+        roll = -orientation[1, 2]
+        pitch = orientation[0, 2]
+        yaw = -orientation[0, 1]
+        
+        return Vector3(roll, pitch, yaw)
+
+    def cvt_quat_to_euler(self, quat):
+        euler_rpy = Vector3()
+        euler = tf.transformations.euler_from_quaternion(
+            [self.quat.x, self.quat.y, self.quat.z, self.quat.w])
+
+        euler_rpy.x = euler[0]
+        euler_rpy.y = euler[1]
+        euler_rpy.z = euler[2]
+        return euler_rpy
+
+    def init_joints_pose(self, init_pos):
+        """
+        We initialise the Position variable that saves the desired position where we want our
+        joints to be
+        :param init_pos:
+        :return:
+        """
+        self.current_joint_pose =[]
+        self.current_joint_pose = copy.deepcopy(init_pos)
+        return self.current_joint_pose
+
+    def get_euclidean_dist(self, p_in, p_pout):
+        """
+        Given a Vector3 Object, get distance from current position
+        :param p_end:
+        :return:
+        """
+        a = numpy.array((p_in.x, p_in.y, p_in.z))
+        b = numpy.array((p_pout.x, p_pout.y, p_pout.z))
+
+        distance = numpy.linalg.norm(a - b)
+
+        return distance
+
+    def joints_state_callback(self,msg):
+        self.joints_state = msg
+
+    def get_observations(self):
+        """
+        Returns the state of the robot needed for OpenAI QLearn Algorithm
+        The state will be defined by an array
+        :return: observation
+        """
+        joint_states = self.joints_state
+        shp_joint_ang = joint_states.position[0]
+        shl_joint_ang = joint_states.position[1]
+        elb_joint_ang = joint_states.position[2]
+        wr1_joint_ang = joint_states.position[3]
+        wr2_joint_ang = joint_states.position[4]
+        wr3_joint_ang = joint_states.position[5]
+
+        shp_joint_vel = joint_states.velocity[0]
+        shl_joint_vel = joint_states.velocity[1]
+        elb_joint_vel = joint_states.velocity[2]
+        wr1_joint_vel = joint_states.velocity[3]
+        wr2_joint_vel = joint_states.velocity[4]
+        wr3_joint_vel = joint_states.velocity[5]
+
+        q = [shp_joint_ang, shl_joint_ang, elb_joint_ang, wr1_joint_ang, wr2_joint_ang, wr3_joint_ang]
+        eef_x, eef_y, eef_z = self.get_xyz(q)
+
+        observation = []
+        rospy.logdebug("List of Observations==>"+str(self.observations))
+        for obs_name in self.observations:
+            if obs_name == "shp_joint_ang":
+                observation.append(shp_joint_ang)
+            elif obs_name == "shl_joint_ang":
+                observation.append(shl_joint_ang)
+            elif obs_name == "elb_joint_ang":
+                observation.append(elb_joint_ang)
+            elif obs_name == "wr1_joint_ang":
+                observation.append(wr1_joint_ang)
+            elif obs_name == "wr2_joint_ang":
+                observation.append(wr2_joint_ang)
+            elif obs_name == "wr3_joint_ang":
+                observation.append(wr3_joint_ang)
+            elif obs_name == "shp_joint_vel":
+                observation.append(shp_joint_vel)
+            elif obs_name == "shl_joint_vel":
+                observation.append(shl_joint_vel)
+            elif obs_name == "elb_joint_vel":
+                observation.append(elb_joint_vel)
+            elif obs_name == "wr1_joint_vel":
+                observation.append(wr1_joint_vel)
+            elif obs_name == "wr2_joint_vel":
+                observation.append(wr2_joint_vel)
+            elif obs_name == "wr3_joint_vel":
+                observation.append(wr3_joint_vel)
+            elif obs_name == "eef_x":
+                observation.append(eef_x)
+            elif obs_name == "eef_y":
+                observation.append(eef_y)
+            elif obs_name == "eef_z":
+                observation.append(eef_z)
+            else:
+                raise NameError('Observation Asked does not exist=='+str(obs_name))
+
+        return observation
+
+    def clamp_to_joint_limits(self):
+        """
+        clamps self.current_joint_pose based on the joint limits
+        self._joint_limits
+        {
+         "shp_max": shp_max,
+         "shp_min": shp_min,
+         ...
+         }
+        :return:
+        """
+
+        rospy.logdebug("Clamping current_joint_pose>>>" + str(self.current_joint_pose))
+        shp_joint_value = self.current_joint_pose[0]
+        shl_joint_value = self.current_joint_pose[1]
+        elb_joint_value = self.current_joint_pose[2]
+        wr1_joint_value = self.current_joint_pose[3]
+        wr2_joint_value = self.current_joint_pose[4]
+        wr3_joint_value = self.current_joint_pose[5]
+
+        self.current_joint_pose[0] = max(min(shp_joint_value, self._joint_limits["shp_max"]),
+                                         self._joint_limits["shp_min"])
+        self.current_joint_pose[1] = max(min(shl_joint_value, self._joint_limits["shl_max"]),
+                                         self._joint_limits["shl_min"])
+        self.current_joint_pose[2] = max(min(elb_joint_value, self._joint_limits["elb_max"]),
+                                         self._joint_limits["elb_min"])
+        self.current_joint_pose[3] = max(min(wr1_joint_value, self._joint_limits["wr1_max"]),
+                                         self._joint_limits["wr1_min"])
+        self.current_joint_pose[4] = max(min(wr2_joint_value, self._joint_limits["wr2_max"]),
+                                         self._joint_limits["wr2_min"])
+        self.current_joint_pose[5] = max(min(wr3_joint_value, self._joint_limits["wr3_max"]),
+                                         self._joint_limits["wr3_min"])
+
+        rospy.logdebug("DONE Clamping current_joint_pose>>>" + str(self.current_joint_pose))
+
     # Resets the state of the environment and returns an initial observation.
     def reset(self):
     	# 0st: We pause the Simulator
@@ -184,25 +346,12 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
     	rospy.logdebug("reset_ur_joint_controllers...")
-    	"""
-    	if self._ctrl_type != self.pre_ctrl_type:
-    		print('self._ctrl_type != self.pre_ctrl_type', self._ctrl_type, self.pre_ctrl_type)
-    		if self._ctrl_type == 'vel':
-    			self._ctrl_conn.switch_controllers(controllers_on= self._ctrl_conn.vel_controller, 
-									controllers_off = self._ctrl_conn.vel_traj_controller)
-    		elif self._ctrl_type == 'traj_vel':
-    			self._ctrl_conn.switch_controllers(controllers_off= self._ctrl_conn.vel_controller, 
-									controllers_on = self._ctrl_conn.vel_traj_controller)
-    	else:
-    		self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
-        print("self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)")
-    	"""
     	self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
 
     	# 3rd: resets the robot to initial conditions
     	rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
     	# We save that position as the current joint desired position
-    	init_pos = self._ur_state.init_joints_pose(self.init_joint_pose)
+    	init_pos = self.init_joints_pose(self.init_joint_pose)
         print("init_pos")
 
     	# 4th: We Set the init pose to the jump topic so that the jump control can update
@@ -221,7 +370,7 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	# Get the state of the Robot defined by its RPY orientation, distance from
     	# desired point, contact force and JointState of the three joints
     	rospy.logdebug("check_all_systems_ready...")
-    	self._ur_state.check_all_systems_ready()
+    	self.check_all_systems_ready()
 
     	# 6th: We restore the gravity to original
     	rospy.logdebug("Restore Gravity...")
@@ -234,11 +383,10 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# 8th: Get the State Discrete Stringuified version of the observations
     	rospy.logdebug("get_observations...")
-    	observation = self._ur_state.get_observations()
-    	state = self.get_state(observation)
+    	observation = self.get_observations()
 
         print('Reset final')
-    	return state
+    	return observation
 
     def _act(self, action):
     	if self._ctrl_type == 'traj_vel':
@@ -256,12 +404,9 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	# Given the action selected by the learning algorithm,
     	# we perform the corresponding movement of the robot
 
-    	# 1st, decide which action corresponds to which joint is incremented
-    	next_action_position = self._ur_state.get_action_to_position(action)
-
-    	# We move it to that pos
+    	# Act
     	self._gz_conn.unpauseSim()
-    	self._act(next_action_position)
+    	self._act(action)
     	
     	# Then we send the command to the robot and let it go
     	# for running_step seconds
@@ -272,72 +417,16 @@ class URReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	# the state and the rewards. This way we guarantee that they work
     	# with the same exact data.
     	# Generate State based on observations
-    	observation = self._ur_state.get_observations()
+    	observation = self.get_observations()
 
     	# finally we get an evaluation based on what happened in the sim
-    	reward,done = self._ur_state.process_data()
+    	reward = self.compute_dist_rewards()
+    	done = self.check_done()
 
-    	# Get the State Discrete Stringuified version of the observations
-    	state = self.get_state(observation)
+    	return observation, reward, done, {}
 
-    	return state, reward, done, {}
+    def compute_dist_rewards(self):
+		return 0
 
-    def get_state(self, observation):
-    	"""
-    	We retrieve the Stringuified-Discrete version of the given observation
-    	:return: state
-    	"""
-    	return self._ur_state.get_state_as_string(observation)
-
-    def _init_obj_pose(self):
-        """Inits object pose for arrangement at reset time
-        _init_obj_pose() isn't completely worked, but if loaded each sdf file follwing a object it can be worked.
-        """
-        x = [0]
-        y = [0]
-        z = [0]
-
-        qx = [0]
-        qy = [0]
-        qz = [0]
-        qw = [1]
-
-        req_position = np.array([x, y, z])
-        req_orientation = np.array([qx, qy, qz, qw])
-        req_name = 'dropbox'
-        while not self._set_obj_position(req_name, req_position, req_orientation):
-            pass
-        req_name = 'dropbox_clone'
-        while not self._set_obj_position(req_name, req_position, req_orientation):
-            pass
-        req_name = 'short_table'
-        while not self._set_obj_position(req_name, req_position, req_orientation):
-            pass
-        req_name = 'short_table_clone'
-        while not self._set_obj_position(req_name, req_position, req_orientation):
-            pass
-
-    def _set_obj_position(self, obj_name, position, orientation):
-        rospy.wait_for_service('/gazebo/set_model_state')
-        rospy.loginfo("set model_state for " + obj_name + " available")
-        sms_req = SetModelStateRequest()
-        sms_req.model_state.pose.position.x = position[0]
-        sms_req.model_state.pose.position.y = position[1]
-        sms_req.model_state.pose.position.z = position[2]
-        sms_req.model_state.pose.orientation.x = orientation[0]
-        sms_req.model_state.pose.orientation.y = orientation[1]
-        sms_req.model_state.pose.orientation.z = orientation[2]
-        sms_req.model_state.pose.orientation.w = orientation[3]
-
-        sms_req.model_state.twist.linear.x = 0.
-        sms_req.model_state.twist.linear.y = 0.
-        sms_req.model_state.twist.linear.z = 0.
-        sms_req.model_state.twist.angular.x = 0.
-        sms_req.model_state.twist.angular.y = 0.
-        sms_req.model_state.twist.angular.z = 0.
-        sms_req.model_state.model_name = obj_name
-        sms_req.model_state.reference_frame = 'ground_plane'
-        result = self.set_obj_state(sms_req)
-
-        rospy.loginfo("result.success: " + str(result.success) )
-        return result.success
+    def check_done(self):
+		return True

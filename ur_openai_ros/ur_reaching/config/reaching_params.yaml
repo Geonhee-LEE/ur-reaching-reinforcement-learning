@@ -11,42 +11,27 @@ desired_pose:
     x: 0.0
     y: 0.0
     z: 1.0
-desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
-desired_yaw: 0.0 # Desired yaw in radians for the hopper to stay
+
 max_height: 3.0   # in meters
 min_height: 0.5   # in meters
-max_incl: 1.6       # in rads
 running_step: 0.0010   # in seconds
-joint_increment_value: 0.05   # in radians
-done_reward: -1000.0 # reward
-alive_reward: 100.0 # reward
 
-list_of_observations: # Observations you want to use for the learning
-  #- distance_from_desired_point
-  - base_roll
-  - base_pitch
-  - base_yaw
-  #- base_angular_vel_x
-  #- base_angular_vel_y
-  #- base_angular_vel_z
-  #- base_linear_acceleration_x
-  #- base_linear_acceleration_y
-  #- base_linear_acceleration_z
-  - contact_force
-  #- joint_states_haa
-  #- joint_states_hfe
-  #- joint_states_kfe
-  #- joint_effort_haa
-  #- joint_effort_hfe
-  #- joint_effort_kfe
-
-discrete_division: 50 # Parts in which we divide each of the observations sensory range
-
-weight_r1: 0.0 # Weight for joint positions ( joints in the zero is perfect )
-weight_r2: 0.0 # Weight for joint efforts ( no efforts is perfect )
-weight_r3: 0.0 # Weight for contact force similar to desired ( weight of monoped )
-weight_r4: 0.0 # Weight for orientation ( vertical is perfect )
-weight_r5: 0.0 # Weight for distance from desired point ( on the point is perfect )
+observations: # Observations you want to use for the learning
+  - shp_joint_ang
+  - shl_joint_ang
+  - elb_joint_ang
+  - wr1_joint_ang
+  - wr2_joint_ang
+  - wr3_joint_ang
+  - shp_joint_vel
+  - shl_joint_vel
+  - elb_joint_vel
+  - wr1_joint_vel
+  - wr2_joint_vel
+  - wr3_joint_vel
+  - eef_x
+  - eef_y
+  - eef_z
 
 init_joint_pose:
   shp: -2.873
@@ -57,25 +42,19 @@ init_joint_pose:
   wr3: -0.97
 
 joint_limits_array:
-  shp_max: 3.0
-  shp_min: -3.0
-  shl_max: 3.0
-  shl_min: -3.0
-  elb_max: 3.0
-  elb_min: -3.0
-  wr1_max: 3.0
-  wr1_min: -3.0
-  wr2_max: 3.0
-  wr2_min: -3.0
-  wr3_max: 3.0
-  wr3_min: -3.0
+  shp_max: 1.0
+  shp_min: -1.0
+  shl_max: 1.0
+  shl_min: -1.0
+  elb_max: 1.0
+  elb_min: -1.0
+  wr1_max: 1.0
+  wr1_min: -1.0
+  wr2_max: 1.0
+  wr2_min: -1.0
+  wr3_max: 1.0
+  wr3_min: -1.0
 
 episode_done_criteria:
   - minimum_height
   #- monoped_vertical_orientation
-
-maximum_base_linear_acceleration: 3000.0 # Based on making fall from a body height vertical max/min imu readings
-
-maximum_base_angular_velocity: 20.0 # Based on free fall, one body length, at 45 degree angle max/min imu readings 20.0
-
-maximum_joint_effort: 10.0 # Based on observation of Falling knee flexed
