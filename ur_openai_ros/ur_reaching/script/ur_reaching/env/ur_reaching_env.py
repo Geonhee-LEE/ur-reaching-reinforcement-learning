@@ -133,6 +133,7 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
         # Gym interface and action
     	self.action_space = spaces.Discrete(6)
+    	self.observation_space = 15 #np.arange(self.get_observations().shape[0])
     	self.reward_range = (-np.inf, np.inf)
     	self._seed()
 
@@ -426,7 +427,9 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	return observation, reward, done, {}
 
     def compute_dist_rewards(self):
-		return 0
+		#return np.exp(np.linalg.norm(eef_pos - goals, axis=0))
+		return np.exp([0]) 
+
 
     def check_done(self):
 		return True
