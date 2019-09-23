@@ -118,7 +118,7 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	self._ctrl_conn = ControllersConnection(namespace="")
 		
 		# Controller type for ros_control
-    	self._ctrl_type =  sys.argv[1]
+    	self._ctrl_type =  rospy.get_param("/control_type")
     	self.pre_ctrl_type =  self._ctrl_type
 
         # We init the observations
@@ -458,11 +458,11 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 		#print ("(self.get_current_xyz(): ", self.get_current_xyz())
 		end_effector_pos = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z])
 		self.distance = np.linalg.norm(end_effector_pos, axis=0)
-		return np.exp(np.linalg.norm(end_effector_pos, axis=0))
+		return np.exp(-np.linalg.norm(end_effector_pos, axis=0))
 		#return np.exp(np.linalg.norm(self.get_current_xyz() - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0))
 		
     def check_done(self):
-    	if self.distance >= 3 or self.distance < 0.1:
+    	if self.distance < 0.1:
     		return True
     	else :
 			return False

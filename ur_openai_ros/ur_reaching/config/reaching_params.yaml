@@ -6,6 +6,9 @@ epsilon_discount: 0.999 # 1098 eps to reach 0.1
 nepisodes: 100000
 nsteps: 1000
 
+# Input type
+control_type: vel
+
 # Environment Parameters
 desired_pose:
     x: 0.0

@@ -27,7 +27,7 @@ def run_episode(env, agent): # Run policy and collect (state, action, reward) pa
     observes, actions, rewards, infos = [], [], [], []
     done = False
 
-    for update in range(100):
+    for update in range(1000):
         action = agent.get_action([obs])
         
         next_obs, reward, done, info = env.step(action)
@@ -105,7 +105,7 @@ def main():
         if (update%1)==0:
             print('[{}/{}] policy loss : {:.3f}, return : {:.3f}'.format(update, nupdates, np.mean(avg_loss_list), np.mean(avg_return_list)))
             
-        if (np.mean(avg_return_list) > 490) and np.shape(np.mean(avg_loss_list)) == np.shape(np.mean(avg_return_list)): # Threshold return to success cartpole
+        if (np.mean(avg_return_list) > 10000) and np.shape(np.mean(avg_loss_list)) == np.shape(np.mean(avg_return_list)): # Threshold return to success cartpole
             print('[{}/{}] policy loss : {:.3f}, return : {:.3f}'.format(update,nupdates, np.mean(avg_loss_list), np.mean(avg_return_list)))
             print('The problem is solved with {} episodes'.format(update*episode_size))
             break

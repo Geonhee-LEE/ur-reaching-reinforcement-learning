@@ -115,7 +115,7 @@ class REINFORCEAgent(object):
         for e in range(self.epochs):
             observes, actions, scores = shuffle(observes, actions, scores, random_state=self.seed)
             '''
-                print ("######################update######################")
+            print ("######################update######################")
             ('observes: ', (100, 15), <type 'numpy.ndarray'>)
             ('actions: ', (100, 6), <type 'numpy.ndarray'>)
             ('rewards: ', (100,), <type 'numpy.ndarray'>)
