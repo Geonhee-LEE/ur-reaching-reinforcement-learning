@@ -24,7 +24,7 @@ roslaunch ur_reaching reinforcement.launch
 
  And start the learning algorithm 
   ```
-python reinforcement_main.py vel
+python reinforcement_main.py 
   ```
 
 
