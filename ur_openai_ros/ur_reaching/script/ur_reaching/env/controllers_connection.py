@@ -48,7 +48,7 @@ class ControllersConnection():
             ---
             bool ok
             """
-            rospy.loginfo("Switch Result==>"+str(switch_result.ok))
+            rospy.logdebug("Switch Result==>"+str(switch_result.ok))
 
             return switch_result.ok
 

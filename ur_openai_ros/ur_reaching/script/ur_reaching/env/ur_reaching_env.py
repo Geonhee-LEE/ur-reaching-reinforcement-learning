@@ -390,7 +390,6 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     		self._joint_pubisher.check_publishers_connection()
     	else:
         	rospy.logwarn("Controller type is wrong!!!!")
-        print("check_publishers_connection ")
     	
 
     	# 5th: Check all subscribers work.
@@ -412,7 +411,6 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	rospy.logdebug("get_observations...")
     	observation = self.get_observations()
 
-        print('Reset final')
     	return observation
 
     def _act(self, action):
@@ -426,6 +424,9 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     		self._joint_pubisher.move_joints(action)
 				
     def step(self, action):
+        '''
+    	('action: ', array([ 0.,  0. , -0., -0., -0. , 0. ], dtype=float32))    	
+    	'''
     	rospy.logdebug("UR step func")
 
     	# Given the action selected by the learning algorithm,
@@ -448,7 +449,6 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# finally we get an evaluation based on what happened in the sim
     	reward = self.compute_dist_rewards()
-    	print ("reward", reward)
     	done = self.check_done()
 
     	return observation, reward, done, {}

@@ -90,7 +90,7 @@ def main():
 
     episode_size = 1
     batch_size = 16
-    nupdates = 100
+    nupdates = 100000
 
     for update in range(nupdates+1):
         #print ('update: ', update)
@@ -98,15 +98,10 @@ def main():
         compute_returns(trajectories)
         observes, actions, returns = build_train_set(trajectories)
 
-        pol_loss = agent.update(observes, actions, returns, batch_size=batch_size)
-        print ("pol_loss: ", np.shape((pol_loss)))
-        
+        pol_loss = agent.update(observes, actions, returns, batch_size=batch_size)       
         avg_loss_list.append(pol_loss)
         avg_return_list.append([np.sum(t['rewards']) for t in trajectories])
         
-        print ("avg_loss_list: ", np.shape((avg_loss_list)))
-        print ("avg_return_list: ", np.shape((avg_return_list)))
-
         if (update%1)==0:
             print('[{}/{}] policy loss : {:.3f}, return : {:.3f}'.format(update, nupdates, np.mean(avg_loss_list), np.mean(avg_return_list)))
             

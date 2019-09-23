@@ -114,15 +114,15 @@ class REINFORCEAgent(object):
         
         for e in range(self.epochs):
             observes, actions, scores = shuffle(observes, actions, scores, random_state=self.seed)
-            
+            '''
+                print ("######################update######################")
+            ('observes: ', (100, 15), <type 'numpy.ndarray'>)
+            ('actions: ', (100, 6), <type 'numpy.ndarray'>)
+            ('rewards: ', (100,), <type 'numpy.ndarray'>)
+            '''
             for j in range(num_batches): 
                 start = j * batch_size
                 end = (j + 1) * batch_size
-                print ("######################update######################")
-                print ("observes: ", observes.shape, type(observes))
-                print ("actions: ", actions.shape, type(actions))
-                print ("rewards: ", scores.shape, type(scores))
-                print ("######################update######################")
                 feed_dict = {self.obs_ph: observes[start:end,:],
                      self.act_ph: actions[start:end],
                      self.score_ph: scores[start:end],
