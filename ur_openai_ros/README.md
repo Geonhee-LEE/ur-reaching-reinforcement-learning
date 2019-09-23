@@ -9,6 +9,23 @@
   ```
   roslaunch ur_training default.launch
   ```
+  
+# How to launch REINFORCE algorithm
+ First launch the simulator
+  
+  ``` 
+roslaunch ur_robotiq_gazebo conveyer_gym.launch controller:=vel --screen gui:=false
+  ```
+ 
+ And load the parameters and launch python file for reset
+  ```
+roslaunch ur_reaching reinforcement.launch
+  ```
+
+ And start the learning algorithm 
+  ```
+python reinforcement_main.py vel
+  ```
 
 
 
