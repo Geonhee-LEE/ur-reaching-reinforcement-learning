@@ -343,7 +343,7 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	# 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
     	# It also UNPAUSES the simulation
     	rospy.logdebug("Remove Gravity...")
-    	self._gz_conn.change_gravity(0.0, 0.0, 0.0)
+    	self._gz_conn.change_gravity_zero()
 
     	# EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
     	rospy.logdebug("reset_ur_joint_controllers...")
@@ -353,7 +353,6 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
     	# We save that position as the current joint desired position
     	init_pos = self.init_joints_pose(self.init_joint_pose)
-        print("init_pos")
 
     	# 4th: We Set the init pose to the jump topic so that the jump control can update
     	# We check the jump publisher has connection
@@ -375,7 +374,7 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# 6th: We restore the gravity to original
     	rospy.logdebug("Restore Gravity...")
-    	self._gz_conn.change_gravity(0.0, 0.0, -9.81)
+    	self._gz_conn.adjust_gravity()
 
     	# 7th: pauses simulation
     	rospy.logdebug("Pause SIM...")
@@ -427,9 +426,7 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	return observation, reward, done, {}
 
     def compute_dist_rewards(self):
-		#return np.exp(np.linalg.norm(eef_pos - goals, axis=0))
-		return np.exp([0]) 
-
-
+		return np.exp(np.linalg.norm([self.target_point.x, self.target_point.y, self.target_point.z], axis=0))
+		
     def check_done(self):
-		return True
+		return False

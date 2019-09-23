@@ -28,17 +28,20 @@ def run_episode(env, animate=False): # Run policy and collect (state, action, re
     done = False
     while not done:
         obs = np.array(obs)
-        obs = obs.astype(np.float32).reshape((1, -1))
+        obs = obs.astype(np.float32).reshape((1, -1)) # numpy.ndarray (1, num_obs)
+        print ("#####################run_episode#######################")
+        print ("observes: ", obs.shape, type(obs))
         observes.append(obs)
         
-        action = agent.get_action(obs)
+        action = agent.get_action(obs) # List
         actions.append(action)
         obs, reward, done, info = env.step(action)
         
         if not isinstance(reward, float):
             reward = np.asscalar(reward)
-        rewards.append(reward)
+        rewards.append(reward) # List
         infos.append(info)
+        print ("#####################run_episode#######################")
         
     return (np.concatenate(observes), np.array(actions), np.array(rewards, dtype=np.float32), infos)
 
@@ -46,12 +49,18 @@ def run_policy(env, episodes): # collect trajectories
     total_steps = 0
     trajectories = []
     for e in range(episodes):
-        observes, actions, rewards, infos = run_episode(env)
+        observes, actions, rewards, infos = run_episode(env) # numpy.ndarray
+        print ("######################run_policy######################")
+        print ("observes: ", observes.shape, type(observes))
+        print ("actions: ", actions.shape, type(actions))
+        print ("rewards: ", rewards.shape, type(rewards))
         total_steps += observes.shape[0]
         trajectory = {'observes': observes,
                       'actions': actions,
                       'rewards': rewards,
                       'infos': infos}
+        print ("trajectory: ", len(trajectory), type(trajectory))
+        print ("#####################run_policy#######################")
         trajectories.append(trajectory)
     return trajectories
         
@@ -60,8 +69,6 @@ def add_value(trajectories, val_func): # Add value estimation for each trajector
         observes = trajectory['observes']
         values = val_func.get_value(observes)
         trajectory['values'] = values
-        print ("observes: ", observes)
-        print ("values): ",values, "type: ", type(values), "size: ", values.shape)
 
 def add_gae(trajectories, gamma=0.99, lam=0.98): # generalized advantage estimation (for training stability)
     for trajectory in trajectories:
@@ -69,9 +76,9 @@ def add_gae(trajectories, gamma=0.99, lam=0.98): # generalized advantage estimat
         values = trajectory['values']
         
         # temporal differences
-        print ("rewards: ", rewards)
-        print ("values): ",values, "type: ", type(values), "size: ", values.shape)
-        print ("np.append(values[1:],0): ", np.append(values,0))
+        print ("###############################add_gae###########################")
+        print ("rewards: ", rewards.shape)
+        print ("values): ", values.shape)
         tds = rewards + np.append(values, 0) * gamma - values
         advantages = np.zeros_like(tds)
         advantage = 0
@@ -79,6 +86,7 @@ def add_gae(trajectories, gamma=0.99, lam=0.98): # generalized advantage estimat
             advantage = tds[t] + lam*gamma*advantage
             advantages[t] = advantage
         trajectory['advantages'] = advantages
+        print ("###############################add_gae###########################")
 
 def add_rets(trajectories, gamma=0.99): # compute the returns
     for trajectory in trajectories:
@@ -105,7 +113,6 @@ def build_train_set(trajectories):
     advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-6)
 
     return observes, actions, advantages, returns
-
     
 def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
@@ -140,9 +147,12 @@ def main():
         add_rets(trajectories)
         observes, actions, advantages, returns = build_train_set(trajectories)
 
-        print ("advantages: ", advantages.size, type(advantages))
-        print ("returns: ", returns.size, type(returns))
-        print ("actions: ", actions.size, type(actions))
+        print ("----------------------------------------------------")
+        print ("observes: ", observes.shape, type(observes))
+        print ("advantages: ", advantages.shape, type(advantages))
+        print ("returns: ", returns.shape, type(returns))
+        print ("actions: ", actions.shape, type(actions))
+        print ("----------------------------------------------------")
         pol_loss, val_loss, kl, entropy = agent.update(observes, actions, advantages, returns, batch_size=batch_size)
 
         avg_pol_loss_list.append(pol_loss)

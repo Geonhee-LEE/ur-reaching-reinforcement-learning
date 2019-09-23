@@ -148,8 +148,12 @@ class PPOGAEAgent(object):
         self.sess.run(self.init)
         
     def get_value(self, obs):
+        print ("######################get_value######################")
         feed_dict = {self.obs_ph: obs}
+        print ("feed_dict: ", feed_dict, type(feed_dict))
         value = self.sess.run(self.value, feed_dict=feed_dict)
+        print ("value: ", value.shape, type(value))
+        print ("######################get_value######################")
         return value
     
     def get_action(self, obs): # SAMPLE FROM POLICY
