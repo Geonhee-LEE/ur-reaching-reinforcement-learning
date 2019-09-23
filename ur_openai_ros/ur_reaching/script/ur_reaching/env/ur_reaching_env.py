@@ -18,6 +18,7 @@ from joint_traj_publisher import JointTrajPub
 # Gazebo
 from gazebo_msgs.srv import SetModelState, SetModelStateRequest, GetModelState
 from gazebo_msgs.srv import GetWorldProperties
+from gazebo_msgs.msg import LinkStates 
 
 # For reset GAZEBO simultor
 from gazebo_connection import GazeboConnection
@@ -61,7 +62,8 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
 		# Subscribe joint state and target pose
         rospy.Subscriber("/joint_states", JointState, self.joints_state_callback)
-        rospy.Subscriber("/target_blocks_pose", Point, self.target_point_cb)
+        rospy.Subscriber("/target_blocks_pose", Point, self.target_point_callback)
+        rospy.Subscriber("/gazebo/link_states", LinkStates, self.link_state_callback)
 
     	# Gets training parameters from param server
     	self.desired_pose = Pose()
@@ -122,7 +124,10 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
         # We init the observations
         self.base_orientation = Quaternion()
     	self.target_point = Point()
+    	self.link_state = LinkStates()
         self.joints_state = JointState()
+    	self.end_effector = Point() 
+    	self.distance = 0.
 
         # Arm/Control parameters
         self._ik_params = setups['UR5_6dof']['ik_params']
@@ -142,7 +147,11 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	self.np_random, seed = seeding.np_random(seed)
     	return [seed]
     	
-    def target_point_cb(self, msg):
+    def link_state_callback(self, msg):
+    	self.link_state = msg
+    	self.end_effector = self.link_state.pose[8]
+    		
+    def target_point_callback(self, msg):
     	self.target_point = msg
 
     def check_all_systems_ready(self):
@@ -181,6 +190,24 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
         xyz = mat[:3, 3]
         return xyz
 
+    def get_current_xyz(self):
+        """Get x,y,z coordinates according to currrent joint angles
+        Returns:
+        xyz are the x,y,z coordinates of an end-effector in a Cartesian space.
+        """
+        joint_states = self.joints_state
+        shp_joint_ang = joint_states.position[0]
+        shl_joint_ang = joint_states.position[1]
+        elb_joint_ang = joint_states.position[2]
+        wr1_joint_ang = joint_states.position[3]
+        wr2_joint_ang = joint_states.position[4]
+        wr3_joint_ang = joint_states.position[5]
+		
+        q = [shp_joint_ang, shl_joint_ang, elb_joint_ang, wr1_joint_ang, wr2_joint_ang, wr3_joint_ang]
+        mat = ur_utils.forward(q, self._ik_params)
+        xyz = mat[:3, 3]
+        return xyz
+    		
     def get_orientation(self, q):
         """Get Euler angles 
         Args:
@@ -421,12 +448,21 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# finally we get an evaluation based on what happened in the sim
     	reward = self.compute_dist_rewards()
+    	print ("reward", reward)
     	done = self.check_done()
 
     	return observation, reward, done, {}
 
     def compute_dist_rewards(self):
-		return np.exp(np.linalg.norm([self.target_point.x, self.target_point.y, self.target_point.z], axis=0))
+		#print ("[self.target_point]: ", [self.target_point.x, self.target_point.y, self.target_point.z])
+		#print ("(self.get_current_xyz(): ", self.get_current_xyz())
+		end_effector_pos = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z])
+		self.distance = np.linalg.norm(end_effector_pos, axis=0)
+		return np.exp(np.linalg.norm(end_effector_pos, axis=0))
+		#return np.exp(np.linalg.norm(self.get_current_xyz() - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0))
 		
     def check_done(self):
-		return False
+    	if self.distance >= 3 or self.distance < 0.1:
+    		return True
+    	else :
+			return False

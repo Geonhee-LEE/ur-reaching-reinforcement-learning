@@ -26,7 +26,8 @@ def run_episode(env, agent): # Run policy and collect (state, action, reward) pa
     obs = env.reset()
     observes, actions, rewards, infos = [], [], [], []
     done = False
-    while not done:
+
+    for update in range(100):
         action = agent.get_action([obs])
         
         next_obs, reward, done, info = env.step(action)
@@ -37,6 +38,10 @@ def run_episode(env, agent): # Run policy and collect (state, action, reward) pa
         infos.append(info)
 
         obs = next_obs
+
+        if done is True:
+            break
+
     return np.asarray(observes), np.asarray(actions), np.asarray(rewards), infos
 
 def run_policy(env, agent, episodes): # collect trajectories. if 'evaluation' is ture, then only mean value of policy distribution is used without sampling.

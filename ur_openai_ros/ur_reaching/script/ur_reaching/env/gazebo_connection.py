@@ -28,7 +28,7 @@ class GazeboConnection():
         rospy.wait_for_service('/unpause_physics')
         try:
             response= self._unpause(True)
-            print ("/unpauseSim: ", response.success, response.message)
+            #print ("/unpauseSim: ", response.success, response.message)
         except rospy.ServiceException, e:
             print ("/unpause_physics service call failed")
        
@@ -36,7 +36,7 @@ class GazeboConnection():
         rospy.wait_for_service('/pause_physics')
         try:
             response= self._pause(True)
-            print ("/pauseSim: ", response.success, response.message)
+            #print ("/pauseSim: ", response.success, response.message)
         except rospy.ServiceException, e:
             print ("/pause_physics service call failed")
 
@@ -44,7 +44,7 @@ class GazeboConnection():
         rospy.wait_for_service('/reset_simulation')
         try:
             response= self._reset_simulation_proxy(True)
-            print ("/resetSim: ", response.success, response.message)
+            #print ("/resetSim: ", response.success, response.message)
         except rospy.ServiceException, e:
             print ("/reset_simulation service call failed")
 
@@ -52,7 +52,7 @@ class GazeboConnection():
         rospy.wait_for_service('/reset_world')
         try:
             response= self._reset_world_proxy(True)
-            print ("/resetWorld: ", response.success, response.message)
+            #print ("/resetWorld: ", response.success, response.message)
         except rospy.ServiceException, e:
             print ("/reset_world service call failed")
 
@@ -60,7 +60,7 @@ class GazeboConnection():
         rospy.wait_for_service('/init_values')
         try:
             response= self._init_values(True)
-            print ("/init_values: ", response.success, response.message)
+            #print ("/init_values: ", response.success, response.message)
         except rospy.ServiceException, e:
             print ("/init_values service call failed")
 
@@ -68,7 +68,7 @@ class GazeboConnection():
         rospy.wait_for_service('/adjust_gravity')
         try:
             response= self._adjust_gravity(True)
-            print ("/adjust_gravity: ", response.success, response.message)
+            #print ("/adjust_gravity: ", response.success, response.message)
         except rospy.ServiceException, e:
             print ("/adjust_gravity service call failed")
 
@@ -76,6 +76,6 @@ class GazeboConnection():
         rospy.wait_for_service('/change_gravity_zero')
         try:
             response= self._change_gravity_zero(True)
-            print ("/change_gravity_zero: ", response.success, response.message)
+            #print ("/change_gravity_zero: ", response.success, response.message)
         except rospy.ServiceException, e:
             print ("/change_gravity_zero service call failed")

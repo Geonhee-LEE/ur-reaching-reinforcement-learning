@@ -38,7 +38,6 @@ class GazeboConnection():
 
         
     def _init_values(self, req):
-        print ("_init_values")
         self.init_values()
         return SetBoolResponse(True, "_init_values")
     
@@ -57,7 +56,6 @@ class GazeboConnection():
         return SetBoolResponse(True, "_change_gravity_zero")
         
     def _reset_simulation(self, req):
-        print ("_reset_simulation")
         self.resetSim()
         return SetBoolResponse(True, "_reset_simulation")
 
@@ -67,12 +65,10 @@ class GazeboConnection():
 
 
     def _unpause_physics(self, req):
-        print ("_unpause_physics")
         self.unpauseSim()
         return SetBoolResponse(True, "_unpause_physics")
     
     def _pause_physics(self, req):
-        print ("_pause_physics")
         self.pauseSim()
         return SetBoolResponse(True, "_pause_physics")
 
@@ -105,7 +101,6 @@ class GazeboConnection():
             print ("/gazebo/reset_world service call failed")
 
     def init_values(self):
-
         rospy.wait_for_service('/gazebo/reset_simulation')
         try:
             # reset_proxy.call()
@@ -136,8 +131,6 @@ class GazeboConnection():
         self.update_gravity_call()
 
     def update_gravity_call(self):
-        print ("update_gravity_call")
-
         self.pauseSim()
 
         set_physics_request = SetPhysicsPropertiesRequest()
