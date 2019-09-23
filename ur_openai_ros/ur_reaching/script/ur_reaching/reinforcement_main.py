@@ -85,7 +85,7 @@ def main():
 
     episode_size = 1
     batch_size = 16
-    nupdates = 10000
+    nupdates = 100
 
     for update in range(nupdates+1):
         #print ('update: ', update)

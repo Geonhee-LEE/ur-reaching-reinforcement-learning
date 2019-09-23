@@ -1,0 +1,6 @@
+<launch>
+   <arg name="controller" default="vel"/> <!-- 'vel' or 'traj_vel'-->
+
+    <!-- Load the parameters for the algorithm -->
+    <rosparam command="load" file="$(find ur_reaching)/config/reaching_params.yaml" />
+</launch>

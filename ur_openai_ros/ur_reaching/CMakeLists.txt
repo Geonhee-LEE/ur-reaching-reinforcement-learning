@@ -16,6 +16,8 @@ include_directories(
 
 install(PROGRAMS
 scripts/ur_reaching/reaching_main.py
+scripts/ur_reaching/reinforcement_main.py
+scripts/ur_reaching/gazebo_execution.py
 
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
