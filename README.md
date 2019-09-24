@@ -44,3 +44,7 @@ Depth image
 ## Multiple Arms
 
 ![multi_arms](images/multiple_arms.jpg)
+
+```
+erb multi_ur_robotiq_gazebo.launch | roslaunch -
+```
