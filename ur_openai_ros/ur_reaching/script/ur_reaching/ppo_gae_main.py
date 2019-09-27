@@ -26,11 +26,12 @@ def run_episode(env, animate=False): # Run policy and collect (state, action, re
     obs = env.reset()
     observes, actions, rewards, infos = [], [], [], []
     done = False
-    while not done:
+
+    n_step = 10
+    for update in range(n_step):
         obs = np.array(obs)
         obs = obs.astype(np.float32).reshape((1, -1)) # numpy.ndarray (1, num_obs)
-        print ("#####################run_episode#######################")
-        print ("observes: ", obs.shape, type(obs))
+        #print ("observes: ", obs.shape, type(obs)) # (1, 15)
         observes.append(obs)
         
         action = agent.get_action(obs) # List
@@ -41,7 +42,9 @@ def run_episode(env, animate=False): # Run policy and collect (state, action, re
             reward = np.asscalar(reward)
         rewards.append(reward) # List
         infos.append(info)
-        print ("#####################run_episode#######################")
+
+        if done is True:
+            break
         
     return (np.concatenate(observes), np.array(actions), np.array(rewards, dtype=np.float32), infos)
 
@@ -79,7 +82,7 @@ def add_gae(trajectories, gamma=0.99, lam=0.98): # generalized advantage estimat
         print ("###############################add_gae###########################")
         print ("rewards: ", rewards.shape)
         print ("values): ", values.shape)
-        tds = rewards + np.append(values, 0) * gamma - values
+        tds = rewards + np.append(values[1:], 0) * gamma - values
         advantages = np.zeros_like(tds)
         advantage = 0
         for t in reversed(range(len(tds))):
@@ -116,7 +119,7 @@ def build_train_set(trajectories):
     
 def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-    rospy.init_node('ur_gym', anonymous=True, log_level=rospy.DEBUG)
+    rospy.init_node('ur_gym', anonymous=True, log_level=rospy.INFO)
     
     env = gym.make('URSimReaching-v0')
     env._max_episode_steps = 10000
@@ -147,12 +150,15 @@ def main():
         add_rets(trajectories)
         observes, actions, advantages, returns = build_train_set(trajectories)
 
+        '''
         print ("----------------------------------------------------")
-        print ("observes: ", observes.shape, type(observes))
-        print ("advantages: ", advantages.shape, type(advantages))
-        print ("returns: ", returns.shape, type(returns))
-        print ("actions: ", actions.shape, type(actions))
+        print ("observes: ", observes.shape, type(observes)) #('observes: ', (n_step, 15), <type 'numpy.ndarray'>)
+        print ("advantages: ", advantages.shape, type(advantages)) # ('advantages: ', (n_step,), <type 'numpy.ndarray'>)
+        print ("returns: ", returns.shape, type(returns)) # ('returns: ', (n_step,), <type 'numpy.ndarray'>)
+        print ("actions: ", actions.shape, type(actions)) # ('actions: ', (n_step, 6), <type 'numpy.ndarray'>)
         print ("----------------------------------------------------")
+        '''
+
         pol_loss, val_loss, kl, entropy = agent.update(observes, actions, advantages, returns, batch_size=batch_size)
 
         avg_pol_loss_list.append(pol_loss)
@@ -173,12 +179,12 @@ def main():
             plt.pause(1e-17)
             plt.savefig("./results/ppo_with_gae_avg_return_list.png")
 
-        if (np.mean(avg_return_list) > 1): # Threshold return to success 
+        if (np.mean(avg_return_list) > 1000): # Threshold return to success 
             print('[{}/{}] return : {:.3f}, value loss : {:.3f}, policy loss : {:.3f}'.format(update,nupdates, np.mean(avg_return_list), np.mean(avg_val_loss_list), np.mean(avg_pol_loss_list)))
             print('The problem is solved with {} episodes'.format(update*episode_size))
             break
 
-	env.close()
+	#env.close() # rospy.wait_for_service('/pause_physics') -> raise ROSInterruptException("rospy shutdown")
 
 if __name__ == '__main__':
     main()

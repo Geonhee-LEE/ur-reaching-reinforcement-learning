@@ -38,7 +38,9 @@ class PPOGAEAgent(object):
             self.variables = tf.global_variables()  
             # Create a saver object which will save all the variables
             #self.saver = tf.train.Saver()
-                  
+        
+
+            
     def _placeholders(self):
         # observations, actions and advantages:
         self.obs_ph = tf.placeholder(tf.float32, (None, self.obs_dim), 'obs')
@@ -147,13 +149,10 @@ class PPOGAEAgent(object):
         self.sess = tf.Session(config=config, graph=self.g)
         self.sess.run(self.init)
         
+    
     def get_value(self, obs):
-        print ("######################get_value######################")
         feed_dict = {self.obs_ph: obs}
-        print ("feed_dict: ", feed_dict, type(feed_dict))
         value = self.sess.run(self.value, feed_dict=feed_dict)
-        print ("value: ", value.shape, type(value))
-        print ("######################get_value######################")
         return value
     
     def get_action(self, obs): # SAMPLE FROM POLICY
@@ -173,12 +172,6 @@ class PPOGAEAgent(object):
         
         old_means_np, old_std_np = self.sess.run([self.mean, self.std],{self.obs_ph: observes}) # COMPUTE OLD PARAMTER
         for e in range(self.epochs):
-            print ("advantages: ", advantages.size, type(advantages))
-            print ("returns: ", returns.size, type(returns))
-            print ("actions: ", actions.size, type(actions))
-            print ("old_means_np: ", old_means_np.size, type(old_means_np))
-            print ("old_std_np: ", old_std_np.size, type(old_std_np))
-
             observes, actions, advantages, returns, old_means_np, old_std_np = shuffle(observes, actions, advantages, returns, old_means_np, old_std_np, random_state=self.seed)
             for j in range(num_batches): 
                 start = j * batch_size
