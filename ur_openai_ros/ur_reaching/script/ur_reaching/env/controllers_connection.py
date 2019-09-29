@@ -2,6 +2,8 @@
 import sys
 import rospy
 from controller_manager_msgs.srv import SwitchController, SwitchControllerRequest, SwitchControllerResponse
+from controller_manager_msgs.srv import LoadController, LoadControllerRequest, LoadControllerResponse
+from controller_manager_msgs.srv import UnloadController, UnloadControllerRequest, UnloadControllerResponse
 
 class ControllersConnection():
     
@@ -9,6 +11,12 @@ class ControllersConnection():
 
         self.switch_service_name = '/controller_manager/switch_controller'
         self.switch_service = rospy.ServiceProxy(self.switch_service_name, SwitchController)
+        
+        self.load_service_name = '/controller_manager/load_controller'
+        self.load_service = rospy.ServiceProxy(self.load_service_name, LoadController)
+
+        self.unload_service_name = '/controller_manager/unload_controller'
+        self.unload_service = rospy.ServiceProxy(self.unload_service_name, UnloadController)
 
         self.vel_traj_controller = ['joint_state_controller',
                             'gripper_controller',
@@ -90,3 +98,48 @@ class ControllersConnection():
 
         return reset_result
 
+    def load_controllers(self, load_controllers_name):
+        rospy.wait_for_service(self.load_service_name)
+
+        try:
+            load_request_object = LoadControllerRequest()
+            load_request_object.name = load_controllers_name
+
+            load_result = self.load_service(load_request_object)
+            """
+            [controller_manager_msgs/LoadController]
+            string name
+            ---
+            bool ok
+            """
+            rospy.logdebug("Load Result==>"+str(load_result.ok))
+
+            return load_result.ok
+
+        except rospy.ServiceException, e:
+            print (self.load_service_name + " service call failed")
+
+            return None
+
+    def unload_controllers(self, unload_controllers_name):
+        rospy.wait_for_service(self.unload_service_name)
+
+        try:
+            unload_request_object = UnloadControllerRequest()
+            unload_request_object.name = unload_controllers_name
+
+            unload_result = self.unload_service(unload_request_object)
+            """
+            [controller_manager_msgs/UnloadController]
+            string name
+            ---
+            bool ok
+            """
+            rospy.logdebug("Load Result==>"+str(unload_result.ok))
+
+            return unload_result.ok
+
+        except rospy.ServiceException, e:
+            print (self.unload_service_name + " service call failed")
+
+            return None

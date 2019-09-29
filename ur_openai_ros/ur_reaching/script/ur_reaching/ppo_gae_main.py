@@ -27,7 +27,7 @@ def run_episode(env, animate=False): # Run policy and collect (state, action, re
     observes, actions, rewards, infos = [], [], [], []
     done = False
 
-    n_step = 10
+    n_step = 1000
     for update in range(n_step):
         obs = np.array(obs)
         obs = obs.astype(np.float32).reshape((1, -1)) # numpy.ndarray (1, num_obs)
@@ -53,17 +53,19 @@ def run_policy(env, episodes): # collect trajectories
     trajectories = []
     for e in range(episodes):
         observes, actions, rewards, infos = run_episode(env) # numpy.ndarray
-        print ("######################run_policy######################")
-        print ("observes: ", observes.shape, type(observes))
-        print ("actions: ", actions.shape, type(actions))
-        print ("rewards: ", rewards.shape, type(rewards))
         total_steps += observes.shape[0]
         trajectory = {'observes': observes,
                       'actions': actions,
                       'rewards': rewards,
-                      'infos': infos}
-        print ("trajectory: ", len(trajectory), type(trajectory))
+                      'infos': infos} 
+        '''
+        print ("######################run_policy######################")
+        print ("observes: ", observes.shape, type(observes)) # (n_step, 15), <type 'numpy.ndarray'>
+        print ("actions: ", actions.shape, type(actions))  #(n_step, 6), <type 'numpy.ndarray'>
+        print ("rewards: ", rewards.shape, type(rewards))  #(n_step, ), <type 'numpy.ndarray'>
+        print ("trajectory: ", len(trajectory), type(trajectory)) #(n_step, 4), <type 'numpy.ndarray'>
         print ("#####################run_policy#######################")
+        '''
         trajectories.append(trajectory)
     return trajectories
         
@@ -79,9 +81,12 @@ def add_gae(trajectories, gamma=0.99, lam=0.98): # generalized advantage estimat
         values = trajectory['values']
         
         # temporal differences
+        '''
         print ("###############################add_gae###########################")
-        print ("rewards: ", rewards.shape)
-        print ("values): ", values.shape)
+        print ("rewards: ", rewards.shape)  # (n_step, ), <type 'numpy.ndarray'>
+        print ("values): ", values.shape)  # (n_step, ), <type 'numpy.ndarray'>
+        print ("###############################add_gae###########################")
+        '''
         tds = rewards + np.append(values[1:], 0) * gamma - values
         advantages = np.zeros_like(tds)
         advantage = 0
@@ -89,7 +94,6 @@ def add_gae(trajectories, gamma=0.99, lam=0.98): # generalized advantage estimat
             advantage = tds[t] + lam*gamma*advantage
             advantages[t] = advantage
         trajectory['advantages'] = advantages
-        print ("###############################add_gae###########################")
 
 def add_rets(trajectories, gamma=0.99): # compute the returns
     for trajectory in trajectories:
@@ -140,7 +144,7 @@ def main():
     y_data = []
     axes = plt.gca()
     axes.set_xlim(0, 350)
-    axes.set_ylim(-350, +1)
+    axes.set_ylim(0, 1000)
     line, = axes.plot(x_data, y_data, 'r-')
 
     for update in range(nupdates+1):

@@ -457,7 +457,7 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 		#print ("[self.target_point]: ", [self.target_point.x, self.target_point.y, self.target_point.z])
 		#print ("(self.get_current_xyz(): ", self.get_current_xyz())
 		end_effector_pos = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z])
-		self.distance = np.linalg.norm(end_effector_pos, axis=0)
+		self.distance = np.linalg.norm(end_effector_pos - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0)
 		return np.exp(-np.linalg.norm(end_effector_pos, axis=0))
 		#return np.exp(np.linalg.norm(self.get_current_xyz() - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0))
 		
