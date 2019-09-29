@@ -29,7 +29,7 @@ arm_controller:
     wrist_3_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
      
 vel_traj_controller:
-  type: velocity_controllers/JointTrajectoryController
+  type: velocity_controllers/JointTrajectoryController #https://github.com/ros-controls/ros_controllers/blob/melodic-devel/joint_trajectory_controller/ros_control_plugins.xml
   joints:
      - shoulder_pan_joint
      - shoulder_lift_joint
