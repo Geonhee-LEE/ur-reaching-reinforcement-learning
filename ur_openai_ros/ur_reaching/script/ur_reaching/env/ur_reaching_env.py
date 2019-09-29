@@ -414,14 +414,32 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	return observation
 
     def _act(self, action):
+        vel_traj_controller = ['joint_state_controller',
+                            'gripper_controller',
+                            'vel_traj_controller']
+        vel_controller = ["joint_state_controller",
+                                "gripper_controller",
+                                "ur_shoulder_pan_vel_controller",
+                                "ur_shoulder_lift_vel_controller",
+                                "ur_elbow_vel_controller",
+                                "ur_wrist_1_vel_controller",
+                                "ur_wrist_2_vel_controller",
+                                "ur_wrist_3_vel_controller"]
     	if self._ctrl_type == 'traj_vel':
     		self.pre_ctrl_type = 'traj_vel'
-    		self._joint_traj_pubisher.move_joints(action)
+    		self._joint_traj_pubisher.jointTrajectoryCommand(action)
+    		self._ctrl_conn.stop_controllers(controllers_off=vel_traj_controller)
+    		self._ctrl_conn.start_controllers(controllers_on=vel_controller)
+    		self._ctrl_type = 'vel'
     	elif self._ctrl_type == 'vel':
         	self.pre_ctrl_type = 'vel'
     		self._joint_pubisher.move_joints(action)
+    		self._ctrl_conn.stop_controllers(controllers_off=vel_controller)
+    		self._ctrl_conn.start_controllers(controllers_on=vel_traj_controller)
+    		self._ctrl_type = 'traj_vel'
     	else:
     		self._joint_pubisher.move_joints(action)
+        
 				
     def step(self, action):
         '''

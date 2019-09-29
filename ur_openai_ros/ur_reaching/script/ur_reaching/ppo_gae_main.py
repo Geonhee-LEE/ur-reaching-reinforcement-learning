@@ -123,7 +123,7 @@ def build_train_set(trajectories):
     
 def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-    rospy.init_node('ur_gym', anonymous=True, log_level=rospy.INFO)
+    rospy.init_node('ur_gym', anonymous=True, log_level=rospy.DEBUG)
     
     env = gym.make('URSimReaching-v0')
     env._max_episode_steps = 10000
