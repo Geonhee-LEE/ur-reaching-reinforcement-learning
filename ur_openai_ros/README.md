@@ -55,11 +55,11 @@ rostopic echo /blocks_poses
 
 ## Services
 
-- /set_velocity_controller([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
+- _/set_velocity_controller_ ([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
   -  Set velocity controllers including 6 velocity controllers after stoppint velocity_controller/JointTrajectoryController
-- /set_trajectory_velocity_controller([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
+- _/set_trajectory_velocity_controller_ ([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
   -  Set velocity trajectory controller including Joint trajectory controllers after stopping velocity_controller/JointVelocityController
-- /stop_training([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
+- _/stop_training_ ([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
   -  Stop training process
-- /start_training([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
+- _/start_training_ ([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
   -  Start training process
