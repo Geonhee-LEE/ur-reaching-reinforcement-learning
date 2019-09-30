@@ -73,3 +73,13 @@ rostopic echo /blocks_poses
   -  Stop training process
 - _/start_training_ ([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
   -  Start training process
+
+
+## Helpful function
+We can check the controller manager status using following:
+```
+rosrun rqt_controller_manager rqt_controller_manager
+```
+
+
+![grasping](../images/controller_manager.png)
