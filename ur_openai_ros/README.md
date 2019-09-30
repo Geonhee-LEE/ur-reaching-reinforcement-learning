@@ -87,6 +87,11 @@ rosrun visual_tools moveit_visual_tools_demo
 
 ## Services
 
+- _/gazebo/unpause_physics_ ([Empty](http://docs.ros.org/melodic/api/std_srvs/html/srv/Empty.html))
+  - Unpause GAZEBO simulator for starting
+  ```
+  rosservice call /gazebo/unpause_physics "{}"
+  ```
 - _/set_velocity_controller_ ([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
   -  Set velocity controllers including 6 velocity controllers after stoppint velocity_controller/JointTrajectoryController
 - _/set_trajectory_velocity_controller_ ([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
