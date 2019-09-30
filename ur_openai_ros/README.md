@@ -65,6 +65,11 @@ rostopic echo /blocks_poses
 
 ## Visualization
 
+- Rviz
+```
+roslaunch ur_robotiq_moveit_config  moveit_rviz.launch 
+```
+
 - rviz_visual_tools
 ```
 rosrun visual_tools rviz_visual_tools_demo
