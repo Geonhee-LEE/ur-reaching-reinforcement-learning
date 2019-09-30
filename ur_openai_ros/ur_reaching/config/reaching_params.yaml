@@ -7,7 +7,7 @@ nepisodes: 100000
 nsteps: 1000
 
 # Input type
-control_type: vel
+control_type: vel #traj_vel or vel
 
 # Environment Parameters
 desired_pose:

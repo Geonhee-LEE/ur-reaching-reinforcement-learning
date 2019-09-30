@@ -28,6 +28,12 @@ class JointPub(object):
         self.publishers_array.append(self._wrist_3_joint_pub)
     	
         self._ctrl_conn = ControllersConnection(namespace="")
+        self._ctrl_conn.load_controllers("ur_shoulder_pan_vel_controller")
+        self._ctrl_conn.load_controllers("ur_shoulder_lift_vel_controller")
+        self._ctrl_conn.load_controllers("ur_elbow_vel_controller")
+        self._ctrl_conn.load_controllers("ur_wrist_1_vel_controller")
+        self._ctrl_conn.load_controllers("ur_wrist_2_vel_controller")
+        self._ctrl_conn.load_controllers("ur_wrist_3_vel_controller")
 
     def set_init_pose(self, init_pose):
         """
@@ -46,7 +52,6 @@ class JointPub(object):
         while (self._shoulder_pan_joint_pub.get_num_connections() == 0):
             rospy.logdebug("No susbribers to _shoulder_pan_joint_pub yet so we wait and try again")
             try:
-                self._ctrl_conn.load_controllers("ur_shoulder_pan_vel_controller")
                 self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_pan_vel_controller")
                 rate.sleep()
             except rospy.ROSInterruptException:
@@ -57,7 +62,6 @@ class JointPub(object):
         while (self._shoulder_lift_joint_pub.get_num_connections() == 0):
             rospy.logdebug("No susbribers to _shoulder_lift_joint_pub yet so we wait and try again")
             try:
-                self._ctrl_conn.load_controllers("ur_shoulder_lift_vel_controller")
                 self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_lift_vel_controller")
                 rate.sleep()
             except rospy.ROSInterruptException:
@@ -68,7 +72,6 @@ class JointPub(object):
         while (self._elbow_vel_joint_pub.get_num_connections() == 0):
             rospy.logdebug("No susbribers to _elbow_vel_joint_pub yet so we wait and try again")
             try:
-                self._ctrl_conn.load_controllers("ur_elbow_vel_controller")
                 self._ctrl_conn.start_controllers(controllers_on="ur_elbow_vel_controller")
                 rate.sleep()
             except rospy.ROSInterruptException:
@@ -80,7 +83,6 @@ class JointPub(object):
         while (self._wrist_1_joint_pub.get_num_connections() == 0):
             rospy.logdebug("No susbribers to _wrist_1_joint_pub yet so we wait and try again")
             try:
-                self._ctrl_conn.load_controllers("ur_wrist_1_vel_controller")
                 self._ctrl_conn.start_controllers(controllers_on="ur_wrist_1_vel_controller")
                 rate.sleep()
             except rospy.ROSInterruptException:
@@ -92,7 +94,6 @@ class JointPub(object):
         while (self._wrist_2_joint_pub.get_num_connections() == 0):
             rospy.logdebug("No susbribers to _wrist_2_joint_pub yet so we wait and try again")
             try:
-                self._ctrl_conn.load_controllers("ur_wrist_2_vel_controller")
                 self._ctrl_conn.start_controllers(controllers_on="ur_wrist_2_vel_controller")
                 rate.sleep()
             except rospy.ROSInterruptException:
@@ -104,7 +105,6 @@ class JointPub(object):
         while (self._wrist_3_joint_pub.get_num_connections() == 0):
             rospy.logdebug("No susbribers to _wrist_3_joint_pub yet so we wait and try again")
             try:
-                self._ctrl_conn.load_controllers("ur_wrist_3_vel_controller")
                 self._ctrl_conn.start_controllers(controllers_on="ur_wrist_3_vel_controller")
                 rate.sleep()
             except rospy.ROSInterruptException:

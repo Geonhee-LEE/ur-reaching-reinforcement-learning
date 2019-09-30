@@ -74,16 +74,14 @@
   <!-- the block's poses publisher node -->
   <node name="block_pose_publisher" pkg="ur_robotiq_gazebo" type="block_pose_publisher" output="screen" />
 
+  <!-- Training help func on GAZEBO -->
+  <include file="$(find ur_reaching)/launch/ppo_gae.launch">
+  </include>
 
   <!-- Run moveit -->
   <include file="$(find ur_robotiq_moveit_config)/launch/move_group.launch">
     <arg name="debug" default="$(arg debug)" />
   </include>
-
-  <!-- Training help func on GAZEBO -->
-  <include file="$(find ur_reaching)/launch/ppo_gae.launch">
-  </include>
-
   <!-- Run Rviz -->
   <!--include file="$(find ur_robotiq_moveit_config)/launch/moveit_rviz.launch">
     <arg name="debug" default="$(arg debug)" />

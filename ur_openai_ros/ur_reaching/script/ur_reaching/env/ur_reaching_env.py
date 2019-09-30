@@ -69,9 +69,6 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     	# Gets training parameters from param server
     	self.desired_pose = Pose()
-    	self.desired_pose.position.x = rospy.get_param("/desired_pose/x")
-    	self.desired_pose.position.y = rospy.get_param("/desired_pose/y")
-    	self.desired_pose.position.z = rospy.get_param("/desired_pose/z")
     	self.running_step = rospy.get_param("/running_step")
     	self.max_height = rospy.get_param("/max_height")
     	self.min_height = rospy.get_param("/min_height")
@@ -219,7 +216,7 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
                 self.joints_state = joint_states_msg
                 rospy.logdebug("Current joint_states READY")
             except Exception as e:
-                self._ctrl_conn.load_controllers("joint_state_controller")
+                #self._ctrl_conn.load_controllers("joint_state_controller")
                 self._ctrl_conn.start_controllers(controllers_on="joint_state_controller")                
                 rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
 		

@@ -18,6 +18,8 @@ class JointTrajPub(object):
         """
         self._joint_traj_pub = rospy.Publisher('/vel_traj_controller/command', JointTrajectory, queue_size=10)
     	self._ctrl_conn = ControllersConnection(namespace="")
+        
+    	self._ctrl_conn.load_controllers("vel_traj_controller")
 
     def set_init_pose(self, init_pose):
         """
@@ -36,7 +38,6 @@ class JointTrajPub(object):
         while (self._joint_traj_pub.get_num_connections() == 0):
             rospy.logdebug("No subscribers to vel_traj_controller yet so we wait and try again")
             try:
-                self._ctrl_conn.load_controllers("vel_traj_controller")
                 self._ctrl_conn.start_controllers(controllers_on="vel_traj_controller")
                 rate.sleep()
             except rospy.ROSInterruptException:
