@@ -27,6 +27,16 @@ roslaunch ur_reaching reinforcement.launch
 python reinforcement_main.py 
   ```
 
+# How to launch PPO+GAE algorithm
+First launch the simulator including loading the parameters and GAZEBO Excution func
+```
+roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen gui:=false
+```
+
+ And start the learning algorithm 
+ ```
+  python ppo_gae_main.py
+ ```
 
 
 ## Conveyer GAZEBO env
