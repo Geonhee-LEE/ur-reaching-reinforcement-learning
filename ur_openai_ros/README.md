@@ -63,6 +63,23 @@ rostopic echo /blocks_poses
 ```
 
 
+## Visualization
+
+- rviz_visual_tools
+```
+rosrun visual_tools rviz_visual_tools_demo
+```
+
+![Visualization](../images/rviz_visual_tools.png)
+
+- moveit_visual_tools
+```
+rosrun visual_tools moveit_visual_tools_demo
+```
+
+
+
+
 ## Services
 
 - _/set_velocity_controller_ ([SetBool](http://docs.ros.org/melodic/api/std_srvs/html/srv/SetBool.html))
@@ -82,4 +99,4 @@ rosrun rqt_controller_manager rqt_controller_manager
 ```
 
 
-![grasping](../images/controller_manager.png)
+![controller manager](../images/controller_manager.png)
