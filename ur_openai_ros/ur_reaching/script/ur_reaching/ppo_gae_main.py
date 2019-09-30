@@ -18,7 +18,6 @@ n_act = 6 #config: act_dim #env.action_space.n
 agent = PPOGAEAgent(obs_dim, n_act, epochs=10, hdim=16, policy_lr=3e-3, value_lr=1e-3, max_std=1.0,
                             clip_range=0.2, seed=seed)
 
-
 '''
 PPO Agent with Gaussian policy
 '''

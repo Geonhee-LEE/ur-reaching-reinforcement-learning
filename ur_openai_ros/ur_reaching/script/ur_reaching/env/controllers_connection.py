@@ -5,6 +5,7 @@ from controller_manager_msgs.srv import SwitchController, SwitchControllerReques
 from controller_manager_msgs.srv import LoadController, LoadControllerRequest, LoadControllerResponse
 from controller_manager_msgs.srv import UnloadController, UnloadControllerRequest, UnloadControllerResponse
 
+
 class ControllersConnection():
     
     def __init__(self, namespace):
@@ -18,10 +19,7 @@ class ControllersConnection():
         self.unload_service_name = '/controller_manager/unload_controller'
         self.unload_service = rospy.ServiceProxy(self.unload_service_name, UnloadController)
 
-        self.vel_traj_controller = ['joint_state_controller',
-                            'gripper_controller',
-                            'vel_traj_controller']
-        self.vel_controller = ["joint_state_controller",
+        self.vel_controller = [ "joint_state_controller",
                                 "gripper_controller",
                                 "ur_shoulder_pan_vel_controller",
                                 "ur_shoulder_lift_vel_controller",
@@ -29,7 +27,10 @@ class ControllersConnection():
                                 "ur_wrist_1_vel_controller",
                                 "ur_wrist_2_vel_controller",
                                 "ur_wrist_3_vel_controller"]
-
+        self.vel_traj_controller = ['joint_state_controller',
+                                    'gripper_controller',
+                                    'vel_traj_controller']
+     
 
     def switch_controllers(self, controllers_on, controllers_off, strictness=1):
         """
@@ -246,3 +247,6 @@ class ControllersConnection():
             print (self.unload_service_name + " service call failed")
 
             return None
+
+
+         

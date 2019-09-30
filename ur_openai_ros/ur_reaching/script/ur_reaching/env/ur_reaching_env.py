@@ -28,6 +28,8 @@ from controllers_connection import ControllersConnection
 from geometry_msgs.msg import Pose, Point, Quaternion, Vector3
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String
+from std_srvs.srv import SetBool, SetBoolResponse, SetBoolRequest
+from std_srvs.srv import Empty
 
 # Gym
 import gym
@@ -142,6 +144,57 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	self.reward_range = (-np.inf, np.inf)
     	self._seed()
 
+        # Change the controller type 
+        set_joint_vel_server = rospy.Service('/set_velocity_controller', SetBool, self._set_vel_ctrl)
+        set_joint_traj_vel_server = rospy.Service('/set_trajectory_velocity_controller', SetBool, self._set_traj_vel_ctrl)
+
+        self.vel_traj_controller = ['joint_state_controller',
+                            'gripper_controller',
+                            'vel_traj_controller']
+        self.vel_controller = ["joint_state_controller",
+                                "gripper_controller",
+                                "ur_shoulder_pan_vel_controller",
+                                "ur_shoulder_lift_vel_controller",
+                                "ur_elbow_vel_controller",
+                                "ur_wrist_1_vel_controller",
+                                "ur_wrist_2_vel_controller",
+                                "ur_wrist_3_vel_controller"]
+
+        # Helpful False
+        self.stop_flag = False
+        stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
+        start_trainning_server = rospy.Service('/start_training', SetBool, self._start_trainnig)
+
+    def check_stop_flg(self):
+        if self.stop_flag is False:
+            return False
+        else:
+            return True
+
+    def _start_trainnig(self, req):
+        rospy.logdebug("_start_trainnig!!!!")
+        self.stop_flag = False
+        return SetBoolResponse(True, "_start_trainnig")
+
+    def _stop_trainnig(self, req):
+        rospy.logdebug("_stop_trainnig!!!!")
+        self.stop_flag = True
+        return SetBoolResponse(True, "_stop_trainnig")
+
+    def _set_vel_ctrl(self, req):
+        rospy.wait_for_service('set_velocity_controller')
+        self._ctrl_conn.stop_controllers(self.vel_traj_controller)
+        self._ctrl_conn.start_controllers(self.vel_controller)
+        self._ctrl_type = 'vel'
+        return SetBoolResponse(True, "_set_vel_ctrl")
+
+    def _set_traj_vel_ctrl(self, req):
+        rospy.wait_for_service('set_trajectory_velocity_controller')
+        self._ctrl_conn.stop_controllers(self.vel_controller)
+        self._ctrl_conn.start_controllers(self.vel_traj_controller)    
+        self._ctrl_type = 'traj_vel'
+        return SetBoolResponse(True, "_set_traj_vel_ctrl")  
+
     # A function to initialize the random generator
     def _seed(self, seed=None):
     	self.np_random, seed = seeding.np_random(seed)
@@ -162,12 +215,12 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
         joint_states_msg = None
         while joint_states_msg is None and not rospy.is_shutdown():
             try:
-                self._ctrl_conn.load_controllers("joint_state_controller")
-                self._ctrl_conn.start_controllers(controllers_on="joint_state_controller")
                 joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=0.1)
                 self.joints_state = joint_states_msg
                 rospy.logdebug("Current joint_states READY")
             except Exception as e:
+                self._ctrl_conn.load_controllers("joint_state_controller")
+                self._ctrl_conn.start_controllers(controllers_on="joint_state_controller")                
                 rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
 		
         target_pose_msg = None
@@ -416,38 +469,32 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     	return observation
 
     def _act(self, action):
-        vel_traj_controller = ['joint_state_controller',
-                            'gripper_controller',
-                            'vel_traj_controller']
-        vel_controller = ["joint_state_controller",
-                                "gripper_controller",
-                                "ur_shoulder_pan_vel_controller",
-                                "ur_shoulder_lift_vel_controller",
-                                "ur_elbow_vel_controller",
-                                "ur_wrist_1_vel_controller",
-                                "ur_wrist_2_vel_controller",
-                                "ur_wrist_3_vel_controller"]
     	if self._ctrl_type == 'traj_vel':
     		self.pre_ctrl_type = 'traj_vel'
     		self._joint_traj_pubisher.jointTrajectoryCommand(action)
-    		self._ctrl_conn.stop_controllers(controllers_off=vel_traj_controller)
-    		self._ctrl_conn.start_controllers(controllers_on=vel_controller)
-    		self._ctrl_type = 'vel'
     	elif self._ctrl_type == 'vel':
         	self.pre_ctrl_type = 'vel'
     		self._joint_pubisher.move_joints(action)
-    		self._ctrl_conn.stop_controllers(controllers_off=vel_controller)
-    		self._ctrl_conn.start_controllers(controllers_on=vel_traj_controller)
-    		self._ctrl_type = 'traj_vel'
     	else:
     		self._joint_pubisher.move_joints(action)
         
+    def training_ok(self):
+        rate = rospy.Rate(1)
+        while self.check_stop_flg() is True:                  
+            rospy.logdebug("stop_flag is ON!!!!")
+            self._gz_conn.unpauseSim()
+
+            if self.check_stop_flg() is False:
+                break 
+            rate.sleep()
 				
     def step(self, action):
         '''
     	('action: ', array([ 0.,  0. , -0., -0., -0. , 0. ], dtype=float32))    	
     	'''
     	rospy.logdebug("UR step func")
+
+        self.training_ok()
 
     	# Given the action selected by the learning algorithm,
     	# we perform the corresponding movement of the robot
