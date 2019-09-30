@@ -162,6 +162,8 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
         joint_states_msg = None
         while joint_states_msg is None and not rospy.is_shutdown():
             try:
+                self._ctrl_conn.load_controllers("joint_state_controller")
+                self._ctrl_conn.start_controllers(controllers_on="joint_state_controller")
                 joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=0.1)
                 self.joints_state = joint_states_msg
                 rospy.logdebug("Current joint_states READY")

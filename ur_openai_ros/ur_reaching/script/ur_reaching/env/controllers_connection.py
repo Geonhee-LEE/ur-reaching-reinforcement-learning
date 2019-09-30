@@ -99,6 +99,40 @@ class ControllersConnection():
             print (self.switch_service_name + " service call failed")
 
             return None
+    
+    def stop_all_controller(self,  strictness=1):
+        """
+        Give the controllers you wan to stop.
+        :param controllers_off: ["name_controler_1", "name_controller2",...,"name_controller_n"]
+        :return:
+        """
+        rospy.wait_for_service(self.switch_service_name)
+
+        try:
+            switch_request_object = SwitchControllerRequest()
+            switch_request_object.start_controllers = []
+            switch_request_object.stop_controllers = [self.vel_traj_controller, self.vel_controller]
+            switch_request_object.strictness = strictness
+
+            switch_result = self.switch_service(switch_request_object)
+            """
+            [controller_manager_msgs/SwitchController]
+            int32 BEST_EFFORT=1
+            int32 STRICT=2
+            string[] start_controllers
+            string[] stop_controllers
+            int32 strictness
+            ---
+            bool ok
+            """
+            rospy.logdebug("Switch Result==>"+str(switch_result.ok))
+
+            return switch_result.ok
+
+        except rospy.ServiceException, e:
+            print (self.switch_service_name + " service call failed")
+
+            return None
 
     def start_controllers(self, controllers_on, strictness=1):
         """

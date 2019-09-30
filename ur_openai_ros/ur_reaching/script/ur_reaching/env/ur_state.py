@@ -78,8 +78,6 @@ class URState(object):
             try:
                 joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=0.1)
                 self.joints_state = joint_states_msg
-                self._ctrl_conn.load_controllers("joint_state_controller")
-                self._ctrl_conn.start_controllers(controllers_on="joint_state_controller")
                 rospy.logdebug("Current joint_states READY")
             except Exception as e:
                 rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
