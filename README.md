@@ -35,15 +35,12 @@ rosrun ur_robotiq_manipulation grasp_object.py
 
 RGB image
 
-![rbg](images/camera_rgb_image.png)
 
 Depth image
 
-![depth](images/camera_depth_image.png)
 
 ## Multiple Arms
 
-![multi_arms](images/multiple_arms.jpg)
 
 ```
 erb multi_ur_robotiq_gazebo.launch | roslaunch -
