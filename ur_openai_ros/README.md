@@ -27,6 +27,13 @@ roslaunch ur_reaching reinforcement.launch
 python reinforcement_main.py 
   ```
 
+ And unpause physics of GAZEBO simulator
+ ```
+ rosservice call /gazebo/unpause_physics "{}"
+ ```
+
+
+
 # How to launch PPO+GAE algorithm
 First launch the simulator including loading the parameters and GAZEBO Excution func
 ```
