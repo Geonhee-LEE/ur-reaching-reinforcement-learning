@@ -9,7 +9,31 @@
   ```
   roslaunch ur_training default.launch
   ```
-  
+
+## Conveyer GAZEBO env
+
+First launch the gazebo and gym interface and node publishing block point.
+ ```
+ roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen
+ ```
+ 
+ Run the RL algorithms and unpause the GAZEBO
+  ```
+  roslaunch ur_training default.launch
+  ```
+ 
+
+> Latest block's point:
+``` 
+rostopic echo /target_blocks_pose
+```
+
+> Total block's points:
+``` 
+rostopic echo /blocks_poses 
+```
+
+
 # How to launch REINFORCE algorithm
  First launch the simulator
   
@@ -45,29 +69,6 @@ roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen gui:=false
   python ppo_gae_main.py
  ```
 
-
-## Conveyer GAZEBO env
-
-First launch the gazebo and gym interface and node publishing block point.
- ```
- roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen
- ```
- 
- Run the RL algorithms and unpause the GAZEBO
-  ```
-  roslaunch ur_training default.launch
-  ```
- 
-
-> Latest block's point:
-``` 
-rostopic echo /target_blocks_pose
-```
-
-> Total block's points:
-``` 
-rostopic echo /blocks_poses 
-```
 
 
 ## Visualization
