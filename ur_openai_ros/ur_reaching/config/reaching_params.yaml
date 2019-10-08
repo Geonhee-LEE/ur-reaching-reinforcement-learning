@@ -58,6 +58,30 @@ joint_limits_array:
   wr3_max: 1.0
   wr3_min: -1.0
 
+
+joint_velocity_limits_array:
+  shp_max: 1.0
+  shp_min: -1.0
+  shl_max: 1.0
+  shl_min: -1.0
+  elb_max: 1.0
+  elb_min: -1.0
+  wr1_max: 1.0
+  wr1_min: -1.0
+  wr2_max: 1.0
+  wr2_min: -1.0
+  wr3_max: 1.0
+  wr3_min: -1.0
+
+
+cartesian_limits:
+  x_max: 1.0
+  x_min: 1.0
+  y_max: -1.0
+  y_min: -1.0
+  z_max: -1.0
+  z_min: -1.0
+
 episode_done_criteria:
   - minimum_height
   #- monoped_vertical_orientation
