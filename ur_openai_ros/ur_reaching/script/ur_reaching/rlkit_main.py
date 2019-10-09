@@ -7,7 +7,7 @@ from ur_reaching.algorithm.ppo_gae import PPOGAEAgent
 
 # import our training environment
 import gym
-from ur_reaching.env import RLkitUR
+from ur_reaching.env.rlkit_ur_env import RLkitUR
 
 import rospy
 import rospkg

@@ -1,6 +1,6 @@
-#!/usr/bin/env python
 '''
     By Geonhee Lee <gunhee6392@gmail.com>
+    Refer https://github.com/openai/gym/blob/master/docs/creating-environments.md
 '''
 # Python
 import copy
@@ -33,7 +33,7 @@ from std_srvs.srv import Empty
 
 # Gym
 import gym
-from gym import utils, spaces
+from gym import error, spaces, utils
 from gym.utils import seeding
 # For register my env
 from gym.envs.registration import register
@@ -46,15 +46,16 @@ from ur_reaching.env.ur_setups import setups
 from ur_reaching.env import ur_utils
 
 
-rospy.loginfo("register...")
 #register the training environment in the gym as an available one
 reg = gym.envs.register(
     id='RLkitUR-v0',
-    entry_point='ur_reaching.env:RLkitUR', # Its directory associated with importing in other sources like from 'ur_reaching.env.ur_sim_env import *' 
+    entry_point='env:RLkitUR', # Its directory associated with importing in other sources like from 'ur_reaching.env.ur_sim_env import *' 
     #timestep_limit=100000,
     )
 
 class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
+    metadata = {'render.modes': ['human']}
+
     def __init__(self):
     	rospy.logdebug("Starting RLkitUR Class object...")
 
@@ -211,8 +212,106 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         #self.goal = np.array([-.14, -.13, 0.26])
         self.set_goal(self.sample_goal_for_rollout())
 
-    def set_goal(self, goal):
-        self.goal = goal
+    def step(self, action):
+        '''
+    	('action: ', array([ 0.,  0. , -0., -0., -0. , 0. ], dtype=float32))    	
+    	'''
+    	rospy.logdebug("UR step func")
+
+        self.training_ok()
+
+    	# Given the action selected by the learning algorithm,
+    	# we perform the corresponding movement of the robot
+
+    	# Act
+    	self._gz_conn.unpauseSim()
+    	self.act(action)
+    	
+    	# Then we send the command to the robot and let it go
+    	# for running_step seconds
+    	time.sleep(self.running_step)
+    	self._gz_conn.pauseSim()
+
+    	# We now process the latest data saved in the class state to calculate
+    	# the state and the rewards. This way we guarantee that they work
+    	# with the same exact data.
+    	# Generate State based on observations
+    	observation = self.get_observations()
+
+    	# finally we get an evaluation based on what happened in the sim
+    	reward = self.compute_dist_rewards()
+    	done = self.check_done()
+
+    	return observation, reward, done, {}
+
+    # Resets the state of the environment and returns an initial observation.
+    def reset(self):
+    	# 0st: We pause the Simulator
+    	rospy.logdebug("Pausing SIM...")
+    	self._gz_conn.pauseSim()
+
+    	# 1st: resets the simulation to initial values
+    	rospy.logdebug("Reset SIM...")
+    	self._gz_conn.resetSim()
+
+    	# 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
+    	# It also UNPAUSES the simulation
+    	rospy.logdebug("Remove Gravity...")
+    	self._gz_conn.change_gravity_zero()
+
+    	# EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
+    	rospy.logdebug("reset_ur_joint_controllers...")
+    	self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
+
+    	# 3rd: resets the robot to initial conditions
+    	rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
+    	# We save that position as the current joint desired position
+    	init_pos = self.init_joints_pose(self.init_joint_pose)
+
+    	# 4th: We Set the init pose to the jump topic so that the jump control can update
+    	# We check the jump publisher has connection
+
+    	if self._ctrl_type == 'traj_vel':
+        	self._joint_traj_pubisher.check_publishers_connection()
+    	elif self._ctrl_type == 'vel':
+    		self._joint_pubisher.check_publishers_connection()
+    	else:
+        	rospy.logwarn("Controller type is wrong!!!!")
+    	
+
+    	# 5th: Check all subscribers work.
+    	# Get the state of the Robot defined by its RPY orientation, distance from
+    	# desired point, contact force and JointState of the three joints
+    	rospy.logdebug("check_all_systems_ready...")
+    	self.check_all_systems_ready()
+
+    	# 6th: We restore the gravity to original
+    	rospy.logdebug("Restore Gravity...")
+    	self._gz_conn.adjust_gravity()
+
+    	# 7th: pauses simulation
+    	rospy.logdebug("Pause SIM...")
+    	self._gz_conn.pauseSim()
+        # self._init_obj_pose()
+
+    	# 8th: Get the State Discrete Stringuified version of the observations
+    	rospy.logdebug("get_observations...")
+    	observation = self.get_observations()
+
+    	return observation
+    
+    def act(self, action):
+    	if self._ctrl_type == 'traj_vel':
+    		self.pre_ctrl_type = 'traj_vel'
+    		self._joint_traj_pubisher.jointTrajectoryCommand(action)
+    	elif self._ctrl_type == 'vel':
+        	self.pre_ctrl_type = 'vel'
+    		self._joint_pubisher.move_joints(action)
+    	else:
+    		self._joint_pubisher.move_joints(action)
+
+    def render(self, mode='human', close=False):
+        pass
 
     def check_stop_flg(self):
         if self.stop_flag is False:
@@ -461,72 +560,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                                          self._joint_limits["wr3_min"])
 
         rospy.logdebug("DONE Clamping current_joint_pose>>>" + str(self.current_joint_pose))
-
-    # Resets the state of the environment and returns an initial observation.
-    def reset(self):
-    	# 0st: We pause the Simulator
-    	rospy.logdebug("Pausing SIM...")
-    	self._gz_conn.pauseSim()
-
-    	# 1st: resets the simulation to initial values
-    	rospy.logdebug("Reset SIM...")
-    	self._gz_conn.resetSim()
-
-    	# 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
-    	# It also UNPAUSES the simulation
-    	rospy.logdebug("Remove Gravity...")
-    	self._gz_conn.change_gravity_zero()
-
-    	# EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
-    	rospy.logdebug("reset_ur_joint_controllers...")
-    	self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
-
-    	# 3rd: resets the robot to initial conditions
-    	rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
-    	# We save that position as the current joint desired position
-    	init_pos = self.init_joints_pose(self.init_joint_pose)
-
-    	# 4th: We Set the init pose to the jump topic so that the jump control can update
-    	# We check the jump publisher has connection
-
-    	if self._ctrl_type == 'traj_vel':
-        	self._joint_traj_pubisher.check_publishers_connection()
-    	elif self._ctrl_type == 'vel':
-    		self._joint_pubisher.check_publishers_connection()
-    	else:
-        	rospy.logwarn("Controller type is wrong!!!!")
-    	
-
-    	# 5th: Check all subscribers work.
-    	# Get the state of the Robot defined by its RPY orientation, distance from
-    	# desired point, contact force and JointState of the three joints
-    	rospy.logdebug("check_all_systems_ready...")
-    	self.check_all_systems_ready()
-
-    	# 6th: We restore the gravity to original
-    	rospy.logdebug("Restore Gravity...")
-    	self._gz_conn.adjust_gravity()
-
-    	# 7th: pauses simulation
-    	rospy.logdebug("Pause SIM...")
-    	self._gz_conn.pauseSim()
-        # self._init_obj_pose()
-
-    	# 8th: Get the State Discrete Stringuified version of the observations
-    	rospy.logdebug("get_observations...")
-    	observation = self.get_observations()
-
-    	return observation
-
-    def _act(self, action):
-    	if self._ctrl_type == 'traj_vel':
-    		self.pre_ctrl_type = 'traj_vel'
-    		self._joint_traj_pubisher.jointTrajectoryCommand(action)
-    	elif self._ctrl_type == 'vel':
-        	self.pre_ctrl_type = 'vel'
-    		self._joint_pubisher.move_joints(action)
-    	else:
-    		self._joint_pubisher.move_joints(action)
         
     def training_ok(self):
         rate = rospy.Rate(1)
@@ -537,39 +570,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
             if self.check_stop_flg() is False:
                 break 
             rate.sleep()
-				
-    def step(self, action):
-        '''
-    	('action: ', array([ 0.,  0. , -0., -0., -0. , 0. ], dtype=float32))    	
-    	'''
-    	rospy.logdebug("UR step func")
-
-        self.training_ok()
-
-    	# Given the action selected by the learning algorithm,
-    	# we perform the corresponding movement of the robot
-
-    	# Act
-    	self._gz_conn.unpauseSim()
-    	self._act(action)
-    	
-    	# Then we send the command to the robot and let it go
-    	# for running_step seconds
-    	time.sleep(self.running_step)
-    	self._gz_conn.pauseSim()
-
-    	# We now process the latest data saved in the class state to calculate
-    	# the state and the rewards. This way we guarantee that they work
-    	# with the same exact data.
-    	# Generate State based on observations
-    	observation = self.get_observations()
-
-    	# finally we get an evaluation based on what happened in the sim
-    	reward = self.compute_dist_rewards()
-    	done = self.check_done()
-
-    	return observation, reward, done, {}
-
+			
     def compute_dist_rewards(self):
 		#print ("[self.target_point]: ", [self.target_point.x, self.target_point.y, self.target_point.z])
 		#print ("(self.get_current_xyz(): ", self.get_current_xyz())
@@ -583,3 +584,47 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
     		return True
     	else :
 			return False
+
+    # For RLkit
+    def sample_goal_for_rollout(self):
+        return np.random.uniform(low=np.array([-.14, -.13, 0.26]), high=np.array([.14, .13, .39]))
+
+    def set_goal(self, goal):
+        self.goal = goal
+        
+    # Functions for pickling
+    def __getstate__(self):
+        print ("______________________________________________getstate________________________________________________")
+        state = self.__dict__.copy()
+        if self.mode == 'robot':
+            del state['reset_publisher']
+            del state['position_updated_publisher']
+            del state['action_publisher']
+            del state['current_position_subscriber']
+        return state
+
+    def __setstate__(self, state):
+        print ("________________________________________________setstate________________________________________________")
+        if state['mode'] == 'robot':
+            try:
+                self._start_rospy(goal_oriented=state['goal_oriented'])
+            except rospy.ROSException:
+                print('ROS Node already started')
+                self.reset_publisher = rospy.Publisher(
+                    "/replab/reset", String, queue_size=1)
+                self.position_updated_publisher = rospy.Publisher(
+                    "/replab/received/position", String, queue_size=1)
+                self.action_publisher = rospy.Publisher(
+                    "/replab/action", numpy_msg(Floats), queue_size=1)
+                self.current_position_subscriber = rospy.Subscriber(
+                    "/replab/action/observation", numpy_msg(Floats), self.update_position)
+        elif state['mode'] == 'sim':
+            try:
+                if state['render']:
+                    self._start_sim(goal_oriented=state['goal_oriented'], render=False)
+                else:
+                    self._start_sim(goal_oriented=state['goal_oriented'], render=state['render'])
+            except AttributeError:
+                pass
+        self.__dict__.update(state)
+        self.reset()
