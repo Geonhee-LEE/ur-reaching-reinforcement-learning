@@ -56,90 +56,90 @@ reg = gym.envs.register(
 
 class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
     def __init__(self):
-    	rospy.logdebug("Starting URSimReaching Class object...")
+        rospy.logdebug("Starting URSimReaching Class object...")
 
         # Init GAZEBO Objects
         self.set_obj_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
         self.get_world_state = rospy.ServiceProxy('/gazebo/get_world_properties', GetWorldProperties)
 
-		# Subscribe joint state and target pose
+        # Subscribe joint state and target pose
         rospy.Subscriber("/joint_states", JointState, self.joints_state_callback)
         rospy.Subscriber("/target_blocks_pose", Point, self.target_point_callback)
         rospy.Subscriber("/gazebo/link_states", LinkStates, self.link_state_callback)
 
-    	# Gets training parameters from param server
-    	self.desired_pose = Pose()
-    	self.running_step = rospy.get_param("/running_step")
-    	self.max_height = rospy.get_param("/max_height")
-    	self.min_height = rospy.get_param("/min_height")
-    	self.observations = rospy.get_param("/observations")
-    	
-		# Joint limitation
-    	shp_max = rospy.get_param("/joint_limits_array/shp_max")
-    	shp_min = rospy.get_param("/joint_limits_array/shp_min")
-    	shl_max = rospy.get_param("/joint_limits_array/shl_max")
-    	shl_min = rospy.get_param("/joint_limits_array/shl_min")
-    	elb_max = rospy.get_param("/joint_limits_array/elb_max")
-    	elb_min = rospy.get_param("/joint_limits_array/elb_min")
-    	wr1_max = rospy.get_param("/joint_limits_array/wr1_max")
-    	wr1_min = rospy.get_param("/joint_limits_array/wr1_min")
-    	wr2_max = rospy.get_param("/joint_limits_array/wr2_max")
-    	wr2_min = rospy.get_param("/joint_limits_array/wr2_min")
-    	wr3_max = rospy.get_param("/joint_limits_array/wr3_max")
-    	wr3_min = rospy.get_param("/joint_limits_array/wr3_min")
-    	self.joint_limits = {"shp_max": shp_max,
-    	    	    	     "shp_min": shp_min,
-    	    	    	     "shl_max": shl_max,
-    	    	    	     "shl_min": shl_min,
-    	    	    	     "elb_max": elb_max,
-    	    	    	     "elb_min": elb_min,
-    	    	    	     "wr1_max": wr1_max,
-    	    	    	     "wr1_min": wr1_min,
-    	    	    	     "wr2_max": wr2_max,
-    	    	    	     "wr2_min": wr2_min,
-    	    	    	     "wr3_max": wr3_max,
-    	    	    	     "wr3_min": wr3_min
-    	    	    	     }
+        # Gets training parameters from param server
+        self.desired_pose = Pose()
+        self.running_step = rospy.get_param("/running_step")
+        self.max_height = rospy.get_param("/max_height")
+        self.min_height = rospy.get_param("/min_height")
+        self.observations = rospy.get_param("/observations")
+        
+        # Joint limitation
+        shp_max = rospy.get_param("/joint_limits_array/shp_max")
+        shp_min = rospy.get_param("/joint_limits_array/shp_min")
+        shl_max = rospy.get_param("/joint_limits_array/shl_max")
+        shl_min = rospy.get_param("/joint_limits_array/shl_min")
+        elb_max = rospy.get_param("/joint_limits_array/elb_max")
+        elb_min = rospy.get_param("/joint_limits_array/elb_min")
+        wr1_max = rospy.get_param("/joint_limits_array/wr1_max")
+        wr1_min = rospy.get_param("/joint_limits_array/wr1_min")
+        wr2_max = rospy.get_param("/joint_limits_array/wr2_max")
+        wr2_min = rospy.get_param("/joint_limits_array/wr2_min")
+        wr3_max = rospy.get_param("/joint_limits_array/wr3_max")
+        wr3_min = rospy.get_param("/joint_limits_array/wr3_min")
+        self.joint_limits = {"shp_max": shp_max,
+                             "shp_min": shp_min,
+                             "shl_max": shl_max,
+                             "shl_min": shl_min,
+                             "elb_max": elb_max,
+                             "elb_min": elb_min,
+                             "wr1_max": wr1_max,
+                             "wr1_min": wr1_min,
+                             "wr2_max": wr2_max,
+                             "wr2_min": wr2_min,
+                             "wr3_max": wr3_max,
+                             "wr3_min": wr3_min
+                             }
 
-    	shp_init_value = rospy.get_param("/init_joint_pose/shp")
-    	shl_init_value = rospy.get_param("/init_joint_pose/shl")
-    	elb_init_value = rospy.get_param("/init_joint_pose/elb")
-    	wr1_init_value = rospy.get_param("/init_joint_pose/wr1")
-    	wr2_init_value = rospy.get_param("/init_joint_pose/wr2")
-    	wr3_init_value = rospy.get_param("/init_joint_pose/wr3")
-    	self.init_joint_pose = [shp_init_value, shl_init_value, elb_init_value, wr1_init_value, wr2_init_value, wr3_init_value]
+        shp_init_value = rospy.get_param("/init_joint_pose/shp")
+        shl_init_value = rospy.get_param("/init_joint_pose/shl")
+        elb_init_value = rospy.get_param("/init_joint_pose/elb")
+        wr1_init_value = rospy.get_param("/init_joint_pose/wr1")
+        wr2_init_value = rospy.get_param("/init_joint_pose/wr2")
+        wr3_init_value = rospy.get_param("/init_joint_pose/wr3")
+        self.init_joint_pose = [shp_init_value, shl_init_value, elb_init_value, wr1_init_value, wr2_init_value, wr3_init_value]
 
-    	# Fill in the Done Episode Criteria list
-    	self.episode_done_criteria = rospy.get_param("/episode_done_criteria")
-    	
-    	# stablishes connection with simulator
-    	self._gz_conn = GazeboConnection()
-    	self._ctrl_conn = ControllersConnection(namespace="")
-		
-		# Controller type for ros_control
-    	self._ctrl_type =  rospy.get_param("/control_type")
-    	self.pre_ctrl_type =  self._ctrl_type
+        # Fill in the Done Episode Criteria list
+        self.episode_done_criteria = rospy.get_param("/episode_done_criteria")
+        
+        # stablishes connection with simulator
+        self._gz_conn = GazeboConnection()
+        self._ctrl_conn = ControllersConnection(namespace="")
+        
+        # Controller type for ros_control
+        self._ctrl_type =  rospy.get_param("/control_type")
+        self.pre_ctrl_type =  self._ctrl_type
 
         # We init the observations
         self.base_orientation = Quaternion()
-    	self.target_point = Point()
-    	self.link_state = LinkStates()
+        self.target_point = Point()
+        self.link_state = LinkStates()
         self.joints_state = JointState()
-    	self.end_effector = Point() 
-    	self.distance = 0.
+        self.end_effector = Point() 
+        self.distance = 0.
 
         # Arm/Control parameters
         self._ik_params = setups['UR5_6dof']['ik_params']
-		
-		# ROS msg type
-    	self._joint_pubisher = JointPub()
-    	self._joint_traj_pubisher = JointTrajPub()
+        
+        # ROS msg type
+        self._joint_pubisher = JointPub()
+        self._joint_traj_pubisher = JointTrajPub()
 
         # Gym interface and action
-    	self.action_space = spaces.Discrete(6)
-    	self.observation_space = 15 #np.arange(self.get_observations().shape[0])
-    	self.reward_range = (-np.inf, np.inf)
-    	self._seed()
+        self.action_space = spaces.Discrete(6)
+        self.observation_space = 15 #np.arange(self.get_observations().shape[0])
+        self.reward_range = (-np.inf, np.inf)
+        self._seed()
 
         # Change the controller type 
         set_joint_vel_server = rospy.Service('/set_velocity_controller', SetBool, self._set_vel_ctrl)
@@ -194,15 +194,15 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     # A function to initialize the random generator
     def _seed(self, seed=None):
-    	self.np_random, seed = seeding.np_random(seed)
-    	return [seed]
-    	
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+        
     def link_state_callback(self, msg):
-    	self.link_state = msg
-    	self.end_effector = self.link_state.pose[8]
-    		
+        self.link_state = msg
+        self.end_effector = self.link_state.pose[8]
+            
     def target_point_callback(self, msg):
-    	self.target_point = msg
+        self.target_point = msg
 
     def check_all_systems_ready(self):
         """
@@ -219,7 +219,7 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
                 #self._ctrl_conn.load_controllers("joint_state_controller")
                 self._ctrl_conn.start_controllers(controllers_on="joint_state_controller")                
                 rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
-		
+        
         target_pose_msg = None
         while target_pose_msg is None and not rospy.is_shutdown():
             try:
@@ -254,12 +254,12 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
         wr1_joint_ang = joint_states.position[3]
         wr2_joint_ang = joint_states.position[4]
         wr3_joint_ang = joint_states.position[5]
-		
+        
         q = [shp_joint_ang, shl_joint_ang, elb_joint_ang, wr1_joint_ang, wr2_joint_ang, wr3_joint_ang]
         mat = ur_utils.forward(q, self._ik_params)
         xyz = mat[:3, 3]
         return xyz
-    		
+            
     def get_orientation(self, q):
         """Get Euler angles 
         Args:
@@ -411,69 +411,69 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
 
     # Resets the state of the environment and returns an initial observation.
     def reset(self):
-    	# 0st: We pause the Simulator
-    	rospy.logdebug("Pausing SIM...")
-    	self._gz_conn.pauseSim()
+        # 0st: We pause the Simulator
+        rospy.logdebug("Pausing SIM...")
+        self._gz_conn.pauseSim()
 
-    	# 1st: resets the simulation to initial values
-    	rospy.logdebug("Reset SIM...")
-    	self._gz_conn.resetSim()
+        # 1st: resets the simulation to initial values
+        rospy.logdebug("Reset SIM...")
+        self._gz_conn.resetSim()
 
-    	# 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
-    	# It also UNPAUSES the simulation
-    	rospy.logdebug("Remove Gravity...")
-    	self._gz_conn.change_gravity_zero()
+        # 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
+        # It also UNPAUSES the simulation
+        rospy.logdebug("Remove Gravity...")
+        self._gz_conn.change_gravity_zero()
 
-    	# EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
-    	rospy.logdebug("reset_ur_joint_controllers...")
-    	self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
+        # EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
+        rospy.logdebug("reset_ur_joint_controllers...")
+        self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
 
-    	# 3rd: resets the robot to initial conditions
-    	rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
-    	# We save that position as the current joint desired position
-    	init_pos = self.init_joints_pose(self.init_joint_pose)
+        # 3rd: resets the robot to initial conditions
+        rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
+        # We save that position as the current joint desired position
+        init_pos = self.init_joints_pose(self.init_joint_pose)
 
-    	# 4th: We Set the init pose to the jump topic so that the jump control can update
-    	# We check the jump publisher has connection
+        # 4th: We Set the init pose to the jump topic so that the jump control can update
+        # We check the jump publisher has connection
 
-    	if self._ctrl_type == 'traj_vel':
-        	self._joint_traj_pubisher.check_publishers_connection()
-    	elif self._ctrl_type == 'vel':
-    		self._joint_pubisher.check_publishers_connection()
-    	else:
-        	rospy.logwarn("Controller type is wrong!!!!")
-    	
+        if self._ctrl_type == 'traj_vel':
+            self._joint_traj_pubisher.check_publishers_connection()
+        elif self._ctrl_type == 'vel':
+            self._joint_pubisher.check_publishers_connection()
+        else:
+            rospy.logwarn("Controller type is wrong!!!!")
+        
 
-    	# 5th: Check all subscribers work.
-    	# Get the state of the Robot defined by its RPY orientation, distance from
-    	# desired point, contact force and JointState of the three joints
-    	rospy.logdebug("check_all_systems_ready...")
-    	self.check_all_systems_ready()
+        # 5th: Check all subscribers work.
+        # Get the state of the Robot defined by its RPY orientation, distance from
+        # desired point, contact force and JointState of the three joints
+        rospy.logdebug("check_all_systems_ready...")
+        self.check_all_systems_ready()
 
-    	# 6th: We restore the gravity to original
-    	rospy.logdebug("Restore Gravity...")
-    	self._gz_conn.adjust_gravity()
+        # 6th: We restore the gravity to original
+        rospy.logdebug("Restore Gravity...")
+        self._gz_conn.adjust_gravity()
 
-    	# 7th: pauses simulation
-    	rospy.logdebug("Pause SIM...")
-    	self._gz_conn.pauseSim()
+        # 7th: pauses simulation
+        rospy.logdebug("Pause SIM...")
+        self._gz_conn.pauseSim()
         # self._init_obj_pose()
 
-    	# 8th: Get the State Discrete Stringuified version of the observations
-    	rospy.logdebug("get_observations...")
-    	observation = self.get_observations()
+        # 8th: Get the State Discrete Stringuified version of the observations
+        rospy.logdebug("get_observations...")
+        observation = self.get_observations()
 
-    	return observation
+        return observation
 
     def _act(self, action):
-    	if self._ctrl_type == 'traj_vel':
-    		self.pre_ctrl_type = 'traj_vel'
-    		self._joint_traj_pubisher.jointTrajectoryCommand(action)
-    	elif self._ctrl_type == 'vel':
-        	self.pre_ctrl_type = 'vel'
-    		self._joint_pubisher.move_joints(action)
-    	else:
-    		self._joint_pubisher.move_joints(action)
+        if self._ctrl_type == 'traj_vel':
+            self.pre_ctrl_type = 'traj_vel'
+            self._joint_traj_pubisher.jointTrajectoryCommand(action)
+        elif self._ctrl_type == 'vel':
+            self.pre_ctrl_type = 'vel'
+            self._joint_pubisher.move_joints(action)
+        else:
+            self._joint_pubisher.move_joints(action)
         
     def training_ok(self):
         rate = rospy.Rate(1)
@@ -484,49 +484,49 @@ class URSimReaching(robot_gazebo_env_goal.RobotGazeboEnv):
             if self.check_stop_flg() is False:
                 break 
             rate.sleep()
-				
+                
     def step(self, action):
         '''
-    	('action: ', array([ 0.,  0. , -0., -0., -0. , 0. ], dtype=float32))    	
-    	'''
-    	rospy.logdebug("UR step func")
+        ('action: ', array([ 0.,  0. , -0., -0., -0. , 0. ], dtype=float32))        
+        '''
+        rospy.logdebug("UR step func")
 
         self.training_ok()
 
-    	# Given the action selected by the learning algorithm,
-    	# we perform the corresponding movement of the robot
+        # Given the action selected by the learning algorithm,
+        # we perform the corresponding movement of the robot
 
-    	# Act
-    	self._gz_conn.unpauseSim()
-    	self._act(action)
-    	
-    	# Then we send the command to the robot and let it go
-    	# for running_step seconds
-    	time.sleep(self.running_step)
-    	self._gz_conn.pauseSim()
+        # Act
+        self._gz_conn.unpauseSim()
+        self._act(action)
+        
+        # Then we send the command to the robot and let it go
+        # for running_step seconds
+        time.sleep(self.running_step)
+        self._gz_conn.pauseSim()
 
-    	# We now process the latest data saved in the class state to calculate
-    	# the state and the rewards. This way we guarantee that they work
-    	# with the same exact data.
-    	# Generate State based on observations
-    	observation = self.get_observations()
+        # We now process the latest data saved in the class state to calculate
+        # the state and the rewards. This way we guarantee that they work
+        # with the same exact data.
+        # Generate State based on observations
+        observation = self.get_observations()
 
-    	# finally we get an evaluation based on what happened in the sim
-    	reward = self.compute_dist_rewards()
-    	done = self.check_done()
+        # finally we get an evaluation based on what happened in the sim
+        reward = self.compute_dist_rewards()
+        done = self.check_done()
 
-    	return observation, reward, done, {}
+        return observation, reward, done, {}
 
     def compute_dist_rewards(self):
-		#print ("[self.target_point]: ", [self.target_point.x, self.target_point.y, self.target_point.z])
-		#print ("(self.get_current_xyz(): ", self.get_current_xyz())
-		end_effector_pos = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z])
-		self.distance = np.linalg.norm(end_effector_pos - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0)
-		return np.exp(-np.linalg.norm(end_effector_pos, axis=0))
-		#return np.exp(np.linalg.norm(self.get_current_xyz() - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0))
-		
+        #print ("[self.target_point]: ", [self.target_point.x, self.target_point.y, self.target_point.z])
+        #print ("(self.get_current_xyz(): ", self.get_current_xyz())
+        end_effector_pos = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z])
+        self.distance = np.linalg.norm(end_effector_pos - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0)
+        return np.exp(-np.linalg.norm(end_effector_pos, axis=0))
+        #return np.exp(np.linalg.norm(self.get_current_xyz() - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0))
+        
     def check_done(self):
-    	if self.distance < 0.1:
-    		return True
-    	else :
-			return False
+        if self.distance < 0.1:
+            return True
+        else :
+        	return False

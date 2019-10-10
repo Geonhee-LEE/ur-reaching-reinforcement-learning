@@ -62,7 +62,7 @@ class ControllersConnection():
 
             return switch_result.ok
 
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print (self.switch_service_name + " service call failed")
 
             return None
@@ -96,7 +96,7 @@ class ControllersConnection():
 
             return switch_result.ok
 
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print (self.switch_service_name + " service call failed")
 
             return None
@@ -130,7 +130,7 @@ class ControllersConnection():
 
             return switch_result.ok
 
-        except rospy.ServiceException, e:
+        except rospy.ServiceExceptionas:
             print (self.switch_service_name + " service call failed")
 
             return None
@@ -164,7 +164,7 @@ class ControllersConnection():
 
             return switch_result.ok
 
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print (self.switch_service_name + " service call failed")
 
             return None
@@ -220,7 +220,7 @@ class ControllersConnection():
 
             return load_result.ok
 
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print (self.load_service_name + " service call failed")
 
             return None
@@ -243,7 +243,7 @@ class ControllersConnection():
 
             return unload_result.ok
 
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print (self.unload_service_name + " service call failed")
 
             return None
