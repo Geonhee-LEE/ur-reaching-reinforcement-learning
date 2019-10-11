@@ -1,0 +1,51 @@
+diff --git a/rlkit/samplers/rollout_functions.py b/rlkit/samplers/rollout_functions.py
+index 0733983..bfe9c75 100644
+--- a/rlkit/samplers/rollout_functions.py
++++ b/rlkit/samplers/rollout_functions.py
+@@ -109,6 +109,7 @@ def rollout(
+     if render:
+         env.render(**render_kwargs)
+     while path_length < max_path_length:
++        print ("sampler/rollout_functions.py, rollout, o: ", type(o), o.shape)
+         a, agent_info = agent.get_action(o)
+         next_o, r, d, env_info = env.step(a)
+         observations.append(o)
+diff --git a/rlkit/torch/core.py b/rlkit/torch/core.py
+index a94a455..c5e91d8 100644
+--- a/rlkit/torch/core.py
++++ b/rlkit/torch/core.py
+@@ -13,9 +13,16 @@ def eval_np(module, *args, **kwargs):
+ 
+     Assumes the output is either a single object or a tuple of objects.
+     """
++    print ("-----------------------torch/core.py, eval_np-----------------------")
+     torch_args = tuple(torch_ify(x) for x in args)
+     torch_kwargs = {k: torch_ify(v) for k, v in kwargs.items()}
++    print ("torch/core.py, eval_np, torch_args: ", type(torch_args), ", " , len(torch_args))
++    print ("torch/core.py, eval_np, torch_kwargs: ", type(torch_kwargs), ", " , len(torch_kwargs))
++    
+     outputs = module(*torch_args, **torch_kwargs)
++    
++    print ("torch/core.py, eval_np, outputs: ", outputs)
++        
+     if isinstance(outputs, tuple):
+         return tuple(np_ify(x) for x in outputs)
+     else:
+diff --git a/rlkit/torch/networks.py b/rlkit/torch/networks.py
+index f8be3d8..9b929d5 100644
+--- a/rlkit/torch/networks.py
++++ b/rlkit/torch/networks.py
+@@ -108,10 +108,13 @@ class MlpPolicy(Mlp, Policy):
+         return super().forward(obs, **kwargs)
+ 
+     def get_action(self, obs_np):
++        print ("torch/networks.py, get_action, obs_np: ", type(obs_np), ", ", obs_np.shape)
+         actions = self.get_actions(obs_np[None])
++        print ("torch/networks.py, get_action, actions: ", type(actions), ", ", actions.shape)
+         return actions[0, :], {}
+ 
+     def get_actions(self, obs):
++        print ("torch/networks.py, get_actions, actions: ", type(obs), ", ", obs.shape)
+         return eval_np(self, obs)
+ 
+ 

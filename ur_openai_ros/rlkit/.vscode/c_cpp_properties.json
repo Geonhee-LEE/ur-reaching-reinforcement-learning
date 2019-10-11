@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/geonhee-ml/keba_ws/devel/include",
+                "/home/geonhee-ml/rl_ws/devel/include",
+                "/home/geonhee-ml/ur_ws/devel/include",
+                "/home/geonhee-ml/catkin_ws/devel/include",
+                "/opt/ros/kinetic/include",
+                "/home/geonhee-ml/rl_ws/src/gps/src/gps_agent_pkg/include",
+                "/home/geonhee-ml/rl_ws/src/ur5-gripper/ur_rl_msgs/include",
+                "/home/geonhee-ml/rl_ws/src/ur5-gripper/ur_robotiq_gazebo/include",
+                "/home/geonhee-ml/rl_ws/src/ur5-gripper/visual_tools/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

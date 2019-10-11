@@ -1,0 +1,6 @@
+Wed Oct  2 20:36:45 2019
+ERROR: Expired activation key
+
+Thu Oct  3 09:19:28 2019
+ERROR: Invalid activation key
+
