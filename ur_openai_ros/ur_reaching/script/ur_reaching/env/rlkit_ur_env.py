@@ -217,9 +217,28 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         return self
 
     def step(self, action):
-        '''
-        ('action: ', array([ 0.,  0. , -0., -0., -0. , 0. ], dtype=float32))        
-        '''
+        """
+
+        Parameters
+        ----------
+        action : [change in x, change in y, change in z]
+
+        Returns
+        -------
+        ob, reward, episode_over, info : tuple
+            ob (object) :
+                either current position or an observation object, depending on
+                the type of environment this is representing
+            reward (float) :
+                negative, squared, l2 distance between current position and 
+                goal position
+            episode_over (bool) :
+                Whether or not we have reached the goal
+            info (dict) :
+                 For now, all this does is keep track of the total distance from goal.
+                 This is used for rlkit to get the final total distance after evaluation.
+                 See function get_diagnostics for more info.
+        """
         rospy.logdebug("UR step func")
 
         self.training_ok()

@@ -70,6 +70,9 @@ def experiment(variant):
 
    
 def main():
+    """
+    main
+    """
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
     rospy.init_node('RLkitUR', anonymous=True, log_level=rospy.INFO)
     
