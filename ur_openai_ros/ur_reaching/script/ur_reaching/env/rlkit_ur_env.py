@@ -102,7 +102,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                              "wr3_min": wr3_min
                              }
 
-
         # Joint Velocity limitation
         shp_vel_max = rospy.get_param("/joint_velocity_limits_array/shp_max")
         shp_vel_min = rospy.get_param("/joint_velocity_limits_array/shp_min")
@@ -130,6 +129,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                              "wr3_vel_min": wr3_vel_min
                              }
 
+        #  Init joint pose
         shp_init_value = rospy.get_param("/init_joint_pose/shp")
         shl_init_value = rospy.get_param("/init_joint_pose/shl")
         elb_init_value = rospy.get_param("/init_joint_pose/elb")
@@ -148,7 +148,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         # Fill in the Done Episode Criteria list
         self.episode_done_criteria = rospy.get_param("/episode_done_criteria")
         
-        # stablishes connection with simulator
+        # Stablishes connection with simulator
         self._gz_conn = GazeboConnection()
         self._ctrl_conn = ControllersConnection(namespace="")
         
@@ -156,7 +156,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self._ctrl_type =  rospy.get_param("/control_type")
         self.pre_ctrl_type =  self._ctrl_type
 
-        # We init the observations
+        # Init the observations, target, ...
         self.base_orientation = Quaternion()
         self.target_point = Point()
         self.link_state = LinkStates()
@@ -172,11 +172,10 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self._joint_traj_pubisher = JointTrajPub()
 
         # Gym interface and action
-        # self.action_space = spaces.Discrete(6)
-        # self.observation_space = 15 #np.arange(self.get_observations().shape[0])
         self.reward_range = (-np.inf, np.inf)
         self._seed()
 
+        # Controller list
         self.vel_traj_controller = ['joint_state_controller',
                             'gripper_controller',
                             'vel_traj_controller']
@@ -189,7 +188,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                                 "ur_wrist_2_vel_controller",
                                 "ur_wrist_3_vel_controller"]
 
-        # Helpful False
+        # Stop flag durning training 
         self.stop_flag = False
 
         # For RLkit and gym        
@@ -205,6 +204,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self.current_pos = None
         #self.goal = np.array([-.14, -.13, 0.26])
         self.set_goal(self.sample_goal_for_rollout())
+        self.goal_oriented = False
     
     def _start_ros_services(self):
         stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
@@ -246,7 +246,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         reward = self.compute_dist_rewards()
         done = self.check_done()
 
-        return observation, reward, done, {}
+        #return observation, reward, done, {}
+        return self._generate_step_tuple()
 
     # Resets the state of the environment and returns an initial observation.
     def reset(self):
@@ -594,5 +595,36 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         return np.random.uniform(low=np.array([-.14, -.13, 0.26]), high=np.array([.14, .13, .39]))
 
     def set_goal(self, goal):
+        print ("goal: ", goal)
         self.goal = goal
-        
+
+    def _generate_step_tuple(self):
+        reward = self._get_reward(self.goal)
+
+        episode_over = False
+        total_distance_from_goal = np.sqrt(-reward)
+
+        info = {}
+        info['total_distance'] = total_distance_from_goal
+
+        if reward > -0.0001:
+            episode_over = True
+
+        if self.goal_oriented:
+            obs = self._get_obs()
+            return obs, reward, episode_over, info
+
+        #return self.current_pos, reward, episode_over, info        
+        return self.get_observations(), reward, episode_over, info        
+
+
+    def _get_reward(self, goal):
+        return - (np.linalg.norm(self.current_pos[:3] - goal) ** 2)
+
+
+    def _get_obs(self):
+        obs = {}
+        obs['observation'] = self.current_pos
+        obs['desired_goal'] = self.goal
+        obs['achieved_goal'] = self.current_pos[:3]
+        return obs

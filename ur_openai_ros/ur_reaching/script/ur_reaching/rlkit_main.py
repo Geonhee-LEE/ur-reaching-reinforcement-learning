@@ -99,7 +99,7 @@ def main():
         ),
         replay_buffer_size=int(1E6),
     )
-    ptu.set_gpu_mode(False)  # optionally set the GPU (default=False)
+    ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     setup_logger('DDPG_Experiment', variant=variant)
     experiment(variant)
 
