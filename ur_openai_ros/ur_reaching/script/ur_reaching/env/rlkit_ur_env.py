@@ -191,14 +191,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
         # Helpful False
         self.stop_flag = False
-        #stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
-        #start_trainning_server = rospy.Service('/start_training', SetBool, self._start_trainnig)
 
-        # Change the controller type 
-        #set_joint_vel_server = rospy.Service('/set_velocity_controller', SetBool, self._set_vel_ctrl)
-        #set_joint_traj_vel_server = rospy.Service('/set_trajectory_velocity_controller', SetBool, self._set_traj_vel_ctrl)
-
-        # For RLkit        
+        # For RLkit and gym        
         self.obs_space_low = np.array(
             [shp_min, shl_min, elb_min, wr1_min, wr2_min, wr3_min, shp_vel_min, shl_vel_min, elb_vel_min, wr1_vel_min, wr2_vel_min, wr3_vel_min, x_min, y_min, z_min])
         self.obs_space_high = np.array(
@@ -211,6 +205,16 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self.current_pos = None
         #self.goal = np.array([-.14, -.13, 0.26])
         self.set_goal(self.sample_goal_for_rollout())
+    
+    def _start_ros_services(self):
+        stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
+        start_trainning_server = rospy.Service('/start_training', SetBool, self._start_trainnig)
+
+        # Change the controller type 
+        set_joint_vel_server = rospy.Service('/set_velocity_controller', SetBool, self._set_vel_ctrl)
+        set_joint_traj_vel_server = rospy.Service('/set_trajectory_velocity_controller', SetBool, self._set_traj_vel_ctrl)
+
+        return self
 
     def step(self, action):
         '''
@@ -312,14 +316,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
     def render(self, mode='human', close=False):
         pass
-
-    def _get_obs(self):
-        print("##### _get_obs #####")
-        obs = {}
-        obs['observation'] = self.current_pos
-        obs['desired_goal'] = self.goal
-        obs['achieved_goal'] = self.current_pos[:3]
-        return obs
 
     def check_stop_flg(self):
         if self.stop_flag is False:
@@ -532,7 +528,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
             else:
                 raise NameError('Observation Asked does not exist=='+str(obs_name))
 
-
         return np.asarray(observation, dtype=np.float32)
 
     def clamp_to_joint_limits(self):
@@ -601,39 +596,3 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
     def set_goal(self, goal):
         self.goal = goal
         
-    # Functions for pickling
-    def __getstate__(self):
-        print ("______________________________________________getstate________________________________________________")
-        state = self.__dict__.copy()
-        if self.mode == 'robot':
-            del state['reset_publisher']
-            del state['position_updated_publisher']
-            del state['action_publisher']
-            del state['current_position_subscriber']
-        return state
-
-    def __setstate__(self, state):
-        print ("________________________________________________setstate________________________________________________")
-        if state['mode'] == 'robot':
-            try:
-                self._start_rospy(goal_oriented=state['goal_oriented'])
-            except rospy.ROSException:
-                print('ROS Node already started')
-                self.reset_publisher = rospy.Publisher(
-                    "/replab/reset", String, queue_size=1)
-                self.position_updated_publisher = rospy.Publisher(
-                    "/replab/received/position", String, queue_size=1)
-                self.action_publisher = rospy.Publisher(
-                    "/replab/action", numpy_msg(Floats), queue_size=1)
-                self.current_position_subscriber = rospy.Subscriber(
-                    "/replab/action/observation", numpy_msg(Floats), self.update_position)
-        elif state['mode'] == 'sim':
-            try:
-                if state['render']:
-                    self._start_sim(goal_oriented=state['goal_oriented'], render=False)
-                else:
-                    self._start_sim(goal_oriented=state['goal_oriented'], render=state['render'])
-            except AttributeError:
-                pass
-        self.__dict__.update(state)
-        self.reset()

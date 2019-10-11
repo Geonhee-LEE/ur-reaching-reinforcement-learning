@@ -22,7 +22,8 @@ import rospy
 import rospkg
 
 def experiment(variant):
-    eval_env = NormalizedBoxEnv(gym.make('RLkitUR-v0'))
+    env = gym.make('RLkitUR-v0')._start_ros_services()
+    eval_env = NormalizedBoxEnv(env)
     expl_env = NormalizedBoxEnv(gym.make('RLkitUR-v0'))
     
     obs_dim = eval_env.observation_space.low.size
@@ -70,7 +71,7 @@ def experiment(variant):
    
 def main():
     # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-    rospy.init_node('RLkitUR', anonymous=True, log_level=rospy.DEBUG)
+    rospy.init_node('RLkitUR', anonymous=True, log_level=rospy.INFO)
     
     # noinspection PyTypeChecker
     variant = dict(
