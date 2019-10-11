@@ -27,7 +27,8 @@ def experiment(variant):
     
     obs_dim = eval_env.observation_space.low.size
     action_dim = eval_env.action_space.low.size
-
+    print ("obs_dim: ", obs_dim)
+    print ("action_dim: ", action_dim)
     qf = FlattenMlp(
         input_size=obs_dim + action_dim,
         output_size=1,

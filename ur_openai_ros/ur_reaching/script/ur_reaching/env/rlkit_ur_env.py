@@ -191,11 +191,18 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
         # Helpful False
         self.stop_flag = False
+        #stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
+        #start_trainning_server = rospy.Service('/start_training', SetBool, self._start_trainnig)
+
+        # Change the controller type 
+        #set_joint_vel_server = rospy.Service('/set_velocity_controller', SetBool, self._set_vel_ctrl)
+        #set_joint_traj_vel_server = rospy.Service('/set_trajectory_velocity_controller', SetBool, self._set_traj_vel_ctrl)
+
         # For RLkit        
         self.obs_space_low = np.array(
-            [shp_min, shl_min, elb_min, wr1_min, wr2_min, wr3_min, x_min, y_min, z_min])
+            [shp_min, shl_min, elb_min, wr1_min, wr2_min, wr3_min, shp_vel_min, shl_vel_min, elb_vel_min, wr1_vel_min, wr2_vel_min, wr3_vel_min, x_min, y_min, z_min])
         self.obs_space_high = np.array(
-            [shp_max, shl_max, elb_max, wr1_max, wr2_max, wr3_max, x_max, y_max, z_max])
+            [shp_max, shl_max, elb_max, wr1_max, wr2_max, wr3_max, shp_vel_max, shl_vel_max, elb_vel_max, wr1_vel_max, wr2_vel_max, wr3_vel_max, x_max, y_max, z_max])
         observation_space = spaces.Box(
             low=self.obs_space_low, high=self.obs_space_high, dtype=np.float32)
         self.observation_space = observation_space
@@ -290,9 +297,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         # 8th: Get the State Discrete Stringuified version of the observations
         rospy.logdebug("get_observations...")
         observation = self.get_observations()
-        print("==============================")
-        print("observation:", observation)
-        print("==============================")
 
         return observation
     
@@ -529,7 +533,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                 raise NameError('Observation Asked does not exist=='+str(obs_name))
 
 
-        return observation
+        return np.asarray(observation, dtype=np.float32)
 
     def clamp_to_joint_limits(self):
         """
