@@ -54,9 +54,51 @@ reg = gym.envs.register(
     )
 
 class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
-    metadata = {'render.modes': ['human']}
+    
+    def __init__(self):    
+        self._ros_init()
 
-    def __init__(self):
+        # For RLkit and gym        
+        self.obs_space_low = np.array(
+            [self.joint_limits["shp_min"], self.joint_limits["shl_min"], self.joint_limits["elb_min"], \
+            self.joint_limits["wr1_min"], self.joint_limits["wr2_min"], self.joint_limits["wr3_min"], \
+            self.joint_velocty_limits["shp_vel_min"], self.joint_velocty_limits["shl_vel_min"], self.joint_velocty_limits["elb_vel_min"], \
+            self.joint_velocty_limits["wr1_vel_min"],  self.joint_velocty_limits["wr2_vel_min"],  self.joint_velocty_limits["wr3_vel_min"], \
+            self.xyz_limits["x_min"],  self.xyz_limits["y_min"],  self.xyz_limits["z_min"]])
+        self.obs_space_high = np.array(
+            [self.joint_limits["shp_max"], self.joint_limits["shl_max"], self.joint_limits["elb_max"], \
+            self.joint_limits["wr1_max"], self.joint_limits["wr2_max"], self.joint_limits["wr3_max"], \
+            self.joint_velocty_limits["shp_vel_max"], self.joint_velocty_limits["shl_vel_max"], self.joint_velocty_limits["elb_vel_max"], \
+            self.joint_velocty_limits["wr1_vel_max"],  self.joint_velocty_limits["wr2_vel_max"],  self.joint_velocty_limits["wr3_vel_max"],  \
+            self.xyz_limits["x_max"],  self.xyz_limits["y_max"],  self.xyz_limits["z_max"]])
+        observation_space = spaces.Box(
+            low=self.obs_space_low, \
+            high=self.obs_space_high, \
+            dtype=np.float32)
+        self.observation_space = observation_space
+        action_space = spaces.Box(
+            low=np.array(
+                [self.joint_velocty_limits["shp_vel_min"], self.joint_velocty_limits["shl_vel_min"], \
+                self.joint_velocty_limits["elb_vel_min"], self.joint_velocty_limits["wr1_vel_min"],  \
+                self.joint_velocty_limits["wr2_vel_min"],  self.joint_velocty_limits["wr3_vel_min"]]), \
+            high=np.array([
+                self.joint_velocty_limits["shp_vel_max"], self.joint_velocty_limits["shl_vel_max"], \
+                self.joint_velocty_limits["elb_vel_max"], self.joint_velocty_limits["wr1_vel_max"],  \
+                self.joint_velocty_limits["wr2_vel_max"],  self.joint_velocty_limits["wr3_vel_max"]]), \
+                dtype=np.float32)
+        self.action_space = action_space
+        self.current_pos = None
+        #self.goal = np.array([-.14, -.13, 0.26])
+        self.set_goal(self.sample_goal_for_rollout())
+        self.goal_oriented = False
+
+        # Gym interface and action
+        self.reward_range = (-np.inf, np.inf)
+        self._seed()
+        metadata = {'render.modes': ['human']}
+        spec = None
+
+    def _ros_init(self):
         rospy.logdebug("Starting RLkitUR Class object...")
 
         # Init GAZEBO Objects
@@ -144,7 +186,15 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         y_max = rospy.get_param("/cartesian_limits/y_max")
         y_min = rospy.get_param("/cartesian_limits/y_min")
         z_max = rospy.get_param("/cartesian_limits/z_max")
-        z_min = rospy.get_param("/cartesian_limits/z_min")
+        z_min = rospy.get_param("/cartesian_limits/z_min")       
+        self.xyz_limits = {"x_max": x_max,
+                            "x_min": shp_vel_min,
+                            "y_max": y_max,
+                            "y_min": y_min,
+                            "z_max": z_max,
+                            "z_min": z_min
+                            }
+
         # Fill in the Done Episode Criteria list
         self.episode_done_criteria = rospy.get_param("/episode_done_criteria")
         
@@ -171,10 +221,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self._joint_pubisher = JointPub()
         self._joint_traj_pubisher = JointTrajPub()
 
-        # Gym interface and action
-        self.reward_range = (-np.inf, np.inf)
-        self._seed()
-
         # Controller list
         self.vel_traj_controller = ['joint_state_controller',
                             'gripper_controller',
@@ -190,24 +236,11 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
         # Stop flag durning training 
         self.stop_flag = False
-
-        # For RLkit and gym        
-        self.obs_space_low = np.array(
-            [shp_min, shl_min, elb_min, wr1_min, wr2_min, wr3_min, shp_vel_min, shl_vel_min, elb_vel_min, wr1_vel_min, wr2_vel_min, wr3_vel_min, x_min, y_min, z_min])
-        self.obs_space_high = np.array(
-            [shp_max, shl_max, elb_max, wr1_max, wr2_max, wr3_max, shp_vel_max, shl_vel_max, elb_vel_max, wr1_vel_max, wr2_vel_max, wr3_vel_max, x_max, y_max, z_max])
-        observation_space = spaces.Box(
-            low=self.obs_space_low, high=self.obs_space_high, dtype=np.float32)
-        self.observation_space = observation_space
-        self.action_space = spaces.Box(low=np.array([shp_vel_max, shl_vel_max, elb_vel_max, wr1_vel_max, wr2_vel_max, wr3_vel_max]),
-                                       high=np.array([shp_vel_min, shl_vel_min, elb_vel_min, wr1_vel_min, wr2_vel_min, wr3_vel_min]), dtype=np.float32)
-        self.current_pos = None
-        #self.goal = np.array([-.14, -.13, 0.26])
-        self.set_goal(self.sample_goal_for_rollout())
-        self.goal_oriented = False
-
         self.step_cnt = 0
     
+
+
+
     def _start_ros_services(self):
         stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
         start_trainning_server = rospy.Service('/start_training', SetBool, self._start_trainnig)
@@ -650,3 +683,31 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         obs['desired_goal'] = self.goal
         obs['achieved_goal'] = self.current_pos[:3]
         return obs
+
+    # Functions for pickling and saving the state. Described in ProxyEnv of envs/wrappers.py  
+    '''
+        Refer to https://docs.python.org/3/library/pickle.html#pickle-protocol
+    '''
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        
+        del state['link_state']
+        del state['base_orientation']
+        del state['_joint_pubisher']
+        del state['_joint_traj_pubisher']
+        del state['distance']
+        
+        '''
+        del state['_joint_pubisher']
+        del state['_joint_traj_pubisher']
+        del state['observations']
+        del state['np_random']
+        del state['distance']
+        '''
+        print ("rlkit_ur_env, __getstate__, state :", state)
+        return state
+
+    def __setstate__(self, state):
+        print ("##### rlkit_ur_env, __setstate__ :", state)
+        self.__dict__.update(state)
+        self.reset()

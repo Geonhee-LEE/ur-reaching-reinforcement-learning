@@ -23,8 +23,10 @@ import rospkg
 
 def experiment(variant):
     env = gym.make('RLkitUR-v0')._start_ros_services()
-    eval_env = NormalizedBoxEnv(env)
-    expl_env = NormalizedBoxEnv(gym.make('RLkitUR-v0'))
+    eval_env = gym.make('RLkitUR-v0')
+    expl_env = gym.make('RLkitUR-v0')
+    eval_env = NormalizedBoxEnv(eval_env)
+    expl_env = NormalizedBoxEnv(expl_env)
     
     obs_dim = eval_env.observation_space.low.size
     action_dim = eval_env.action_space.low.size
