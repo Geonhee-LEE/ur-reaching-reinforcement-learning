@@ -238,9 +238,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self.stop_flag = False
         self.step_cnt = 0
     
-
-
-
     def _start_ros_services(self):
         stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
         start_trainning_server = rospy.Service('/start_training', SetBool, self._start_trainnig)
@@ -274,7 +271,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                  This is used for rlkit to get the final total distance after evaluation.
                  See function get_diagnostics for more info.
         """
-        rospy.logdebug("UR step func")
+        rospy.logdebug("### UR step func ###")
 
         self.training_ok()
 
@@ -662,7 +659,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         info['total_distance'] = total_distance_from_goal
 
         self.step_cnt = self.step_cnt + 1
-        if reward > -0.0001 or self.step_cnt > 1:
+        if reward > -0.0001 or self.step_cnt > 1000:
             episode_over = True
             self.step_cnt = 0
 
@@ -696,6 +693,10 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         del state['_joint_pubisher']
         del state['_joint_traj_pubisher']
         del state['distance']
+        del state['joints_state']
+        del state['get_world_state']
+        del state['end_effector']
+        del state['desired_pose']
         
         '''
         del state['_joint_pubisher']
