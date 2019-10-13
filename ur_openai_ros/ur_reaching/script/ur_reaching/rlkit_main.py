@@ -79,12 +79,12 @@ def main():
     # noinspection PyTypeChecker
     variant = dict(
         algorithm_kwargs=dict(
-            num_epochs=1000,
-            num_eval_steps_per_epoch=1000,
-            num_trains_per_train_loop=1000,
-            num_expl_steps_per_train_loop=1000,
-            min_num_steps_before_training=10000,
-            max_path_length=1000,
+            num_epochs=1,
+            num_eval_steps_per_epoch=1,
+            num_trains_per_train_loop=1,
+            num_expl_steps_per_train_loop=1,
+            min_num_steps_before_training=1,
+            max_path_length=1,
             batch_size=128,
         ),
         trainer_kwargs=dict(
