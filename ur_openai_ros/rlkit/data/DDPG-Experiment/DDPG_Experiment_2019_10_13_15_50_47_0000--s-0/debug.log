@@ -1,0 +1,97 @@
+2019-10-13 16:55:33.752716 KST | [DDPG_Experiment_2019_10_13_15_50_47_0000--s-0] Epoch 0 finished
+-------------------------------------------------  --------------
+replay_buffer/size                                 2000
+trainer/QF Loss                                       0.446406
+trainer/Policy Loss                                  -0.0036709
+trainer/Raw Policy Loss                              -0.0036709
+trainer/Preactivation Policy Loss                     0
+trainer/Q Predictions Mean                            0.00367189
+trainer/Q Predictions Std                             0.00039724
+trainer/Q Predictions Max                             0.00448276
+trainer/Q Predictions Min                             0.00240287
+trainer/Q Targets Mean                               -0.664461
+trainer/Q Targets Std                                 0.00184741
+trainer/Q Targets Max                                -0.661459
+trainer/Q Targets Min                                -0.666702
+trainer/Bellman Errors Mean                           0.446406
+trainer/Bellman Errors Std                            0.00247507
+trainer/Bellman Errors Max                            0.450077
+trainer/Bellman Errors Min                            0.442194
+trainer/Policy Action Mean                            0.000757162
+trainer/Policy Action Std                             0.00277494
+trainer/Policy Action Max                             0.00604941
+trainer/Policy Action Min                            -0.00220784
+exploration/num steps total                        2000
+exploration/num paths total                        2000
+exploration/path length Mean                          1
+exploration/path length Std                           0
+exploration/path length Max                           1
+exploration/path length Min                           1
+exploration/Rewards Mean                             -0.665712
+exploration/Rewards Std                               0.0005633
+exploration/Rewards Max                              -0.656538
+exploration/Rewards Min                              -0.666999
+exploration/Returns Mean                             -0.665712
+exploration/Returns Std                               0.0005633
+exploration/Returns Max                              -0.656538
+exploration/Returns Min                              -0.666999
+exploration/Actions Mean                              0.00215928
+exploration/Actions Std                               0.300722
+exploration/Actions Max                               0.990762
+exploration/Actions Min                              -1
+exploration/Num Paths                              1000
+exploration/Average Returns                          -0.665712
+exploration/env_infos/final/total_distance Mean       0.815912
+exploration/env_infos/final/total_distance Std        0.000345579
+exploration/env_infos/final/total_distance Max        0.8167
+exploration/env_infos/final/total_distance Min        0.81027
+exploration/env_infos/initial/total_distance Mean     0.815912
+exploration/env_infos/initial/total_distance Std      0.000345579
+exploration/env_infos/initial/total_distance Max      0.8167
+exploration/env_infos/initial/total_distance Min      0.81027
+exploration/env_infos/total_distance Mean             0.815912
+exploration/env_infos/total_distance Std              0.000345579
+exploration/env_infos/total_distance Max              0.8167
+exploration/env_infos/total_distance Min              0.81027
+evaluation/num steps total                         1000
+evaluation/num paths total                         1000
+evaluation/path length Mean                           1
+evaluation/path length Std                            0
+evaluation/path length Max                            1
+evaluation/path length Min                            1
+evaluation/Rewards Mean                              -0.905281
+evaluation/Rewards Std                                0.000424269
+evaluation/Rewards Max                               -0.90493
+evaluation/Rewards Min                               -0.905947
+evaluation/Returns Mean                              -0.905281
+evaluation/Returns Std                                0.000424269
+evaluation/Returns Max                               -0.90493
+evaluation/Returns Min                               -0.905947
+evaluation/Actions Mean                               0.000756562
+evaluation/Actions Std                                0.00277493
+evaluation/Actions Max                                0.00604939
+evaluation/Actions Min                               -0.00221293
+evaluation/Num Paths                               1000
+evaluation/Average Returns                           -0.905281
+evaluation/env_infos/final/total_distance Mean        0.951462
+evaluation/env_infos/final/total_distance Std         0.000222936
+evaluation/env_infos/final/total_distance Max         0.951813
+evaluation/env_infos/final/total_distance Min         0.951278
+evaluation/env_infos/initial/total_distance Mean      0.951462
+evaluation/env_infos/initial/total_distance Std       0.000222936
+evaluation/env_infos/initial/total_distance Max       0.951813
+evaluation/env_infos/initial/total_distance Min       0.951278
+evaluation/env_infos/total_distance Mean              0.951462
+evaluation/env_infos/total_distance Std               0.000222936
+evaluation/env_infos/total_distance Max               0.951813
+evaluation/env_infos/total_distance Min               0.951278
+time/data storing (s)                                 0.00904666
+time/evaluation sampling (s)                       1284.38
+time/exploration sampling (s)                      1317.02
+time/logging (s)                                      0.0298946
+time/saving (s)                                       0.117725
+time/training (s)                                     5.112
+time/epoch (s)                                     2606.67
+time/total (s)                                     3886.63
+Epoch                                                 0
+-------------------------------------------------  --------------

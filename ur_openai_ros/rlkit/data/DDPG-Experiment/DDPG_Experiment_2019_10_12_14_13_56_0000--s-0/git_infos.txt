@@ -1,0 +1,4 @@
+directory: /home/geonhee-ml/rl_ws/src/ur5-gripper/ur_openai_ros/rlkit/rlkit/..
+git hash: 1d469a509b797ca04a39b8734c1816ca7d108fc8
+git branch name: master
+

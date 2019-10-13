@@ -1,0 +1,73 @@
+diff --git a/rlkit/core/logging.py b/rlkit/core/logging.py
+index 3aa9497..c350b3e 100644
+--- a/rlkit/core/logging.py
++++ b/rlkit/core/logging.py
+@@ -278,6 +278,7 @@ class Logger(object):
+         self._prefix_str = ''.join(self._prefixes)
+ 
+     def save_itr_params(self, itr, params):
++        print ("core/logging, save_itr_params(), params: ", type(params))
+         if self._snapshot_dir:
+             if self._snapshot_mode == 'all':
+                 file_name = osp.join(self._snapshot_dir, 'itr_%d.pkl' % itr)
+diff --git a/rlkit/core/rl_algorithm.py b/rlkit/core/rl_algorithm.py
+index 284ef46..72d9a97 100644
+--- a/rlkit/core/rl_algorithm.py
++++ b/rlkit/core/rl_algorithm.py
+@@ -53,6 +53,7 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
+ 
+     def _end_epoch(self, epoch):
+         snapshot = self._get_snapshot()
++        print ("core/rl_algorithm, _end_epoch(): ", "epoch: ", type(epoch), "snapshot", type(snapshot))
+         logger.save_itr_params(epoch, snapshot)
+         gt.stamp('saving')
+         self._log_stats(epoch)
+diff --git a/rlkit/samplers/rollout_functions.py b/rlkit/samplers/rollout_functions.py
+index 0733983..711165f 100644
+--- a/rlkit/samplers/rollout_functions.py
++++ b/rlkit/samplers/rollout_functions.py
+@@ -109,6 +109,8 @@ def rollout(
+     if render:
+         env.render(**render_kwargs)
+     while path_length < max_path_length:
++        #print ("sampler/rollout_functions.py, rollout, o: ", type(o))
++        #print ("sampler/rollout_functions.py, rollout, o: ", o.shape)
+         a, agent_info = agent.get_action(o)
+         next_o, r, d, env_info = env.step(a)
+         observations.append(o)
+diff --git a/rlkit/torch/core.py b/rlkit/torch/core.py
+index a94a455..2de7a3f 100644
+--- a/rlkit/torch/core.py
++++ b/rlkit/torch/core.py
+@@ -15,7 +15,13 @@ def eval_np(module, *args, **kwargs):
+     """
+     torch_args = tuple(torch_ify(x) for x in args)
+     torch_kwargs = {k: torch_ify(v) for k, v in kwargs.items()}
++    #print ("torch/core.py, eval_np, torch_args: ", type(torch_args), ", " , len(torch_args))
++    #print ("torch/core.py, eval_np, torch_kwargs: ", type(torch_kwargs), ", " , len(torch_kwargs))
++    
+     outputs = module(*torch_args, **torch_kwargs)
++    
++    #print ("torch/core.py, eval_np, outputs: ", outputs)
++        
+     if isinstance(outputs, tuple):
+         return tuple(np_ify(x) for x in outputs)
+     else:
+diff --git a/rlkit/torch/networks.py b/rlkit/torch/networks.py
+index f8be3d8..e55b724 100644
+--- a/rlkit/torch/networks.py
++++ b/rlkit/torch/networks.py
+@@ -108,10 +108,13 @@ class MlpPolicy(Mlp, Policy):
+         return super().forward(obs, **kwargs)
+ 
+     def get_action(self, obs_np):
++        #print ("torch/networks.py, get_action, obs_np: ", type(obs_np), ", ", obs_np.shape)
+         actions = self.get_actions(obs_np[None])
++        #print ("torch/networks.py, get_action, actions: ", type(actions), ", ", actions.shape)
+         return actions[0, :], {}
+ 
+     def get_actions(self, obs):
++        #print ("torch/networks.py, get_actions, actions: ", type(obs), ", ", obs.shape)
+         return eval_np(self, obs)
+ 
+ 

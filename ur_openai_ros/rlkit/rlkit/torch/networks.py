@@ -108,13 +108,13 @@ class MlpPolicy(Mlp, Policy):
         return super().forward(obs, **kwargs)
 
     def get_action(self, obs_np):
-        print ("torch/networks.py, get_action, obs_np: ", type(obs_np), ", ", obs_np.shape)
+        #print ("torch/networks.py, get_action, obs_np: ", type(obs_np), ", ", obs_np.shape)
         actions = self.get_actions(obs_np[None])
-        print ("torch/networks.py, get_action, actions: ", type(actions), ", ", actions.shape)
+        #print ("torch/networks.py, get_action, actions: ", type(actions), ", ", actions.shape)
         return actions[0, :], {}
 
     def get_actions(self, obs):
-        print ("torch/networks.py, get_actions, actions: ", type(obs), ", ", obs.shape)
+        #print ("torch/networks.py, get_actions, actions: ", type(obs), ", ", obs.shape)
         return eval_np(self, obs)
 
 

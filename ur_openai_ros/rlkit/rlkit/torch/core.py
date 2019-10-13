@@ -15,12 +15,12 @@ def eval_np(module, *args, **kwargs):
     """
     torch_args = tuple(torch_ify(x) for x in args)
     torch_kwargs = {k: torch_ify(v) for k, v in kwargs.items()}
-    print ("torch/core.py, eval_np, torch_args: ", type(torch_args), ", " , len(torch_args))
-    print ("torch/core.py, eval_np, torch_kwargs: ", type(torch_kwargs), ", " , len(torch_kwargs))
+    #print ("torch/core.py, eval_np, torch_args: ", type(torch_args), ", " , len(torch_args))
+    #print ("torch/core.py, eval_np, torch_kwargs: ", type(torch_kwargs), ", " , len(torch_kwargs))
     
     outputs = module(*torch_args, **torch_kwargs)
     
-    print ("torch/core.py, eval_np, outputs: ", outputs)
+    #print ("torch/core.py, eval_np, outputs: ", outputs)
         
     if isinstance(outputs, tuple):
         return tuple(np_ify(x) for x in outputs)

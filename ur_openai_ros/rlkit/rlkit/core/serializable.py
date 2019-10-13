@@ -43,6 +43,8 @@ class Serializable(object):
         setattr(self, "_serializable_initialized", True)
 
     def __getstate__(self):
+        print ("core/serializable, __getstate__, self.__args", self.__args)
+        print ("core/serializable, __getstate__, self.__kwargs", self.__kwargs)
         return {"__args": self.__args, "__kwargs": self.__kwargs}
 
     def __setstate__(self, d):
@@ -53,6 +55,7 @@ class Serializable(object):
             spec = inspect.getargspec(self.__init__)
         in_order_args = spec.args[1:]
         out = type(self)(**dict(zip(in_order_args, d["__args"]), **d["__kwargs"]))
+        print ("core/serializable, __setstate__, out", out)
         self.__dict__.update(out.__dict__)
 
     @classmethod

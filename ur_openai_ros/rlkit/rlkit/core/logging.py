@@ -285,6 +285,21 @@ class Logger(object):
             elif self._snapshot_mode == 'last':
                 # override previous params
                 file_name = osp.join(self._snapshot_dir, 'params.pkl')
+                
+                '''
+                core/logging, save_itr_params(), params:  
+                {'evaluation/policy': TanhMlpPolicy(
+                    (fc0): Linear(in_features=15, out_features=400, bias=True)
+                    (fc1): Linear(in_features=400, out_features=300, bias=True)
+                    (last_fc): Linear(in_features=300, out_features=6, bias=True)
+                ), 
+                'exploration/policy': <rlkit.exploration_strategies.base.PolicyWrappedWithExplorationStrategy object at 0x7fac5e9b81d0>, 
+                'evaluation/env': <rlkit.envs.wrappers.NormalizedBoxEnv object at 0x7fac5e9b5ac8>, 
+                'exploration/env': <rlkit.envs.wrappers.NormalizedBoxEnv object at 0x7fac5e9c6f28>}
+                --------------------------------------------------------------
+                print ("## core/logging, save_itr_params(), save_itr_params, file_name: ", file_name)
+                /home/geonhee-ml/rl_ws/src/ur5-gripper/ur_openai_ros/rlkit/rlkit/../data/DDPG-Experiment/DDPG_Experiment_2019_10_12_15_07_22_0000--s-0/params.pkl
+                '''
                 torch.save(params, file_name)
             elif self._snapshot_mode == "gap":
                 if itr % self._snapshot_gap == 0:
@@ -301,6 +316,7 @@ class Logger(object):
             else:
                 raise NotImplementedError
 
+        print ("core/logging, save_itr_params(), save_itr_params, params: ", params)
 
 logger = Logger()
 

@@ -109,8 +109,8 @@ def rollout(
     if render:
         env.render(**render_kwargs)
     while path_length < max_path_length:
-        print ("sampler/rollout_functions.py, rollout, o: ", type(o))
-        print ("sampler/rollout_functions.py, rollout, o: ", o.shape)
+        #print ("sampler/rollout_functions.py, rollout, o: ", type(o))
+        #print ("sampler/rollout_functions.py, rollout, o: ", o.shape)
         a, agent_info = agent.get_action(o)
         next_o, r, d, env_info = env.step(a)
         observations.append(o)

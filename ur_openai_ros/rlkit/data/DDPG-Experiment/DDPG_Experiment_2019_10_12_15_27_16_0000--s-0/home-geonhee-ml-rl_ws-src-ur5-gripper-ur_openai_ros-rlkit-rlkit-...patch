@@ -1,0 +1,142 @@
+diff --git a/rlkit/core/logging.py b/rlkit/core/logging.py
+index 3aa9497..d576e0d 100644
+--- a/rlkit/core/logging.py
++++ b/rlkit/core/logging.py
+@@ -278,6 +278,7 @@ class Logger(object):
+         self._prefix_str = ''.join(self._prefixes)
+ 
+     def save_itr_params(self, itr, params):
++        print ("core/logging, save_itr_params(), params: ", type(params))
+         if self._snapshot_dir:
+             if self._snapshot_mode == 'all':
+                 file_name = osp.join(self._snapshot_dir, 'itr_%d.pkl' % itr)
+@@ -285,6 +286,21 @@ class Logger(object):
+             elif self._snapshot_mode == 'last':
+                 # override previous params
+                 file_name = osp.join(self._snapshot_dir, 'params.pkl')
++                print ("core/logging, save_itr_params(), save_itr_params, params: ", params)
++                print ("core/logging, save_itr_params(), save_itr_params, file_name: ", file_name)
++                '''
++                core/logging, save_itr_params(), params:  
++                {'evaluation/policy': TanhMlpPolicy(
++                    (fc0): Linear(in_features=15, out_features=400, bias=True)
++                    (fc1): Linear(in_features=400, out_features=300, bias=True)
++                    (last_fc): Linear(in_features=300, out_features=6, bias=True)
++                ), 
++                'exploration/policy': <rlkit.exploration_strategies.base.PolicyWrappedWithExplorationStrategy object at 0x7fac5e9b81d0>, 
++                'evaluation/env': <rlkit.envs.wrappers.NormalizedBoxEnv object at 0x7fac5e9b5ac8>, 
++                'exploration/env': <rlkit.envs.wrappers.NormalizedBoxEnv object at 0x7fac5e9c6f28>}
++                --------------------------------------------------------------
++                /home/geonhee-ml/rl_ws/src/ur5-gripper/ur_openai_ros/rlkit/rlkit/../data/DDPG-Experiment/DDPG_Experiment_2019_10_12_15_07_22_0000--s-0/params.pkl
++                '''
+                 torch.save(params, file_name)
+             elif self._snapshot_mode == "gap":
+                 if itr % self._snapshot_gap == 0:
+@@ -301,6 +317,7 @@ class Logger(object):
+             else:
+                 raise NotImplementedError
+ 
++        print ("core/logging, save_itr_params(), save_itr_params, params: ", params)
+ 
+ logger = Logger()
+ 
+diff --git a/rlkit/core/rl_algorithm.py b/rlkit/core/rl_algorithm.py
+index 284ef46..ea42a0e 100644
+--- a/rlkit/core/rl_algorithm.py
++++ b/rlkit/core/rl_algorithm.py
+@@ -52,7 +52,9 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
+         raise NotImplementedError('_train must implemented by inherited class')
+ 
+     def _end_epoch(self, epoch):
++        print ("core/rl_algorithm, _end_epoch(): ", "epoch: ", epoch)
+         snapshot = self._get_snapshot()
++        print ("core/rl_algorithm, _end_epoch(): ", "snapshot: ", snapshot)
+         logger.save_itr_params(epoch, snapshot)
+         gt.stamp('saving')
+         self._log_stats(epoch)
+diff --git a/rlkit/core/serializable.py b/rlkit/core/serializable.py
+index c6f1627..4ccf7f0 100644
+--- a/rlkit/core/serializable.py
++++ b/rlkit/core/serializable.py
+@@ -43,6 +43,8 @@ class Serializable(object):
+         setattr(self, "_serializable_initialized", True)
+ 
+     def __getstate__(self):
++        print ("core/serializable, __getstate__, self.__args", self.__args)
++        print ("core/serializable, __getstate__, self.__kwargs", self.__kwargs)
+         return {"__args": self.__args, "__kwargs": self.__kwargs}
+ 
+     def __setstate__(self, d):
+@@ -53,6 +55,7 @@ class Serializable(object):
+             spec = inspect.getargspec(self.__init__)
+         in_order_args = spec.args[1:]
+         out = type(self)(**dict(zip(in_order_args, d["__args"]), **d["__kwargs"]))
++        print ("core/serializable, __setstate__, out", out)
+         self.__dict__.update(out.__dict__)
+ 
+     @classmethod
+diff --git a/rlkit/envs/wrappers.py b/rlkit/envs/wrappers.py
+index ba83fe9..ffb0ea5 100644
+--- a/rlkit/envs/wrappers.py
++++ b/rlkit/envs/wrappers.py
+@@ -47,9 +47,11 @@ class ProxyEnv(Env):
+         The main problematic case is/was gym's EzPickle serialization scheme.
+         :return:
+         """
++        print ("envs/wrappers, __getstate__, __dict__", self.__dict__)
+         return self.__dict__
+ 
+     def __setstate__(self, state):
++        print ("envs/wrappers, __setstate__, state", state)
+         self.__dict__.update(state)
+ 
+     def __str__(self):
+diff --git a/rlkit/samplers/rollout_functions.py b/rlkit/samplers/rollout_functions.py
+index 0733983..711165f 100644
+--- a/rlkit/samplers/rollout_functions.py
++++ b/rlkit/samplers/rollout_functions.py
+@@ -109,6 +109,8 @@ def rollout(
+     if render:
+         env.render(**render_kwargs)
+     while path_length < max_path_length:
++        #print ("sampler/rollout_functions.py, rollout, o: ", type(o))
++        #print ("sampler/rollout_functions.py, rollout, o: ", o.shape)
+         a, agent_info = agent.get_action(o)
+         next_o, r, d, env_info = env.step(a)
+         observations.append(o)
+diff --git a/rlkit/torch/core.py b/rlkit/torch/core.py
+index a94a455..2de7a3f 100644
+--- a/rlkit/torch/core.py
++++ b/rlkit/torch/core.py
+@@ -15,7 +15,13 @@ def eval_np(module, *args, **kwargs):
+     """
+     torch_args = tuple(torch_ify(x) for x in args)
+     torch_kwargs = {k: torch_ify(v) for k, v in kwargs.items()}
++    #print ("torch/core.py, eval_np, torch_args: ", type(torch_args), ", " , len(torch_args))
++    #print ("torch/core.py, eval_np, torch_kwargs: ", type(torch_kwargs), ", " , len(torch_kwargs))
++    
+     outputs = module(*torch_args, **torch_kwargs)
++    
++    #print ("torch/core.py, eval_np, outputs: ", outputs)
++        
+     if isinstance(outputs, tuple):
+         return tuple(np_ify(x) for x in outputs)
+     else:
+diff --git a/rlkit/torch/networks.py b/rlkit/torch/networks.py
+index f8be3d8..e55b724 100644
+--- a/rlkit/torch/networks.py
++++ b/rlkit/torch/networks.py
+@@ -108,10 +108,13 @@ class MlpPolicy(Mlp, Policy):
+         return super().forward(obs, **kwargs)
+ 
+     def get_action(self, obs_np):
++        #print ("torch/networks.py, get_action, obs_np: ", type(obs_np), ", ", obs_np.shape)
+         actions = self.get_actions(obs_np[None])
++        #print ("torch/networks.py, get_action, actions: ", type(actions), ", ", actions.shape)
+         return actions[0, :], {}
+ 
+     def get_actions(self, obs):
++        #print ("torch/networks.py, get_actions, actions: ", type(obs), ", ", obs.shape)
+         return eval_np(self, obs)
+ 
+ 

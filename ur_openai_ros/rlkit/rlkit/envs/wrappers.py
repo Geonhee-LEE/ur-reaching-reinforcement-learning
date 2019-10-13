@@ -15,9 +15,11 @@ class ProxyEnv(Env):
 
     @property
     def wrapped_env(self):
+        #print("envs/wrappers, ProxyEnv/wrapped_env, _wrapped_env", self._wrapped_env)
         return self._wrapped_env
 
     def reset(self, **kwargs):
+        #print("envs/wrappers, ProxyEnv/wrapped_env, reset", self._wrapped_env.reset(**kwargs))
         return self._wrapped_env.reset(**kwargs)
 
     def step(self, action):
@@ -32,11 +34,13 @@ class ProxyEnv(Env):
 
     def terminate(self):
         if hasattr(self.wrapped_env, "terminate"):
+            #print("envs/wrappers, ProxyEnv/wrapped_env, terminate")
             self.wrapped_env.terminate()
 
     def __getattr__(self, attr):
         if attr == '_wrapped_env':
             raise AttributeError()
+        #print("envs/wrappers, ProxyEnv/wrapped_env, __getattr__", getattr(self._wrapped_env, attr))
         return getattr(self._wrapped_env, attr)
 
     def __getstate__(self):
@@ -47,12 +51,16 @@ class ProxyEnv(Env):
         The main problematic case is/was gym's EzPickle serialization scheme.
         :return:
         """
+        #print ("############ envs/wrappers, ProxyEnv/__getstate__, __dict__", self.__dict__)
+        #print ("############ envs/wrappers, ProxyEnv/__getstate__, __dict__['_wrapped_env']", self.__dict__['_wrapped_env'].__dict__)
         return self.__dict__
 
     def __setstate__(self, state):
+        #print ("envs/wrappers, ProxyEnv/__setstate__, state", state)
         self.__dict__.update(state)
 
     def __str__(self):
+        #print ("envs/wrappers, ProxyEnv/__str__", '{}({})'.format(type(self).__name__, self.wrapped_env))
         return '{}({})'.format(type(self).__name__, self.wrapped_env)
 
 
@@ -162,8 +170,15 @@ class NormalizedBoxEnv(ProxyEnv):
         next_obs, reward, done, info = wrapped_step
         if self._should_normalize:
             next_obs = self._apply_normalize_obs(next_obs)
+
+        #print ("envs/wrapper, NormalizedBoxEnv/step, next_obs: ", next_obs)
+        #print ("envs/wrapper, NormalizedBoxEnv/step, reward: ", reward)
+        #print ("envs/wrapper, NormalizedBoxEnv/step, _reward_scale: ", self._reward_scale)
+        #print ("envs/wrapper, NormalizedBoxEnv/step, done: ", done)
+        #print ("envs/wrapper, NormalizedBoxEnv/step, info: ", info)
         return next_obs, reward * self._reward_scale, done, info
 
     def __str__(self):
+        #print ("envs/wrapper, NormalizedBoxEnv/step, print: ", "Normalized: %s" % self._wrapped_env)
         return "Normalized: %s" % self._wrapped_env
 
