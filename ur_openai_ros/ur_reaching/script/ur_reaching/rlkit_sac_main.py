@@ -14,9 +14,6 @@ from rlkit.torch.sac.sac import SACTrainer
 from rlkit.torch.networks import FlattenMlp
 from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 
-# ROS
-import rospy
-import rospkg
 
 def experiment(variant):
     env = gym.make('RLkitUR-v0')._start_ros_services()
@@ -92,10 +89,7 @@ def experiment(variant):
 def main():
     """
     main
-    """
-    # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-    rospy.init_node('RLkitUR', anonymous=True, log_level=rospy.INFO)
-    
+    """    
     # noinspection PyTypeChecker
     variant = dict(
         algorithm="SAC",
@@ -124,8 +118,6 @@ def main():
     setup_logger('SAC', variant=variant)
     # ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     experiment(variant)
-
-	#env.close() # rospy.wait_for_service('/pause_physics') -> raise ROSInterruptException("rospy shutdown")
 
 if __name__ == '__main__':
     main()

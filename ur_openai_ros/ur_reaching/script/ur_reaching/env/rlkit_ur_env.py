@@ -45,6 +45,9 @@ from ur_reaching.env import robot_gazebo_env_goal
 from ur_reaching.env.ur_setups import setups
 from ur_reaching.env import ur_utils
 
+# ROS
+import rospy
+import rospkg
 
 #register the training environment in the gym as an available one
 reg = gym.envs.register(
@@ -99,6 +102,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         spec = None
 
     def _ros_init(self):
+        # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
+        rospy.init_node('RLkitUR', anonymous=True, log_level=rospy.INFO)
         rospy.logdebug("Starting RLkitUR Class object...")
 
         # Init GAZEBO Objects
@@ -687,7 +692,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
     '''
     def __getstate__(self):
         state = self.__dict__.copy()
-        
         del state['link_state']
         del state['base_orientation']
         del state['_joint_pubisher']
@@ -709,6 +713,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         return state
 
     def __setstate__(self, state):
+        self._ros_init()
+        
         print ("##### rlkit_ur_env, __setstate__ :", state)
         self.__dict__.update(state)
         self.reset()
