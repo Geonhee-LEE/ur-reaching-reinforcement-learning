@@ -70,6 +70,39 @@ roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen gui:=false
  ```
 
 
+# How to use the RLkit 
+[RLkit](https://github.com/vitchyr/rlkit) is reinforcement learning framework based on [rllab](https://github.com/rll/rllab)
+
+```
+roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen gui:=false
+```
+
+## Training
+ And start the SAC learning algorithm based on RLkit
+ ```
+  python rlkit_sac_main.py
+ ```
+
+ And unpause physics of GAZEBO simulator
+ ```
+ rosservice call /gazebo/unpause_physics "{}"
+ ```
+ 
+ After training, you may find the pickled files on the rlkit/data folder.
+ 
+ you can easily see the results through selecting the generated folder about training like follwing:
+ 
+ ```
+ python viskit/frontend.py ../rlkit/data/SAC/SAC_2019_10_14_08_27_55_0000--s-0/
+```
+
+## Evaluation
+
+If you want to evaluate the trained weight, you can run like following:
+```
+python rlkit/scripts/run_policy.py rlkit/data/SAC/SAC_2019_10_14_08_27_55_0000--s-0/params.pkl 
+```
+
 
 ## Visualization
 
