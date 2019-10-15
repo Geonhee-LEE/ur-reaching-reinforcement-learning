@@ -60,7 +60,6 @@ python reinforcement_main.py
 
 # How to launch PPO+GAE algorithm
 
-## Run GAZEBO simulator and gazebo_execution 
 First launch the simulator including loading the parameters and GAZEBO Excution func
 ```
 roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen gui:=false
@@ -75,6 +74,8 @@ roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen gui:=false
 # How to use the RLkit 
 [RLkit](https://github.com/vitchyr/rlkit) is reinforcement learning framework based on [rllab](https://github.com/rll/rllab)
 
+## Run GAZEBO simulator and gazebo_execution 
+First launch the simulator including loading the parameters and GAZEBO Excution func
 ```
 roslaunch ur_robotiq_gazebo conveyer_gym.launch --screen gui:=false
 ```
