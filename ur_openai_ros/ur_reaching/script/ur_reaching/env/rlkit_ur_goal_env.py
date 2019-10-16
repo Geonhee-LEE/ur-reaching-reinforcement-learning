@@ -37,6 +37,7 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 # For register my env
 from gym.envs.registration import register
+from collections import OrderedDict
 
 # For inherit RobotGazeboEnv
 from ur_reaching.env import robot_gazebo_env_goal
@@ -51,34 +52,61 @@ import rospkg
 
 #register the training environment in the gym as an available one
 reg = gym.envs.register(
-    id='RLkitUR-v0',
-    entry_point='ur_reaching.env:RLkitUR', # Its directory associated with importing in other sources like from 'ur_reaching.env.ur_sim_env import *' 
+    id='RLkitGoalUR-v0',
+    entry_point='ur_reaching.env:RLkitGoalUR', # Its directory associated with importing in other sources like from 'ur_reaching.env.ur_sim_env import *' 
     #timestep_limit=100000,
     )
 
-class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
+class RLkitGoalUR(robot_gazebo_env_goal.RobotGazeboEnv):
     
     def __init__(self):    
         self._ros_init()
 
-        # For RLkit and gym        
-        self.obs_space_low = np.array(
-            [self.joint_limits["shp_min"], self.joint_limits["shl_min"], self.joint_limits["elb_min"], \
-            self.joint_limits["wr1_min"], self.joint_limits["wr2_min"], self.joint_limits["wr3_min"], \
-            self.joint_velocty_limits["shp_vel_min"], self.joint_velocty_limits["shl_vel_min"], self.joint_velocty_limits["elb_vel_min"], \
-            self.joint_velocty_limits["wr1_vel_min"],  self.joint_velocty_limits["wr2_vel_min"],  self.joint_velocty_limits["wr3_vel_min"], \
-            self.xyz_limits["x_min"],  self.xyz_limits["y_min"],  self.xyz_limits["z_min"]])
-        self.obs_space_high = np.array(
-            [self.joint_limits["shp_max"], self.joint_limits["shl_max"], self.joint_limits["elb_max"], \
-            self.joint_limits["wr1_max"], self.joint_limits["wr2_max"], self.joint_limits["wr3_max"], \
-            self.joint_velocty_limits["shp_vel_max"], self.joint_velocty_limits["shl_vel_max"], self.joint_velocty_limits["elb_vel_max"], \
-            self.joint_velocty_limits["wr1_vel_max"],  self.joint_velocty_limits["wr2_vel_max"],  self.joint_velocty_limits["wr3_vel_max"],  \
-            self.xyz_limits["x_max"],  self.xyz_limits["y_max"],  self.xyz_limits["z_max"]])
-        observation_space = spaces.Box(
-            low=self.obs_space_low, \
-            high=self.obs_space_high, \
-            dtype=np.float32)
-        self.observation_space = observation_space
+        # For RLkit and gym     
+        self.goal_oriented = True
+
+        if self.goal_oriented is False :
+            self.obs_space_low = np.array(
+                [self.joint_limits["shp_min"], self.joint_limits["shl_min"], self.joint_limits["elb_min"], \
+                self.joint_limits["wr1_min"], self.joint_limits["wr2_min"], self.joint_limits["wr3_min"], \
+                self.joint_velocty_limits["shp_vel_min"], self.joint_velocty_limits["shl_vel_min"], self.joint_velocty_limits["elb_vel_min"], \
+                self.joint_velocty_limits["wr1_vel_min"],  self.joint_velocty_limits["wr2_vel_min"],  self.joint_velocty_limits["wr3_vel_min"], \
+                self.xyz_limits["x_min"],  self.xyz_limits["y_min"],  self.xyz_limits["z_min"]])
+            self.obs_space_high = np.array(
+                [self.joint_limits["shp_max"], self.joint_limits["shl_max"], self.joint_limits["elb_max"], \
+                self.joint_limits["wr1_max"], self.joint_limits["wr2_max"], self.joint_limits["wr3_max"], \
+                self.joint_velocty_limits["shp_vel_max"], self.joint_velocty_limits["shl_vel_max"], self.joint_velocty_limits["elb_vel_max"], \
+                self.joint_velocty_limits["wr1_vel_max"],  self.joint_velocty_limits["wr2_vel_max"],  self.joint_velocty_limits["wr3_vel_max"],  \
+                self.xyz_limits["x_max"],  self.xyz_limits["y_max"],  self.xyz_limits["z_max"]])
+            observation_space = spaces.Box(
+                low=self.obs_space_low, \
+                high=self.obs_space_high, \
+                dtype=np.float32)
+            self.observation_space = observation_space
+        else:
+            self.obs_space_low = np.array(
+                [self.joint_limits["shp_min"], self.joint_limits["shl_min"], self.joint_limits["elb_min"], \
+                self.joint_limits["wr1_min"], self.joint_limits["wr2_min"], self.joint_limits["wr3_min"]])
+            self.obs_space_high = np.array(
+                [self.joint_limits["shp_max"], self.joint_limits["shl_max"], self.joint_limits["elb_max"], \
+                self.joint_limits["wr1_max"], self.joint_limits["wr2_max"], self.joint_limits["wr3_max"]])
+            observation_space = spaces.Box(
+                low=self.obs_space_low, \
+                high=self.obs_space_high, \
+                dtype=np.float32)
+            self.observation_space = observation_space
+            self.observation_space = spaces.Dict(dict(
+                desired_goal=spaces.Box(
+                    low=np.array([self.xyz_limits["x_min"],  self.xyz_limits["y_min"],  self.xyz_limits["z_min"]]), \
+                    high=np.array([self.xyz_limits["x_max"],  self.xyz_limits["y_max"],  self.xyz_limits["z_max"]]), \
+                    dtype=np.float32),
+                achieved_goal=spaces.Box(
+                    low=np.array([self.xyz_limits["x_min"],  self.xyz_limits["y_min"],  self.xyz_limits["z_min"]]), \
+                    high=np.array([self.xyz_limits["x_max"],  self.xyz_limits["y_max"],  self.xyz_limits["z_max"]]), \
+                    dtype=np.float32),
+                observation=self.observation_space
+            ))
+                
         action_space = spaces.Box(
             low=np.array(
                 [self.joint_velocty_limits["shp_vel_min"], self.joint_velocty_limits["shl_vel_min"], \
@@ -93,7 +121,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self.current_pos = None
         #self.goal = np.array([-.14, -.13, 0.26])
         self.set_goal(self.sample_goal_for_rollout())
-        self.goal_oriented = False
 
         # Gym interface and action
         self.reward_range = (-np.inf, np.inf)
@@ -103,8 +130,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
     def _ros_init(self):
         # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-        rospy.init_node('RLkitUR', anonymous=True, log_level=rospy.INFO)
-        rospy.logdebug("Starting RLkitUR Class object...")
+        rospy.init_node('RLkitGoalUR', anonymous=True, log_level=rospy.INFO)
+        rospy.logdebug("Starting RLkitGoalUR Class object...")
 
         # Init GAZEBO Objects
         self.set_obj_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
@@ -296,11 +323,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         # the state and the rewards. This way we guarantee that they work
         # with the same exact data.
         # Generate State based on observations
-        observation = self.get_observations()
 
         # finally we get an evaluation based on what happened in the sim
-        reward = self.compute_dist_rewards()
-        done = self.check_done()
 
         #return observation, reward, done, {}
         return self._generate_step_tuple()
@@ -359,6 +383,10 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         rospy.logdebug("get_observations...")
         observation = self.get_observations()
 
+        if self.goal_oriented:
+            self.set_goal(self.sample_goal_for_rollout())
+            return self._get_obs()
+
         return observation
     
     def act(self, action):
@@ -412,7 +440,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
     def link_state_callback(self, msg):
         self.link_state = msg
         self.end_effector = self.link_state.pose[8]
-        self.current_pos = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z])
+        self.current_eef = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z], dtype=np.float32)
             
     def target_point_callback(self, msg):
         self.target_point = msg
@@ -444,35 +472,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
         rospy.logdebug("ALL SYSTEMS READY")
 
-    def get_xyz(self, q):
-        """Get x,y,z coordinates 
-        Args:
-            q: a numpy array of joints angle positions.
-        Returns:
-            xyz are the x,y,z coordinates of an end-effector in a Cartesian space.
-        """
-        mat = ur_utils.forward(q, self._ik_params)
-        xyz = mat[:3, 3]
-        return xyz
-
-    def get_current_xyz(self):
-        """Get x,y,z coordinates according to currrent joint angles
-        Returns:
-        xyz are the x,y,z coordinates of an end-effector in a Cartesian space.
-        """
-        joint_states = self.joints_state
-        shp_joint_ang = joint_states.position[0]
-        shl_joint_ang = joint_states.position[1]
-        elb_joint_ang = joint_states.position[2]
-        wr1_joint_ang = joint_states.position[3]
-        wr2_joint_ang = joint_states.position[4]
-        wr3_joint_ang = joint_states.position[5]
-        
-        q = [shp_joint_ang, shl_joint_ang, elb_joint_ang, wr1_joint_ang, wr2_joint_ang, wr3_joint_ang]
-        mat = ur_utils.forward(q, self._ik_params)
-        xyz = mat[:3, 3]
-        return xyz
-            
     def get_orientation(self, q):
         """Get Euler angles 
         Args:
@@ -488,16 +487,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         
         return Vector3(roll, pitch, yaw)
 
-    def cvt_quat_to_euler(self, quat):
-        euler_rpy = Vector3()
-        #euler = tf.transformations.euler_from_quaternion(
-        #    [self.quat.x, self.quat.y, self.quat.z, self.quat.w])
-
-        euler_rpy.x = euler[0]
-        euler_rpy.y = euler[1]
-        euler_rpy.z = euler[2]
-        return euler_rpy
-
     def init_joints_pose(self, init_pos):
         """
         We initialise the Position variable that saves the desired position where we want our
@@ -509,28 +498,10 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self.current_joint_pose = copy.deepcopy(init_pos)
         return self.current_joint_pose
 
-    def get_euclidean_dist(self, p_in, p_pout):
-        """
-        Given a Vector3 Object, get distance from current position
-        :param p_end:
-        :return:
-        """
-        a = numpy.array((p_in.x, p_in.y, p_in.z))
-        b = numpy.array((p_pout.x, p_pout.y, p_pout.z))
-
-        distance = numpy.linalg.norm(a - b)
-
-        return distance
-
     def joints_state_callback(self,msg):
         self.joints_state = msg
 
-    def get_observations(self):
-        """
-        Returns the state of the robot needed for OpenAI QLearn Algorithm
-        The state will be defined by an array
-        :return: observation
-        """
+    def _get_current_joint_positions(self):
         joint_states = self.joints_state
         shp_joint_ang = joint_states.position[0]
         shl_joint_ang = joint_states.position[1]
@@ -539,18 +510,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         wr2_joint_ang = joint_states.position[4]
         wr3_joint_ang = joint_states.position[5]
 
-        shp_joint_vel = joint_states.velocity[0]
-        shl_joint_vel = joint_states.velocity[1]
-        elb_joint_vel = joint_states.velocity[2]
-        wr1_joint_vel = joint_states.velocity[3]
-        wr2_joint_vel = joint_states.velocity[4]
-        wr3_joint_vel = joint_states.velocity[5]
-
-        q = [shp_joint_ang, shl_joint_ang, elb_joint_ang, wr1_joint_ang, wr2_joint_ang, wr3_joint_ang]
-        eef_x, eef_y, eef_z = self.get_xyz(q)
-
         observation = []
-        rospy.logdebug("List of Observations==>"+str(self.observations))
         for obs_name in self.observations:
             if obs_name == "shp_joint_ang":
                 observation.append(shp_joint_ang)
@@ -564,7 +524,21 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                 observation.append(wr2_joint_ang)
             elif obs_name == "wr3_joint_ang":
                 observation.append(wr3_joint_ang)
-            elif obs_name == "shp_joint_vel":
+
+        return np.array(observation, dtype=np.float32)
+
+    def _get_current_joint_velocities(self):
+        joint_states = self.joints_state
+        shp_joint_vel = joint_states.velocity[0]
+        shl_joint_vel = joint_states.velocity[1]
+        elb_joint_vel = joint_states.velocity[2]
+        wr1_joint_vel = joint_states.velocity[3]
+        wr2_joint_vel = joint_states.velocity[4]
+        wr3_joint_vel = joint_states.velocity[5]
+
+        observation = []
+        for obs_name in self.observations:
+            if obs_name == "shp_joint_vel":
                 observation.append(shp_joint_vel)
             elif obs_name == "shl_joint_vel":
                 observation.append(shl_joint_vel)
@@ -576,16 +550,26 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                 observation.append(wr2_joint_vel)
             elif obs_name == "wr3_joint_vel":
                 observation.append(wr3_joint_vel)
-            elif obs_name == "eef_x":
-                observation.append(eef_x)
-            elif obs_name == "eef_y":
-                observation.append(eef_y)
-            elif obs_name == "eef_z":
-                observation.append(eef_z)
-            else:
-                raise NameError('Observation Asked does not exist=='+str(obs_name))
+        return np.array(observation, dtype=np.float32)
 
-        return np.asarray(observation, dtype=np.float32)
+    def _get_current_end_effector_position(self):
+        return self.current_eef
+
+    def get_observations(self):
+        """
+        Returns the state of the robot needed for OpenAI QLearn Algorithm
+        The state will be defined by an array
+        :return: observation
+        """
+        rospy.logdebug("joint_positions==>"+str(self._get_current_joint_positions()))
+        rospy.logdebug("joint_velocities==>"+str(self._get_current_joint_velocities()))
+        rospy.logdebug("current_end_effector_position==>"+str(self._get_current_end_effector_position()))
+
+        return np.concatenate(
+                [self._get_current_joint_positions(),
+                self._get_current_joint_velocities(),
+                self._get_current_end_effector_position()],
+                axis = 0)
 
     def clamp_to_joint_limits(self):
         """
@@ -631,21 +615,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
             if self.check_stop_flg() is False:
                 break 
             rate.sleep()
-            
-    def compute_dist_rewards(self):
-        #print ("[self.target_point]: ", [self.target_point.x, self.target_point.y, self.target_point.z])
-        #print ("(self.get_current_xyz(): ", self.get_current_xyz())
-        end_effector_pos = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z])
-        self.distance = np.linalg.norm(end_effector_pos - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0)
-        return np.exp(-np.linalg.norm(end_effector_pos, axis=0))
-        #return np.exp(np.linalg.norm(self.get_current_xyz() - [self.target_point.x, self.target_point.y, self.target_point.z], axis=0))
-        
-    def check_done(self):
-        if self.distance < 0.1:
-            return True
-        else :
-            return False
-
+                    
     # For RLkit
     def sample_goal_for_rollout(self):
         return np.random.uniform(low=np.array([-.14, -.13, 0.26]), high=np.array([.14, .13, .39]))
@@ -664,7 +634,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         info['total_distance'] = total_distance_from_goal
 
         self.step_cnt = self.step_cnt + 1
-        if reward > -0.0001 or self.step_cnt > 300:
+        if reward > -0.0001 or self.step_cnt > 1000:
+            print ("Done, reward: ", reward, "step_cnt: ", self.step_cnt)
             episode_over = True
             self.step_cnt = 0
 
@@ -675,17 +646,85 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         #return self.current_pos, reward, episode_over, info        
         return self.get_observations(), reward, episode_over, info        
 
-
     def _get_reward(self, goal):
-        return - (np.linalg.norm(self.current_pos[:3] - goal) ** 2)
+        return - (np.linalg.norm(self._get_current_end_effector_position() - goal) ** 2)
 
+    # For HER
     def _get_obs(self):
         obs = {}
-        obs['observation'] = self.current_pos
+        obs['observation'] = self._get_current_joint_positions()
         obs['desired_goal'] = self.goal
-        obs['achieved_goal'] = self.current_pos[:3]
+        obs['achieved_goal'] = self._get_current_end_effector_position()
         return obs
 
+    def compute_reward(self, achieved_goal, goal, info):
+        return - (np.linalg.norm(achieved_goal - goal)**2)
+    '''
+    def get_diagnostics(self, paths):
+        """
+        This adds the diagnostic "Final Total Distance" for RLkit
+        """
+        def get_stat_in_paths(paths, dict_name, scalar_name):
+            if len(paths) == 0:
+                return np.array([[]])
+
+            if type(paths[0][dict_name]) == dict:
+                return [path[dict_name][scalar_name] for path in paths]
+            return [[info[scalar_name] for info in path[dict_name]] for path in paths]
+
+        def create_stats_ordered_dict(
+                name,
+                data,
+                stat_prefix=None,
+                always_show_all_stats=True,
+                exclude_max_min=False,
+        ):
+            if stat_prefix is not None:
+                name = "{} {}".format(stat_prefix, name)
+            if isinstance(data, Number):
+                return OrderedDict({name: data})
+
+            if len(data) == 0:
+                return OrderedDict()
+
+            if isinstance(data, tuple):
+                ordered_dict = OrderedDict()
+                for number, d in enumerate(data):
+                    sub_dict = create_stats_ordered_dict(
+                        "{0}_{1}".format(name, number),
+                        d,
+                    )
+                    ordered_dict.update(sub_dict)
+                return ordered_dict
+
+            if isinstance(data, list):
+                try:
+                    iter(data[0])
+                except TypeError:
+                    pass
+                else:
+                    data = np.concatenate(data)
+
+            if (isinstance(data, np.ndarray) and data.size == 1
+                    and not always_show_all_stats):
+                return OrderedDict({name: float(data)})
+
+            stats = OrderedDict([
+                (name + ' Mean', np.mean(data)),
+                (name + ' Std', np.std(data)),
+            ])
+            if not exclude_max_min:
+                stats[name + ' Max'] = np.max(data)
+                stats[name + ' Min'] = np.min(data)
+            return stats
+        statistics = OrderedDict()
+        stat_name = 'total_distance'
+        stat = get_stat_in_paths(paths, 'env_infos', stat_name)
+        statistics.update(create_stats_ordered_dict('Final %s' % (stat_name), [
+                          s[-1] for s in stat], always_show_all_stats=True,))
+        return statistics
+    '''
+    
     # Functions for pickling and saving the state. Described in ProxyEnv of envs/wrappers.py  
     '''
         Refer to https://docs.python.org/3/library/pickle.html#pickle-protocol
