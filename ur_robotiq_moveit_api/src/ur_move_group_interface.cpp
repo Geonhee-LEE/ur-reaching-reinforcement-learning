@@ -1,5 +1,3 @@
-
-#include "ur_move_group_interface.h"
 // ROS
 #include <ros/ros.h>
 
