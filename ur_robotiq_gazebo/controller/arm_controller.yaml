@@ -1,4 +1,4 @@
-arm_controller:
+pos_traj_controller:
   type: position_controllers/JointTrajectoryController
   joints:
      - shoulder_pan_joint
@@ -118,6 +118,61 @@ ur_wrist_2_vel_controller:
 
 ur_wrist_3_vel_controller:
   type: velocity_controllers/JointVelocityController
+  joint: wrist_3_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+  gains:
+    #!!These values are useable, but maybe not optimal
+    wrist_3_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+
+    
+ur_shoulder_pan_pos_controller:
+  type: position_controllers/JointPositionController
+  joint: shoulder_pan_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+  gains:
+    #!!These values are useable, but maybe not optimal
+    shoulder_pan_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+
+ur_shoulder_lift_pos_controller:
+  type: position_controllers/JointPositionController
+  joint: shoulder_lift_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+  gains:
+    #!!These values are useable, but maybe not optimal
+    shoulder_lift_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+
+ur_elbow_pos_controller:
+  type: position_controllers/JointPositionController
+  joint: elbow_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+  gains:
+    #!!These values are useable, but maybe not optimal
+    elbow_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+
+ur_wrist_1_pos_controller:
+  type: position_controllers/JointPositionController
+  joint: wrist_1_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+  gains:
+    #!!These values are useable, but maybe not optimal
+    wrist_1_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+
+ur_wrist_2_pos_controller:
+  type: position_controllers/JointPositionController
+  joint: wrist_2_joint
+  pid: {p: 1000.0, i: 0.0, d: 0.7}
+  #pid: {p: 50.0, i: 0.1, d: 0.0}
+  gains:
+    #!!These values are useable, but maybe not optimal
+    wrist_2_joint: {p: 1.2,  i: 0.0, d: 0.1, i_clamp: 1}
+
+ur_wrist_3_pos_controller:
+  type: position_controllers/JointPositionController
   joint: wrist_3_joint
   pid: {p: 1000.0, i: 0.0, d: 0.7}
   #pid: {p: 50.0, i: 0.1, d: 0.0}
