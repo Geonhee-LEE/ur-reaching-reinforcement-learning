@@ -9,6 +9,7 @@ from geometry_msgs.msg import Vector3
 class GazeboConnection():
     
     def __init__(self):
+        print ("GazeboConnection initialization !!!!!")
         
         self._init_values = rospy.ServiceProxy('/init_values', SetBool)
         self._adjust_gravity = rospy.ServiceProxy('/adjust_gravity', SetBool)
@@ -22,6 +23,7 @@ class GazeboConnection():
         
         # We always pause the simulation, important for legged robots learning
         self.pauseSim()
+        print ("End GazeboConnection initialization !!!!!")
 
         
     def unpauseSim(self):

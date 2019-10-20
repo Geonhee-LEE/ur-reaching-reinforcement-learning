@@ -6,10 +6,13 @@ from controller_manager_msgs.srv import LoadController, LoadControllerRequest, L
 from controller_manager_msgs.srv import UnloadController, UnloadControllerRequest, UnloadControllerResponse
 
 
+
 class ControllersConnection():
     
     def __init__(self, namespace):
-
+        print ("ControllersConnection initialization !!!!!")
+        #set_joint_traj_vel_server = rospy.Service('/set_trajectory_velocity_controller', String, self._set_traj_vel_ctrl)
+       
         self.switch_service_name = '/controller_manager/switch_controller'
         self.switch_service = rospy.ServiceProxy(self.switch_service_name, SwitchController)
         
@@ -27,11 +30,21 @@ class ControllersConnection():
                                 "ur_wrist_1_vel_controller",
                                 "ur_wrist_2_vel_controller",
                                 "ur_wrist_3_vel_controller"]
+        self.pos_controller = [ "joint_state_controller",
+                                "gripper_controller",
+                                "ur_shoulder_pan_pos_controller",
+                                "ur_shoulder_lift_pos_controller",
+                                "ur_elbow_pos_controller",
+                                "ur_wrist_1_pos_controller",
+                                "ur_wrist_2_pos_controller",
+                                "ur_wrist_3_pos_controller"]
         self.vel_traj_controller = ['joint_state_controller',
                                     'gripper_controller',
                                     'vel_traj_controller']
+        self.pos_traj_controller = ['joint_state_controller',
+                                    'gripper_controller',
+                                    'pos_traj_controller']
      
-
     def switch_controllers(self, controllers_on, controllers_off, strictness=1):
         """
         Give the controllers you wan to switch on or off.
@@ -169,12 +182,16 @@ class ControllersConnection():
 
             return None
 
-    def reset_ur_joint_controllers(self, ctrl_type):
+    def reset_joint_controllers(self, ctrl_type):
         
         if ctrl_type == 'traj_vel':
             controllers_reset = self.vel_traj_controller
         elif ctrl_type == 'vel':
             controllers_reset = self.vel_controller
+        elif ctrl_type == 'pos':
+            controllers_reset = self.pos_controller
+        elif ctrl_type == 'traj_pos':
+            controllers_reset = self.pos_traj_controller
 
         self.reset_controllers(controllers_reset)
 

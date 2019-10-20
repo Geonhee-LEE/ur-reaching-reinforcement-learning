@@ -11,30 +11,52 @@ from .controllers_connection import ControllersConnection
 
 class JointPub(object):
     def __init__(self):
+        # Controller type for ros_control
+        self.current_controller_type =  rospy.get_param("/control_type")
+        print ("###### init #####, self.current_controller_type: ", self.current_controller_type)
+        self._ctrl_conn = ControllersConnection(namespace="")
 
-    	self.publishers_array = []
-    	self._shoulder_pan_joint_pub = rospy.Publisher('/ur_shoulder_pan_vel_controller/command', Float64, queue_size=1)
-    	self._shoulder_lift_joint_pub = rospy.Publisher('/ur_shoulder_lift_vel_controller/command', Float64, queue_size=1)
-    	self._elbow_vel_joint_pub = rospy.Publisher('/ur_elbow_vel_controller/command', Float64, queue_size=1)
-    	self._wrist_1_joint_pub = rospy.Publisher('/ur_wrist_1_vel_controller/command', Float64, queue_size=1)
-    	self._wrist_2_joint_pub = rospy.Publisher('/ur_wrist_2_vel_controller/command', Float64, queue_size=1)
-    	self._wrist_3_joint_pub = rospy.Publisher('/ur_wrist_3_vel_controller/command', Float64, queue_size=1)
-    	
-    	self.publishers_array.append(self._shoulder_pan_joint_pub)
-    	self.publishers_array.append(self._shoulder_lift_joint_pub)
-    	self.publishers_array.append(self._elbow_vel_joint_pub)
-    	self.publishers_array.append(self._wrist_1_joint_pub)
-    	self.publishers_array.append(self._wrist_2_joint_pub)
-    	self.publishers_array.append(self._wrist_3_joint_pub)
-    	
-    	self._ctrl_conn = ControllersConnection(namespace="")
-    	self._ctrl_conn.load_controllers("ur_shoulder_pan_vel_controller")
-    	self._ctrl_conn.load_controllers("ur_shoulder_lift_vel_controller")
-    	self._ctrl_conn.load_controllers("ur_elbow_vel_controller")
-    	self._ctrl_conn.load_controllers("ur_wrist_1_vel_controller")
-    	self._ctrl_conn.load_controllers("ur_wrist_2_vel_controller")
-    	self._ctrl_conn.load_controllers("ur_wrist_3_vel_controller")
+        if self.current_controller_type == "pos" or self.current_controller_type == "traj_pos":
+    	    print ("###### init #####, load_pos_controllers ")			
+    	    self._ctrl_conn.load_controllers("ur_shoulder_pan_pos_controller")
+    	    self._ctrl_conn.load_controllers("ur_shoulder_lift_pos_controller")
+    	    self._ctrl_conn.load_controllers("ur_elbow_pos_controller")
+    	    self._ctrl_conn.load_controllers("ur_wrist_1_pos_controller")
+    	    self._ctrl_conn.load_controllers("ur_wrist_2_pos_controller")
+    	    self._ctrl_conn.load_controllers("ur_wrist_3_pos_controller")
 
+    	    self._shoulder_pan_joint_pub = rospy.Publisher('/ur_shoulder_pan_pos_controller/command', Float64, queue_size=1)
+    	    self._shoulder_lift_joint_pub = rospy.Publisher('/ur_shoulder_lift_pos_controller/command', Float64, queue_size=1)
+    	    self._elbow_joint_pub = rospy.Publisher('/ur_elbow_pos_controller/command', Float64, queue_size=1)
+    	    self._wrist_1_joint_pub = rospy.Publisher('/ur_wrist_1_pos_controller/command', Float64, queue_size=1)
+    	    self._wrist_2_joint_pub = rospy.Publisher('/ur_wrist_2_pos_controller/command', Float64, queue_size=1)
+    	    self._wrist_3_joint_pub = rospy.Publisher('/ur_wrist_3_pos_controller/command', Float64, queue_size=1)
+        elif self.current_controller_type == "vel" or self.current_controller_type == "traj_vel":
+    	    print ("###### init #####, load_vel_controllers ")		
+    	    self._ctrl_conn.load_controllers("ur_shoulder_pan_vel_controller")
+    	    self._ctrl_conn.load_controllers("ur_shoulder_lift_vel_controller")
+    	    self._ctrl_conn.load_controllers("ur_elbow_vel_controller")
+    	    self._ctrl_conn.load_controllers("ur_wrist_1_vel_controller")
+    	    self._ctrl_conn.load_controllers("ur_wrist_2_vel_controller")
+    	    self._ctrl_conn.load_controllers("ur_wrist_3_vel_controller")
+
+    	    self._shoulder_pan_joint_pub = rospy.Publisher('/ur_shoulder_pan_vel_controller/command', Float64, queue_size=1)
+    	    self._shoulder_lift_joint_pub = rospy.Publisher('/ur_shoulder_lift_vel_controller/command', Float64, queue_size=1)
+    	    self._elbow_joint_pub = rospy.Publisher('/ur_elbow_vel_controller/command', Float64, queue_size=1)
+    	    self._wrist_1_joint_pub = rospy.Publisher('/ur_wrist_1_vel_controller/command', Float64, queue_size=1)
+    	    self._wrist_2_joint_pub = rospy.Publisher('/ur_wrist_2_vel_controller/command', Float64, queue_size=1)
+    	    self._wrist_3_joint_pub = rospy.Publisher('/ur_wrist_3_vel_controller/command', Float64, queue_size=1)
+        else:
+    	    print ("Fail to load controllers")		
+
+        self.publishers_array = []
+        self.publishers_array.append(self._shoulder_pan_joint_pub)
+        self.publishers_array.append(self._shoulder_lift_joint_pub)
+        self.publishers_array.append(self._elbow_joint_pub)
+        self.publishers_array.append(self._wrist_1_joint_pub)
+        self.publishers_array.append(self._wrist_2_joint_pub)
+        self.publishers_array.append(self._wrist_3_joint_pub)
+        
     def set_init_pose(self, init_pose):
     	"""
     	Sets joints to initial position [0,0,0]
@@ -49,74 +71,138 @@ class JointPub(object):
     	:return:
     	"""
     	rate = rospy.Rate(1)  # 1hz
-    	while (self._shoulder_pan_joint_pub.get_num_connections() == 0):
-    	    rospy.logdebug("No susbribers to _shoulder_pan_joint_pub yet so we wait and try again")
-    	    try:
-    	    	self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_pan_vel_controller")
-    	    	rate.sleep()
-    	    except rospy.ROSInterruptException:
-    	    	# This is to avoid error when world is rested, time when backwards.
-    	    	pass
-    	rospy.logdebug("_shoulder_pan_joint_pub Publisher Connected")
 
-    	while (self._shoulder_lift_joint_pub.get_num_connections() == 0):
-    	    rospy.logdebug("No susbribers to _shoulder_lift_joint_pub yet so we wait and try again")
-    	    try:
-    	    	self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_lift_vel_controller")
-    	    	rate.sleep()
-    	    except rospy.ROSInterruptException:
-    	    	# This is to avoid error when world is rested, time when backwards.
-    	    	pass
-    	rospy.logdebug("_shoulder_lift_joint_pub Publisher Connected")
+    	print ("self.current_controller_type: ", self.current_controller_type)
+    	if self.current_controller_type == "pos":
+    	    while (self._shoulder_pan_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _shoulder_pan_joint_pub yet so we wait and try again")
+    	        try:
+    	        	print ("start on ur_shoulder_pan_pos_controller")
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_pan_pos_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_shoulder_pan_joint_pub Publisher Connected")
 
-    	while (self._elbow_vel_joint_pub.get_num_connections() == 0):
-    	    rospy.logdebug("No susbribers to _elbow_vel_joint_pub yet so we wait and try again")
-    	    try:
-    	    	self._ctrl_conn.start_controllers(controllers_on="ur_elbow_vel_controller")
-    	    	rate.sleep()
-    	    except rospy.ROSInterruptException:
-    	    	# This is to avoid error when world is rested, time when backwards.
-    	    	pass
-    	rospy.logdebug("_elbow_vel_joint_pub Publisher Connected")
+    	    while (self._shoulder_lift_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _shoulder_lift_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_lift_pos_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_shoulder_lift_joint_pub Publisher Connected")
+
+    	    while (self._elbow_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _elbow_pos_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_elbow_pos_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_elbow_joint_pub Publisher Connected")
+
+    	    while (self._wrist_1_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _wrist_1_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_1_pos_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_wrist_1_joint_pub Publisher Connected")
+
+    	    while (self._wrist_2_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _wrist_2_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_2_pos_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_wrist_2_joint_pub Publisher Connected")
+
+    	    while (self._wrist_3_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _wrist_3_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_3_pos_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_wrist_3_joint_pub Publisher Connected")
+
+    	    rospy.logdebug("All Joint Publishers READY")
+    	elif self.current_controller_type == "vel":
+    	    while (self._shoulder_pan_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _shoulder_pan_joint_pub yet so we wait and try again")
+    	        try:
+    	        	print ("start on ur_shoulder_pan_vel_controller")
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_pan_vel_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_shoulder_pan_joint_pub Publisher Connected")
+
+    	    while (self._shoulder_lift_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _shoulder_lift_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_lift_vel_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_shoulder_lift_joint_pub Publisher Connected")
+
+    	    while (self._elbow_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _elbow_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_elbow_vel_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_elbow_joint_pub Publisher Connected")
+
+    	    while (self._wrist_1_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _wrist_1_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_1_vel_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_wrist_1_joint_pub Publisher Connected")
 
 
-    	while (self._wrist_1_joint_pub.get_num_connections() == 0):
-    	    rospy.logdebug("No susbribers to _wrist_1_joint_pub yet so we wait and try again")
-    	    try:
-    	    	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_1_vel_controller")
-    	    	rate.sleep()
-    	    except rospy.ROSInterruptException:
-    	    	# This is to avoid error when world is rested, time when backwards.
-    	    	pass
-    	rospy.logdebug("_wrist_1_joint_pub Publisher Connected")
+    	    while (self._wrist_2_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _wrist_2_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_2_vel_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_wrist_2_joint_pub Publisher Connected")
 
 
-    	while (self._wrist_2_joint_pub.get_num_connections() == 0):
-    	    rospy.logdebug("No susbribers to _wrist_2_joint_pub yet so we wait and try again")
-    	    try:
-    	    	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_2_vel_controller")
-    	    	rate.sleep()
-    	    except rospy.ROSInterruptException:
-    	    	# This is to avoid error when world is rested, time when backwards.
-    	    	pass
-    	rospy.logdebug("_wrist_2_joint_pub Publisher Connected")
+    	    while (self._wrist_3_joint_pub.get_num_connections() == 0):
+    	        rospy.logdebug("No susbribers to _wrist_3_joint_pub yet so we wait and try again")
+    	        try:
+    	        	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_3_vel_controller")
+    	        	rate.sleep()
+    	        except rospy.ROSInterruptException:
+    	        	# This is to avoid error when world is rested, time when backwards.
+    	        	pass
+    	    rospy.logdebug("_wrist_3_joint_pub Publisher Connected")
 
-
-    	while (self._wrist_3_joint_pub.get_num_connections() == 0):
-    	    rospy.logdebug("No susbribers to _wrist_3_joint_pub yet so we wait and try again")
-    	    try:
-    	    	self._ctrl_conn.start_controllers(controllers_on="ur_wrist_3_vel_controller")
-    	    	rate.sleep()
-    	    except rospy.ROSInterruptException:
-    	    	# This is to avoid error when world is rested, time when backwards.
-    	    	pass
-    	rospy.logdebug("_wrist_3_joint_pub Publisher Connected")
-
-    	rospy.logdebug("All Joint Publishers READY")
-
+    	    rospy.logdebug("All Joint Publishers READY")
 
     def move_joints(self, joints_array):
-
     	i = 0
     	for publisher_object in self.publishers_array:
     	  joint_value = Float64()

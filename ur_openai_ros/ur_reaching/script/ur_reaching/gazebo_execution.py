@@ -8,11 +8,14 @@ from std_srvs.srv import SetBool, SetBoolResponse, SetBoolRequest
 from std_msgs.msg import Float64
 from geometry_msgs.msg import Vector3
 
-class GazeboConnection():
+
+# Solve conda virtual env(gazebo call error) 
+class GazeboExecution():
     
     def __init__(self):
         rospy.init_node('gazebo_connection')
-        print ("GazeboConnection init")
+        print ("GazeboExcution initailization !!!!!")
+        # Gazebo reset service server
         init_values = rospy.Service('/init_values', SetBool, self._init_values)
         adjust_gravity_server = rospy.Service('/adjust_gravity', SetBool, self._adjust_gravity)
         change_gravity_zero_server = rospy.Service('/change_gravity_zero', SetBool, self._change_gravity_zero)
@@ -33,9 +36,7 @@ class GazeboConnection():
 
         self.set_physics = rospy.ServiceProxy(service_name, SetPhysicsProperties)
         self.init_values()
-        # We always pause the simulation, important for legged robots learning
-        self.pauseSim()
-
+        #self.pauseSim()
         
     def _init_values(self, req):
         self.init_values()
@@ -147,6 +148,6 @@ class GazeboConnection():
         self.unpauseSim()
 
 
-gazebo_connection = GazeboConnection()
+gazebo_execution = GazeboExecution()
 # spin() simply keeps python from exiting until this node is stopped
 rospy.spin()

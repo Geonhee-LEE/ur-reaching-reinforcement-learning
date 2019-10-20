@@ -19,6 +19,8 @@ from .joint_traj_publisher import JointTrajPub
 from gazebo_msgs.srv import SetModelState, SetModelStateRequest, GetModelState
 from gazebo_msgs.srv import GetWorldProperties
 from gazebo_msgs.msg import LinkStates 
+from gazebo_msgs.srv import SetModelConfiguration
+from gazebo_msgs.srv import SetModelConfigurationRequest
 
 # For reset GAZEBO simultor
 from .gazebo_connection import GazeboConnection
@@ -58,7 +60,8 @@ reg = gym.envs.register(
 
 class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
     
-    def __init__(self):    
+    def __init__(self):  
+        print("RLkitUR initialization !!!!!") 
         self._ros_init()
 
         # For RLkit and gym        
@@ -98,6 +101,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         # Gym interface and action
         self.reward_range = (-np.inf, np.inf)
         self._seed()
+        self.sum_pos_action = np.array([0., 0., 0., 0., 0., 0.], dtype=np.float32)
+        self.joint_angles = np.array([0., 0., 0., 0., 0., 0.], dtype=np.float32)
         metadata = {'render.modes': ['human']}
         spec = None
 
@@ -121,6 +126,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self.max_height = rospy.get_param("/max_height")
         self.min_height = rospy.get_param("/min_height")
         self.observations = rospy.get_param("/observations")
+        self.joint_names = rospy.get_param("/joint_names")
         
         # Joint limitation
         shp_max = rospy.get_param("/joint_limits_array/shp_max")
@@ -183,7 +189,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         wr1_init_value = rospy.get_param("/init_joint_pose/wr1")
         wr2_init_value = rospy.get_param("/init_joint_pose/wr2")
         wr3_init_value = rospy.get_param("/init_joint_pose/wr3")
-        self.init_joint_pose = [shp_init_value, shl_init_value, elb_init_value, wr1_init_value, wr2_init_value, wr3_init_value]
+        self.init_joint_angles = [shp_init_value, shl_init_value, elb_init_value, wr1_init_value, wr2_init_value, wr3_init_value]
 
         # 3D coordinate limits
         x_max = rospy.get_param("/cartesian_limits/x_max")
@@ -208,8 +214,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self._ctrl_conn = ControllersConnection(namespace="")
         
         # Controller type for ros_control
-        self._ctrl_type =  rospy.get_param("/control_type")
-        self.pre_ctrl_type =  self._ctrl_type
+        self.current_controller_type =  rospy.get_param("/control_type")
+        self.pre_controller_type =  self.current_controller_type
 
         # Init the observations, target, ...
         self.base_orientation = Quaternion()
@@ -225,11 +231,16 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         # ROS msg type
         self._joint_pubisher = JointPub()
         self._joint_traj_pubisher = JointTrajPub()
+        self.reset_publisher = rospy.Publisher(
+            "/ur/reset", String, queue_size=1)
 
         # Controller list
         self.vel_traj_controller = ['joint_state_controller',
                             'gripper_controller',
                             'vel_traj_controller']
+        self.pos_traj_controller = ['joint_state_controller',
+                            'gripper_controller',
+                            'pos_traj_controller']
         self.vel_controller = ["joint_state_controller",
                                 "gripper_controller",
                                 "ur_shoulder_pan_vel_controller",
@@ -238,18 +249,28 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
                                 "ur_wrist_1_vel_controller",
                                 "ur_wrist_2_vel_controller",
                                 "ur_wrist_3_vel_controller"]
+        self.pos_controller = ["joint_state_controller",
+                                "gripper_controller",
+                                "ur_shoulder_pan_pos_controller",
+                                "ur_shoulder_lift_pos_controller",
+                                "ur_elbow_pos_controller",
+                                "ur_wrist_1_pos_controller",
+                                "ur_wrist_2_pos_controller",
+                                "ur_wrist_3_pos_controller"]
 
         # Stop flag durning training 
         self.stop_flag = False
-        self.step_cnt = 0
     
     def _start_ros_services(self):
         stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
         start_trainning_server = rospy.Service('/start_training', SetBool, self._start_trainnig)
 
         # Change the controller type 
-        set_joint_vel_server = rospy.Service('/set_velocity_controller', SetBool, self._set_vel_ctrl)
-        set_joint_traj_vel_server = rospy.Service('/set_trajectory_velocity_controller', SetBool, self._set_traj_vel_ctrl)
+        set_pos_controller_server = rospy.Service('/set_pos_controller', SetBool, self.set_pos_controller)
+        set_vel_controller_server = rospy.Service('/set_vel_controller', SetBool, self.set_vel_controller)
+        set_traj_pos_controller_server = rospy.Service('/set_traj_pos_controller', SetBool, self.set_traj_pos_controller)
+        set_traj_vel_controller_server = rospy.Service('/set_traj_vel_controller', SetBool, self.set_traj_vel_controller)
+        get_controller_server = rospy.Service('/get_controller_type', SetBool, self._get_controller_type)
 
         return self
 
@@ -278,6 +299,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         """
         rospy.logdebug("### UR step func ###")
 
+        # Check stop flag for training 
         self.training_ok()
 
         # Given the action selected by the learning algorithm,
@@ -307,6 +329,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
     # Resets the state of the environment and returns an initial observation.
     def reset(self):
+        print("reset")
+        self.sum_pos_action = np.array([0., 0., 0., 0., 0., 0.], dtype=np.float32)
         # 0st: We pause the Simulator
         rospy.logdebug("Pausing SIM...")
         self._gz_conn.pauseSim()
@@ -321,23 +345,28 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         self._gz_conn.change_gravity_zero()
 
         # EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
-        rospy.logdebug("reset_ur_joint_controllers...")
-        self._ctrl_conn.reset_ur_joint_controllers(self._ctrl_type)
+        rospy.logdebug("reset_joint_controllers...")
+        self._ctrl_conn.reset_joint_controllers(self.current_controller_type)
 
-        # 3rd: resets the robot to initial conditions
-        rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
-        # We save that position as the current joint desired position
-        init_pos = self.init_joints_pose(self.init_joint_pose)
 
-        # 4th: We Set the init pose to the jump topic so that the jump control can update
-        # We check the jump publisher has connection
-
-        if self._ctrl_type == 'traj_vel':
+        if self.current_controller_type == 'traj_vel':
             self._joint_traj_pubisher.check_publishers_connection()
-        elif self._ctrl_type == 'vel':
+        elif self.current_controller_type == 'vel':
+            self._joint_pubisher.check_publishers_connection()
+        elif self.current_controller_type == 'traj_pos':
+            self._joint_traj_pubisher.check_publishers_connection()
+        elif self.current_controller_type == 'pos':
             self._joint_pubisher.check_publishers_connection()
         else:
             rospy.logwarn("Controller type is wrong!!!!")
+
+        # 3rd: resets the robot to initial conditions
+        rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_angles))
+        # We save that position as the current joint desired position
+        self.init_joints_pose(self.init_joint_angles)
+
+        # 4th: We Set the init pose to the jump topic so that the jump control can update
+        # We check the jump publisher has connection
         
 
         # 5th: Check all subscribers work.
@@ -362,17 +391,102 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         return observation
     
     def act(self, action):
-        if self._ctrl_type == 'traj_vel':
-            self.pre_ctrl_type = 'traj_vel'
+        if self.current_controller_type == 'traj_vel':
+            self.pre_controller_type = 'traj_vel'
             self._joint_traj_pubisher.jointTrajectoryCommand(action)
-        elif self._ctrl_type == 'vel':
-            self.pre_ctrl_type = 'vel'
+        elif self.current_controller_type == 'vel':
+            self.pre_controller_type = 'vel'
             self._joint_pubisher.move_joints(action)
+        elif self.current_controller_type == 'pos':
+            self.pre_controller_type = 'pos'
+            self.sum_pos_action = self.sum_pos_action + action
+            for i in range(6):
+                if self.sum_pos_action[i] > 360:
+                    self.sum_pos_action[i] = self.sum_pos_action[i] - 360
+                if self.sum_pos_action[i] < -360:
+                    self.sum_pos_action[i] = self.sum_pos_action[i] + 360
+            print ("sum_pos_action: ,", self.sum_pos_action)
+            self._joint_pubisher.move_joints(self.sum_pos_action)
+        elif self.current_controller_type == 'traj_pos':
+            self.pre_controller_type = 'traj_pos'
+            self._joint_traj_pubisher.jointTrajectoryCommand(action)
         else:
             self._joint_pubisher.move_joints(action)
 
     def render(self, mode='human', close=False):
         pass
+
+    def _get_controller_type(self, req):
+        return SetBoolResponse(True, self.current_controller_type)
+
+    def set_pos_controller(self, req):
+
+        if self.current_controller_type == "vel":
+            self._ctrl_conn.stop_controllers(self.vel_controller)
+            self._ctrl_conn.start_controllers(self._ctrl_conn.pos_controller)    
+        elif self.current_controller_type == "traj_vel":
+            self._ctrl_conn.stop_controllers(self.vel_traj_controller)
+            self._ctrl_conn.start_controllers(self._ctrl_conn.pos_controller) 
+        elif self.current_controller_type == "pos":
+            self._ctrl_conn.stop_controllers(self.pos_controller)
+            self._ctrl_conn.start_controllers(self._ctrl_conn.pos_controller) 
+        elif self.current_controller_type == "traj_pos":
+            self._ctrl_conn.stop_controllers(self.pos_traj_controller)
+            self._ctrl_conn.start_controllers(self._ctrl_conn.pos_controller) 
+
+        self.current_controller_type = req.data
+        return SetBoolResponse(True, self.current_controller_type)
+
+    def set_vel_controller(self, req):
+    
+        if self.current_controller_type == "vel":
+            self._ctrl_conn.stop_controllers(self.vel_controller)
+            self._ctrl_conn.start_controllers(self.vel_controller)    
+        elif self.current_controller_type == "traj_vel":
+            self._ctrl_conn.stop_controllers(self.vel_traj_controller)
+            self._ctrl_conn.start_controllers(self.vel_controller) 
+        elif self.current_controller_type == "pos":
+            self._ctrl_conn.stop_controllers(self.pos_controller)
+            self._ctrl_conn.start_controllers(self.vel_controller) 
+        elif self.current_controller_type == "traj_pos":
+            self._ctrl_conn.stop_controllers(self.pos_traj_controller)
+            self._ctrl_conn.start_controllers(self.vel_controller) 
+        self.current_controller_type = req.data
+        return SetBoolResponse(True, self.current_controller_type)
+
+    def set_traj_pos_controller(self, req):
+
+        if self.current_controller_type == "vel":
+            self._ctrl_conn.stop_controllers(self.vel_controller)
+            self._ctrl_conn.start_controllers(self.pos_traj_controller)    
+        elif self.current_controller_type == "traj_vel":
+            self._ctrl_conn.stop_controllers(self.vel_traj_controller)
+            self._ctrl_conn.start_controllers(self.pos_traj_controller) 
+        elif self.current_controller_type == "pos":
+            self._ctrl_conn.stop_controllers(self.pos_controller)
+            self._ctrl_conn.start_controllers(self.pos_traj_controller) 
+        elif self.current_controller_type == "traj_pos":
+            self._ctrl_conn.stop_controllers(self.pos_traj_controller)
+            self._ctrl_conn.start_controllers(self.pos_traj_controller) 
+        self.current_controller_type = req.data
+        return SetBoolResponse(True, self.current_controller_type)
+
+    def set_traj_vel_controller(self, req):
+
+        if self.current_controller_type == "vel":
+            self._ctrl_conn.stop_controllers(self.vel_controller)
+            self._ctrl_conn.start_controllers(self.vel_traj_controller)    
+        elif self.current_controller_type == "traj_vel":
+            self._ctrl_conn.stop_controllers(self.vel_traj_controller)
+            self._ctrl_conn.start_controllers(self.vel_traj_controller) 
+        elif self.current_controller_type == "pos":
+            self._ctrl_conn.stop_controllers(self.pos_controller)
+            self._ctrl_conn.start_controllers(self.vel_traj_controller) 
+        elif self.current_controller_type == "traj_pos":
+            self._ctrl_conn.stop_controllers(self.pos_traj_controller)
+            self._ctrl_conn.start_controllers(self.vel_traj_controller) 
+        self.current_controller_type = req.data
+        return SetBoolResponse(True, self.current_controller_type)
 
     def check_stop_flg(self):
         if self.stop_flag is False:
@@ -381,28 +495,15 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
             return True
 
     def _start_trainnig(self, req):
-        rospy.logdebug("_start_trainnig!!!!")
+        print("_start_trainnig!!!!")
         self.stop_flag = False
+        self._gz_conn.unpauseSim()
         return SetBoolResponse(True, "_start_trainnig")
 
     def _stop_trainnig(self, req):
-        rospy.logdebug("_stop_trainnig!!!!")
+        print("_stop_trainnig!!!!")
         self.stop_flag = True
         return SetBoolResponse(True, "_stop_trainnig")
-
-    def _set_vel_ctrl(self, req):
-        rospy.wait_for_service('set_velocity_controller')
-        self._ctrl_conn.stop_controllers(self.vel_traj_controller)
-        self._ctrl_conn.start_controllers(self.vel_controller)
-        self._ctrl_type = 'vel'
-        return SetBoolResponse(True, "_set_vel_ctrl")
-
-    def _set_traj_vel_ctrl(self, req):
-        rospy.wait_for_service('set_trajectory_velocity_controller')
-        self._ctrl_conn.stop_controllers(self.vel_controller)
-        self._ctrl_conn.start_controllers(self.vel_traj_controller)    
-        self._ctrl_type = 'traj_vel'
-        return SetBoolResponse(True, "_set_traj_vel_ctrl")  
 
     # A function to initialize the random generator
     def _seed(self, seed=None):
@@ -460,13 +561,24 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         Returns:
         xyz are the x,y,z coordinates of an end-effector in a Cartesian space.
         """
+        '''
+        rostopic echo /joint_states 
+        name:
+        - elbow_joint
+        - gripper_finger1_joint
+        - shoulder_lift_joint
+        - shoulder_pan_joint
+        - wrist_1_joint
+        - wrist_2_joint
+        - wrist_3_joint
+        '''
         joint_states = self.joints_state
-        shp_joint_ang = joint_states.position[0]
-        shl_joint_ang = joint_states.position[1]
-        elb_joint_ang = joint_states.position[2]
-        wr1_joint_ang = joint_states.position[3]
-        wr2_joint_ang = joint_states.position[4]
-        wr3_joint_ang = joint_states.position[5]
+        shp_joint_ang = joint_states.position[3]
+        shl_joint_ang = joint_states.position[2]
+        elb_joint_ang = joint_states.position[0]
+        wr1_joint_ang = joint_states.position[4]
+        wr2_joint_ang = joint_states.position[5]
+        wr3_joint_ang = joint_states.position[6]
         
         q = [shp_joint_ang, shl_joint_ang, elb_joint_ang, wr1_joint_ang, wr2_joint_ang, wr3_joint_ang]
         mat = ur_utils.forward(q, self._ik_params)
@@ -505,9 +617,31 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         :param init_pos:
         :return:
         """
-        self.current_joint_pose =[]
-        self.current_joint_pose = copy.deepcopy(init_pos)
-        return self.current_joint_pose
+        print ("##### init_joints_pose")
+        '''
+        reset_joints =  rospy.ServiceProxy('/gazebo/set_model_configuration', SetModelConfiguration)
+
+        reset_req = SetModelConfigurationRequest()
+        reset_req.model_name = 'robot'
+        reset_req.urdf_param_name = 'robot_description'
+        reset_req.joint_names = ['shoulder_link'] #self.joint_names #list
+        reset_req.joint_positions = [1.0] #init_pos #list
+        print ("reset_req: ", reset_req)
+        res = reset_joints(reset_req)
+        print ("res: ", res)
+        '''
+        self._joint_pubisher.move_joints(self.init_joint_angles)
+        
+        print ("np.linalg.norm : ", np.linalg.norm(self.joint_angles - self.init_joint_angles))
+            
+        rate = rospy.Rate(1)
+        while np.linalg.norm(self.joint_angles - self.init_joint_angles) > 0.10:            
+            if np.linalg.norm(self.joint_angles-self.init_joint_angles) < 0.10:
+                break 
+            rate.sleep()
+        #self._set_traj_vel_ctrl(True)
+        #self.reset_publisher.publish(String("RESET"))
+        #self._set_vel_ctrl(True)
 
     def get_euclidean_dist(self, p_in, p_pout):
         """
@@ -524,6 +658,19 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
     def joints_state_callback(self,msg):
         self.joints_state = msg
+        '''
+        rostopic echo /joint_states 
+        name:
+        - elbow_joint
+        - gripper_finger1_joint
+        - shoulder_lift_joint
+        - shoulder_pan_joint
+        - wrist_1_joint
+        - wrist_2_joint
+        - wrist_3_joint
+        '''
+        self.joint_angles = np.array([self.joints_state.position[3], self.joints_state.position[2], self.joints_state.position[0], \
+            self.joints_state.position[4], self.joints_state.position[5], self.joints_state.position[6]], dtype=np.float32)
 
     def get_observations(self):
         """
@@ -532,19 +679,30 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         :return: observation
         """
         joint_states = self.joints_state
-        shp_joint_ang = joint_states.position[0]
-        shl_joint_ang = joint_states.position[1]
-        elb_joint_ang = joint_states.position[2]
-        wr1_joint_ang = joint_states.position[3]
-        wr2_joint_ang = joint_states.position[4]
-        wr3_joint_ang = joint_states.position[5]
+        '''
+        rostopic echo /joint_states 
+        name:
+        - elbow_joint
+        - gripper_finger1_joint
+        - shoulder_lift_joint
+        - shoulder_pan_joint
+        - wrist_1_joint
+        - wrist_2_joint
+        - wrist_3_joint
+        '''
+        shp_joint_ang = joint_states.position[3]
+        shl_joint_ang = joint_states.position[2]
+        elb_joint_ang = joint_states.position[0]
+        wr1_joint_ang = joint_states.position[4]
+        wr2_joint_ang = joint_states.position[5]
+        wr3_joint_ang = joint_states.position[6]
 
-        shp_joint_vel = joint_states.velocity[0]
-        shl_joint_vel = joint_states.velocity[1]
-        elb_joint_vel = joint_states.velocity[2]
-        wr1_joint_vel = joint_states.velocity[3]
-        wr2_joint_vel = joint_states.velocity[4]
-        wr3_joint_vel = joint_states.velocity[5]
+        shp_joint_vel = joint_states.velocity[3]
+        shl_joint_vel = joint_states.velocity[2]
+        elb_joint_vel = joint_states.velocity[0]
+        wr1_joint_vel = joint_states.velocity[4]
+        wr2_joint_vel = joint_states.velocity[5]
+        wr3_joint_vel = joint_states.velocity[6]
 
         q = [shp_joint_ang, shl_joint_ang, elb_joint_ang, wr1_joint_ang, wr2_joint_ang, wr3_joint_ang]
         eef_x, eef_y, eef_z = self.get_xyz(q)
@@ -624,9 +782,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         
     def training_ok(self):
         rate = rospy.Rate(1)
-        while self.check_stop_flg() is True:                  
-            rospy.logdebug("stop_flag is ON!!!!")
-            self._gz_conn.unpauseSim()
+        while self.check_stop_flg() is True:   
+            self._gz_conn.pauseSim()
 
             if self.check_stop_flg() is False:
                 break 
@@ -663,10 +820,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         info = {}
         info['total_distance'] = total_distance_from_goal
 
-        self.step_cnt = self.step_cnt + 1
-        if reward > -0.0001 or self.step_cnt > 300:
+        if reward > -0.0001:
             episode_over = True
-            self.step_cnt = 0
 
         if self.goal_oriented:
             obs = self._get_obs()
@@ -674,7 +829,6 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
         #return self.current_pos, reward, episode_over, info        
         return self.get_observations(), reward, episode_over, info        
-
 
     def _get_reward(self, goal):
         return - (np.linalg.norm(self.current_pos[:3] - goal) ** 2)

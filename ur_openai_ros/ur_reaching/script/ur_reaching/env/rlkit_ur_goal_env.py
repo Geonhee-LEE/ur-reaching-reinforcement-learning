@@ -268,7 +268,6 @@ class RLkitGoalUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
         # Stop flag durning training 
         self.stop_flag = False
-        self.step_cnt = 0
     
     def _start_ros_services(self):
         stop_trainning_server = rospy.Service('/stop_training', SetBool, self._stop_trainnig)
@@ -386,7 +385,7 @@ class RLkitGoalUR(robot_gazebo_env_goal.RobotGazeboEnv):
         if self.goal_oriented:
             self.set_goal(self.sample_goal_for_rollout())
             return self._get_obs()
-
+            
         return observation
     
     def act(self, action):
@@ -633,11 +632,9 @@ class RLkitGoalUR(robot_gazebo_env_goal.RobotGazeboEnv):
         info = {}
         info['total_distance'] = total_distance_from_goal
 
-        self.step_cnt = self.step_cnt + 1
-        if reward > -0.0001 or self.step_cnt > 1000:
-            print ("Done, reward: ", reward, "step_cnt: ", self.step_cnt)
+        if reward > -0.0001:
+            print ("Done, reward: ", reward)
             episode_over = True
-            self.step_cnt = 0
 
         if self.goal_oriented:
             obs = self._get_obs()

@@ -7,7 +7,7 @@ nepisodes: 100000
 nsteps: 1000
 
 # Input type
-control_type: vel #traj_vel or vel
+control_type: pos #traj_vel or vel or pos or traj_pos
 
 # Environment Parameters
 desired_pose:
@@ -36,27 +36,29 @@ observations: # Observations you want to use for the learning
   - eef_y
   - eef_z
 
+joint_names: ['shoulder_link', 'upper_arm_link', 'forearm_link', 'wrist_1_link', 'wrist_2_link', 'wrist_3_link']
+
 init_joint_pose:
-  shp: -2.873
-  shl: 0.0
-  elb: 6.28
-  wr1: 1.21
-  wr2: 1.264
-  wr3: -0.97
+  shp: -1.57
+  shl: -1.0
+  elb: 2.0
+  wr1: -2.5
+  wr2: -1.57
+  wr3: 0.0
 
 joint_limits_array:
-  shp_max: 1.0
-  shp_min: -1.0
-  shl_max: 1.0
-  shl_min: -1.0
-  elb_max: 1.0
-  elb_min: -1.0
-  wr1_max: 1.0
-  wr1_min: -1.0
-  wr2_max: 1.0
-  wr2_min: -1.0
-  wr3_max: 1.0
-  wr3_min: -1.0
+  shp_max: 0.0
+  shp_min: -3.14
+  shl_max: 0.0
+  shl_min: -1.57
+  elb_max: 2.5
+  elb_min: 0.0
+  wr1_max: -1.7
+  wr1_min: -2.5
+  wr2_max: -1.57
+  wr2_min: -1.57
+  wr3_max: 1.57
+  wr3_min: -1.57
 
 
 joint_velocity_limits_array:

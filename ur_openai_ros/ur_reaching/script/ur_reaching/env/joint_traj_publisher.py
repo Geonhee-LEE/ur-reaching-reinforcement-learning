@@ -13,13 +13,18 @@ from .controllers_connection import ControllersConnection
 
 class JointTrajPub(object):
     def __init__(self):
-    	"""
-    	Publish trajectory_msgs::JointTrajectory for velocity control
-    	"""
-    	self._joint_traj_pub = rospy.Publisher('/vel_traj_controller/command', JointTrajectory, queue_size=10)
-    	self._ctrl_conn = ControllersConnection(namespace="")
-    	
-    	self._ctrl_conn.load_controllers("vel_traj_controller")
+        """
+        Publish trajectory_msgs::JointTrajectory for velocity control
+        """
+        self._ctrl_conn = ControllersConnection(namespace="")
+        current_controller_type =  rospy.get_param("/control_type")
+
+        if (current_controller_type == "pos") or (current_controller_type == "traj_pos"):
+        	self._ctrl_conn.load_controllers("pos_traj_controller")
+        	self._joint_traj_pub = rospy.Publisher('/pos_traj_controller/command', JointTrajectory, queue_size=10)
+        else:
+        	self._ctrl_conn.load_controllers("vel_traj_controller")
+        	self._joint_traj_pub = rospy.Publisher('/vel_traj_controller/command', JointTrajectory, queue_size=10)
 
     def set_init_pose(self, init_pose):
     	"""
@@ -47,7 +52,6 @@ class JointTrajPub(object):
 
     	rospy.logdebug("All Joint Publishers READY")
 
-
     def move_joints(self, joints_array):
     	vel_cmd = JointTrajectory()
     	vel_cmd.joint_names = [ "shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint" ]
@@ -59,7 +63,6 @@ class JointTrajPub(object):
     	# setup the reset of the pt
     	vel_cmd.points =[jtp]
     	self._joint_traj_pub.publish(vel_cmd)
-
 
     def jointTrajectoryCommand(self, joints_array):
     	rospy.loginfo("jointTrajectoryCommand")
@@ -95,7 +98,6 @@ class JointTrajPub(object):
     	    self._joint_traj_pub.publish(jt)
 
     	except rospy.ROSInterruptException: pass
-
 
     def start_loop(self, rate_value = 2.0):
     	rospy.logdebug("Start Loop")
