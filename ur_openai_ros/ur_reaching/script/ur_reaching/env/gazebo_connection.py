@@ -22,7 +22,7 @@ class GazeboConnection():
         self._reset_world_proxy = rospy.ServiceProxy('/reset_world', SetBool)
         
         # We always pause the simulation, important for legged robots learning
-        self.pauseSim()
+        #self.pauseSim()
         print ("End GazeboConnection initialization !!!!!")
 
         

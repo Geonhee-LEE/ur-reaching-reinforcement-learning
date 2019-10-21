@@ -72,12 +72,12 @@ class JointPub(object):
     	"""
     	rate = rospy.Rate(1)  # 1hz
 
-    	print ("self.current_controller_type: ", self.current_controller_type)
+    	#print ("self.current_controller_type: ", self.current_controller_type)
     	if self.current_controller_type == "pos":
     	    while (self._shoulder_pan_joint_pub.get_num_connections() == 0):
     	        rospy.logdebug("No susbribers to _shoulder_pan_joint_pub yet so we wait and try again")
     	        try:
-    	        	print ("start on ur_shoulder_pan_pos_controller")
+    	        	#print ("start on ur_shoulder_pan_pos_controller")
     	        	self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_pan_pos_controller")
     	        	rate.sleep()
     	        except rospy.ROSInterruptException:
@@ -140,7 +140,7 @@ class JointPub(object):
     	    while (self._shoulder_pan_joint_pub.get_num_connections() == 0):
     	        rospy.logdebug("No susbribers to _shoulder_pan_joint_pub yet so we wait and try again")
     	        try:
-    	        	print ("start on ur_shoulder_pan_vel_controller")
+    	        	#print ("start on ur_shoulder_pan_vel_controller")
     	        	self._ctrl_conn.start_controllers(controllers_on="ur_shoulder_pan_vel_controller")
     	        	rate.sleep()
     	        except rospy.ROSInterruptException:
@@ -206,7 +206,7 @@ class JointPub(object):
     	i = 0
     	for publisher_object in self.publishers_array:
     	  joint_value = Float64()
-    	  joint_value.data = joints_array[i]
+    	  joint_value.data = joints_array[i] 
     	  rospy.logdebug("JointsPos>>"+str(joint_value))
     	  publisher_object.publish(joint_value)
     	  i += 1
