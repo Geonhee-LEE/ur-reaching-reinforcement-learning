@@ -328,6 +328,9 @@ class StateValidity():
         self.sv_srv = rospy.ServiceProxy('/check_state_validity', GetStateValidity)
         # wait for service to become available
         self.sv_srv.wait_for_service()
+        
+        # Collision status
+        self.collision = std_msgs.msg.Bool()
         rospy.loginfo('service is avaiable')
 
     def jointStatesCB(self, msg):
@@ -347,14 +350,17 @@ class StateValidity():
         '''
         check if robotis in collision
         '''
-        collision = std_msgs.msg.Bool()
         if self.getStateValidity().valid:
             rospy.loginfo('robot not in collision, all ok!')
-            collision = False
+            self.collision = False
         else:
             rospy.logwarn('robot in collision')
-            collision = True
-        self.collision_pub.publish(collision)
+            self.collision = True
+
+        self.publishCollisionStatus()
+        
+    def publishCollisionStatus(self):
+        self.collision_pub.publish(self.collision)
 
     def getStateValidity(self, group_name='manipulator', constraints=None):
         '''
@@ -375,11 +381,11 @@ class StateValidity():
 def main():
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node("UR_Moveit_API")
-    ur_moveit_api = UR_Moveit_API(boundaries=True)
+    ur_moveit_api = UR_Moveit_API(boundaries=False)
     #ur_moveit_api.move_to_neutral()
     
-    collision_checker_node = StateValidity()
-    collision_checker_node.start_collision_checker()
+    svd_node = StateValidity()
+    svd_node.start_collision_checker()
 
     """
     print ("============ Press `Enter` to plan and display a Cartesian path ...")
@@ -394,6 +400,7 @@ def main():
     raw_input()
     ur_moveit_api.execute_plan(cartesian_plan)
     """
+
 
     rospy.spin()
 

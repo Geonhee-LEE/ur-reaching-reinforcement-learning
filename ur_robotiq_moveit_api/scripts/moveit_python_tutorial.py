@@ -11,6 +11,7 @@ from geometry_msgs.msg import (
     PoseStamped,
     Pose,
 )
+import moveit_commander
 from moveit_commander import *
 from moveit_msgs.srv import *
 from moveit_msgs.msg import *
@@ -26,6 +27,7 @@ from moveit_python import PlanningSceneInterface
 from moveit_msgs.srv import GetStateValidityRequest, GetStateValidity
 from moveit_msgs.msg import RobotState
 from sensor_msgs.msg import JointState
+import moveit_msgs.msg
 
 JOINT_NAMES = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']
 
@@ -33,9 +35,11 @@ class UR_Moveit_API:
 
     def __init__(self, boundaries=False):
         self.scene = PlanningSceneInterface("/base_link")
-        self.commander = MoveGroupCommander("manipulator")
+        self.robot = RobotCommander()
+        self.group_commander = MoveGroupCommander("manipulator")
         self.gripper = MoveGroupCommander("gripper")
-        self.commander.set_end_effector_link('eef_link')
+        self.group_commander.set_end_effector_link('eef_link')
+        self.get_basic_infomation()
 
         if boundaries is True:
             self.add_bounds()
@@ -46,9 +50,32 @@ class UR_Moveit_API:
             '/%s/command' % name, Float64, queue_size=1) for name in CONTROLLER_NAMES]
         self.gripper_pub = rospy.Publisher(
             '/gripper_prismatic_joint/command', Float64, queue_size=1)
-
+        
+        # create a DisplayTrajectory publisher which is used later to publish trajectories for RViz to visualize
+        self.display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',
+                                               moveit_msgs.msg.DisplayTrajectory,
+                                               queue_size=20)
         self.reset_subscriber = rospy.Subscriber("/ur/reset", String, self.reset)
         rospy.sleep(2)
+
+    def get_basic_infomation(self):
+        # We can get the name of the reference frame for this robot:
+        planning_frame = self.group_commander.get_planning_frame()
+        print ("============ Reference frame: %s" % planning_frame, "============")
+
+        # We can also print the name of the end-effector link for this group:
+        eef_link = self.group_commander.get_end_effector_link()
+        print ("============ End effector: %s" % eef_link, "============")
+
+        # We can get a list of all the groups in the robot:
+        group_names = self.robot.get_group_names()
+        print ("============ Robot Groups:", group_names, "============")
+
+        # Sometimes for debugging it is useful to print the entire state of the
+        # robot:
+        print ("============ Printing robot state")
+        print (self.robot.get_current_state(), "============")
+        print ("================================================")
 
     def joint_callback(self, joint_state):
         self.joint_state = joint_state
@@ -92,6 +119,14 @@ class UR_Moveit_API:
             return None
         return ret.pose_stamped
 
+    def joint_limits(self, header, link_names, robot_state):
+        rospy.wait_for_service('/compute_fk')
+        fk = rospy.ServiceProxy('/compute_fk', GetPositionFK)
+        ret = fk(header, link_names, robot_state)
+        if ret.error_code.val != 1:
+            return None
+        return ret.pose_stamped
+
     def eval_grasp(self, threshold=.0001, manual=False):
         if manual:
             user_input = None
@@ -119,49 +154,45 @@ class UR_Moveit_API:
         elif angle <= -3.1:
             angle = -3.1
         current[0] = angle
-        plan = self.commander.plan(current)
-        return self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(current)
+        return self.group_commander.execute(plan, wait=True)
 
     def wrist_rotate(self, angle):
-        rotated_values = self.commander.get_current_joint_values()
+        rotated_values = self.group_commander.get_current_joint_values()
         rotated_values[4] = angle - rotated_values[0]
         if rotated_values[4] > np.pi / 2:
             rotated_values[4] -= np.pi
         elif rotated_values[4] < -(np.pi / 2):
             rotated_values[4] += np.pi
-        plan = self.commander.plan(rotated_values)
-        return self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(rotated_values)
+        return self.group_commander.execute(plan, wait=True)
 
     def get_joint_values(self):
-        return self.commander.get_current_joint_values()
+        return self.group_commander.get_current_joint_values()
 
     def get_current_pose(self):
-        return self.commander.get_current_pose()
+        return self.group_commander.get_current_pose()
 
     def move_to_neutral(self):
-        print('Moving to neutral...')
-        NEUTRAL_VALUES = [-1.57, -1.0, 
-                  1.5, -2.50,
-                  -1.57, 0.0]
-                  
-        plan = self.commander.plan(NEUTRAL_VALUES)
-        return self.commander.execute(plan, wait=True)
+        print('Moving to neutral...')                  
+        plan = self.group_commander.plan(NEUTRAL_VALUES)
+        return self.group_commander.execute(plan, wait=True)
 
     def move_to_drop(self, angle=None):
         drop_positions = DROPPING_VALUES[:]
         if angle:
             drop_positions[0] = angle
-        plan = self.commander.plan(drop_positions)
-        return self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(drop_positions)
+        return self.group_commander.execute(plan, wait=True)
 
     def move_to_empty(self):
-        plan = self.commander.plan(EMPTY_VALUES)
-        return self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(EMPTY_VALUES)
+        return self.group_commander.execute(plan, wait=True)
 
     def move_to_reset(self):
         print('Moving to reset...')
-        plan = self.commander.plan(RESET_VALUES)
-        return self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(RESET_VALUES)
+        return self.group_commander.execute(plan, wait=True)
 
     def reset(self, data):
         print ("data: ", data)
@@ -177,9 +208,9 @@ class UR_Moveit_API:
             x = (x - CONTROL_NOISE_COEFFICIENT_BETA) / CONTROL_NOISE_COEFFICIENT_ALPHA
             y = (y - CONTROL_NOISE_COEFFICIENT_BETA) / CONTROL_NOISE_COEFFICIENT_ALPHA
         
-        current_p = self.commander.get_current_pose().pose
+        current_p = self.group_commander.get_current_pose().pose
         p1 = Pose(position=Point(x=x, y=y, z=z), orientation=DOWN_ORIENTATION)
-        plan, f = self.commander.compute_cartesian_path(
+        plan, f = self.group_commander.compute_cartesian_path(
             [current_p, p1], 0.001, 0.0)
 
         joint_goal = list(plan.joint_trajectory.points[-1].positions)
@@ -193,25 +224,25 @@ class UR_Moveit_API:
             joint_goal[4] += np.pi
 
         try:
-            plan = self.commander.plan(joint_goal)
+            plan = self.group_commander.plan(joint_goal)
         except MoveItCommanderException as e:
             print('Exception while planning')
             traceback.print_exc(e)
             return False
 
-        return self.commander.execute(plan, wait=True)
+        return self.group_commander.execute(plan, wait=True)
 
     def move_to_vertical(self, z, force_orientation=True, shift_factor=1.0):
-        current_p = self.commander.get_current_pose().pose
+        current_p = self.group_commander.get_current_pose().pose
         current_angle = self.get_joint_values()[4]
         orientation = current_p.orientation if force_orientation else None
         p1 = Pose(position=Point(x=current_p.position.x * shift_factor,
                                  y=current_p.position.y * shift_factor, z=z), orientation=orientation)
         waypoints = [current_p, p1]
-        plan, f = self.commander.compute_cartesian_path(waypoints, 0.001, 0.0)
+        plan, f = self.group_commander.compute_cartesian_path(waypoints, 0.001, 0.0)
 
         if not force_orientation:
-            return self.commander.execute(plan, wait=True)
+            return self.group_commander.execute(plan, wait=True)
         else:
             if len(plan.joint_trajectory.points) > 0:
                 joint_goal = list(plan.joint_trajectory.points[-1].positions)
@@ -220,8 +251,8 @@ class UR_Moveit_API:
 
             joint_goal[4] = current_angle
 
-            plan = self.commander.plan(joint_goal)
-            return self.commander.execute(plan, wait=True)
+            plan = self.group_commander.plan(joint_goal)
+            return self.group_commander.execute(plan, wait=True)
 
     def move_to_target(self, target):
         assert len(target) >= 6, 'Invalid target command'
@@ -266,46 +297,46 @@ class UR_Moveit_API:
     def sweep_arena(self):
         self.remove_bounds()
         self.move_to_drop(.8)
-        plan = self.commander.plan(TL_CORNER[0])
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(TL_CORNER[0])
+        self.group_commander.execute(plan, wait=True)
 
-        plan = self.commander.plan(TL_CORNER[1])
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(TL_CORNER[1])
+        self.group_commander.execute(plan, wait=True)
 
-        plan = self.commander.plan(L_SWEEP[0])
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(L_SWEEP[0])
+        self.group_commander.execute(plan, wait=True)
 
-        plan = self.commander.plan(L_SWEEP[1])
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(L_SWEEP[1])
+        self.group_commander.execute(plan, wait=True)
 
         self.move_to_drop(-.8)
-        plan = self.commander.plan(BL_CORNER[0])
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(BL_CORNER[0])
+        self.group_commander.execute(plan, wait=True)
 
-        plan = self.commander.plan(BL_CORNER[1])
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(BL_CORNER[1])
+        self.group_commander.execute(plan, wait=True)
 
         self.move_to_drop(-2.45)
-        plan = self.commander.plan(BR_CORNER[0])
-        self.commander.execute(plan, wait=True)
-        plan = self.commander.plan(BR_CORNER[1])
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(BR_CORNER[0])
+        self.group_commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(BR_CORNER[1])
+        self.group_commander.execute(plan, wait=True)
 
         self.move_to_drop(2.3)
-        plan = self.commander.plan(TR_CORNER[0])
-        self.commander.execute(plan, wait=True)
-        plan = self.commander.plan(TR_CORNER[1])
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(TR_CORNER[0])
+        self.group_commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(TR_CORNER[1])
+        self.group_commander.execute(plan, wait=True)
         self.add_bounds()
 
     def discard_object(self):
-        plan = self.commander.plan(PREDISCARD_VALUES)
-        self.commander.execute(plan, wait=True)
-        plan = self.commander.plan(DISCARD_VALUES)
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(PREDISCARD_VALUES)
+        self.group_commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(DISCARD_VALUES)
+        self.group_commander.execute(plan, wait=True)
         self.open_gripper(drop=True)
-        plan = self.commander.plan(PREDISCARD_VALUES)
-        self.commander.execute(plan, wait=True)
+        plan = self.group_commander.plan(PREDISCARD_VALUES)
+        self.group_commander.execute(plan, wait=True)
         self.move_to_neutral()
 
 
@@ -364,6 +395,7 @@ class StateValidity():
 
 
 def main():
+    moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node("UR_Moveit_API")
     ur_moveit_api = UR_Moveit_API(boundaries=True)
     ur_moveit_api.move_to_neutral()

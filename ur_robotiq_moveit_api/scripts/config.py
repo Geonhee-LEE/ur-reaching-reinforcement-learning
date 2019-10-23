@@ -68,14 +68,13 @@ END_EFFECTOR_BOUNDS = [(.15,  .15),
 # CONTROLLER CONSTANTS AND PREPLANNED ROUTINES
 DROPPING_VALUES = [0.0, -1.418932228794218,
                    1.3575729972787924, -0.8512816004258118, 0.0]
-NEUTRAL_VALUES = [-1.57, -1.0,
-                  2.0, -2.5,
-                  -1.57, 0.0]
+
+NEUTRAL_VALUES = [-1.57, -1.0, 1.5, -2.50, -1.57, 0.0]
+
 EMPTY_VALUES = [0.015339807878856412, -1.2931458041875956,
                 1.5109710760673565, .55, -0.07158577010132992]
-RESET_VALUES = [-1.57, -1.0,
-                  2.0, -2.5,
-                  -1.57, 0.0]
+
+RESET_VALUES = [-1.57, -1.0, 1.5, -2.50, -1.57, 0.0]
 
 PREDISCARD_VALUES = [1.564660403643354, -1.4081943632790186,
                      1.3437671701878218, -0.006135923151542565, -0.02556634646476069]
@@ -140,4 +139,5 @@ JOINT_MAX = np.array([
 ])
 
 CONTROLLER_NAMES =['ur_shoulder_pan_vel_controller', 'ur_shoulder_lift_vel_controller', 'ur_elbow_vel_controller', 'ur_wrist_1_vel_controller', 'ur_wrist_2_vel_controller', 'ur_wrist_3_vel_controller']
-JOINT_NAMES = ['shoulder_link', 'upper_arm_link', 'forearm_link', 'wrist_1_link', 'wrist_2_link', 'wrist_3_link']
+
+JOINT_NAMES = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']

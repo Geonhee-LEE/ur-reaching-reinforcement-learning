@@ -27,7 +27,7 @@ class UR_Moveit_API:
         self.scene = PlanningSceneInterface()
         self.commander = MoveGroupCommander("manipulator")
         self.gripper = MoveGroupCommander("gripper")
-
+        print("Complete to MoveGroupCommander")
         self.commander.set_end_effector_link('eef_link')
 
         if boundaries:
@@ -106,6 +106,7 @@ class UR_Moveit_API:
         backWall.pose.position.y = .2
         backWall.pose.position.z = .475
         self.scene.add_box('backWall', backWall, (.35, .001, .08))
+        
 
     def remove_bounds(self):
         for obj in self.scene.get_objects().keys():
@@ -346,7 +347,7 @@ class UR_Moveit_API:
 
 def main():
     rospy.init_node("UR_Moveit_API")
-    ur_moveit_api = UR_Moveit_API()
+    ur_moveit_api = UR_Moveit_API(boundaries=True)
     rospy.spin()
 
 
