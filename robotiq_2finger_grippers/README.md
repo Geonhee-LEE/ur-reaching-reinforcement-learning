@@ -43,6 +43,11 @@ The output should look something similar to:
 ```
 [####.#####] USB 1-2: FTDI USB Serial Device converter now attached to ttyUSB0
 ```
+Authorize the device
+```
+sudo chmod 777 /dev/ttyUSB0
+```
+
 ## Test communication and control 
 
 On a new terminal type the following line:
