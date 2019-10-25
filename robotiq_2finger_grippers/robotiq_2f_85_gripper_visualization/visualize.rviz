@@ -1,0 +1,242 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /RobotModel1
+        - /RobotModel1/Link/Joint Tree1
+        - /RobotModel1/Link/Joint Tree1/robotiq_arg2f_base_link1
+      Splitter Ratio: 0.581532419
+    Tree Height: 813
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.588679016
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: ""
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Link/Joint Tree:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Tree of links and joints
+        robotiq_arg2f_base_link:
+          Details:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Value: true
+          finger_joint:
+            Details:
+              Show Axes: false
+              Show Joint Axis: false
+            Value: true
+            left_outer_knuckle:
+              Details:
+                Alpha: 1
+                Show Axes: false
+                Show Trail: false
+              Value: true
+              left_outer_finger_joint:
+                Details:
+                  Show Axes: false
+                Value: true
+                left_outer_finger:
+                  Details:
+                    Alpha: 1
+                    Show Axes: false
+                    Show Trail: false
+                  Value: true
+                  left_inner_finger_joint:
+                    Details:
+                      Show Axes: false
+                      Show Joint Axis: false
+                    Value: true
+                    left_inner_finger:
+                      Details:
+                        Alpha: 1
+                        Show Axes: false
+                        Show Trail: false
+                      Value: true
+                      left_inner_finger_pad_joint:
+                        Details:
+                          Show Axes: false
+                        Value: true
+                        left_inner_finger_pad:
+                          Details:
+                            Alpha: 1
+                            Show Axes: false
+                            Show Trail: false
+                          Value: true
+          left_inner_knuckle_joint:
+            Details:
+              Show Axes: false
+              Show Joint Axis: false
+            Value: true
+            left_inner_knuckle:
+              Details:
+                Alpha: 1
+                Show Axes: false
+                Show Trail: false
+              Value: true
+          right_inner_knuckle_joint:
+            Details:
+              Show Axes: false
+              Show Joint Axis: false
+            Value: true
+            right_inner_knuckle:
+              Details:
+                Alpha: 1
+                Show Axes: false
+                Show Trail: false
+              Value: true
+          right_outer_knuckle_joint:
+            Details:
+              Show Axes: false
+              Show Joint Axis: false
+            Value: true
+            right_outer_knuckle:
+              Details:
+                Alpha: 1
+                Show Axes: false
+                Show Trail: false
+              Value: true
+              right_outer_finger_joint:
+                Details:
+                  Show Axes: false
+                Value: true
+                right_outer_finger:
+                  Details:
+                    Alpha: 1
+                    Show Axes: false
+                    Show Trail: false
+                  Value: true
+                  right_inner_finger_joint:
+                    Details:
+                      Show Axes: false
+                      Show Joint Axis: false
+                    Value: true
+                    right_inner_finger:
+                      Details:
+                        Alpha: 1
+                        Show Axes: false
+                        Show Trail: false
+                      Value: true
+                      right_inner_finger_pad_joint:
+                        Details:
+                          Show Axes: false
+                        Value: true
+                        right_inner_finger_pad:
+                          Details:
+                            Alpha: 1
+                            Show Axes: false
+                            Show Trail: false
+                          Value: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.0299999993
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: robotiq_arg2f_base_link
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Topic: /initialpose
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 0.453161746
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.0599999987
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: -0.0555366687
+        Y: 0.0123848282
+        Z: 0.0355766453
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.0500000007
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.00999999978
+      Pitch: 0.400203109
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz)
+      Yaw: 0.257229745
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1026
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd0000000100000000000001ff000003bcfc0200000005fb000000100044006900730070006c0061007900730100000028000003bc000000d700fffffffb0000001200530065006c0065006300740069006f006e0000000186000000a50000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007300000001d0000000c90000006100fffffffb0000000a00560069006500770073000000024100000159000000ad00fffffffb0000000800540069006d00650000000369000000990000003b00ffffff00000479000003bc00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1662
+  X: 258
+  Y: 24

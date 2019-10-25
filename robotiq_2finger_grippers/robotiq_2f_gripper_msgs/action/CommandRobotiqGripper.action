@@ -1,0 +1,32 @@
+# See Robotiq documentation for fields documentation.
+# See Robotiq documentation for fields documentation.
+
+#goal definition
+bool emergency_release
+uint32 emergency_release_dir
+bool stop
+float32 position #[m] Distance in bewteen fingers 
+float32 speed    #[m/s] Speed (Min: 0.013m/s - Max: 0.1m/s)
+float32 force    #[%] Percentage of gripper force to apply (Min: 0.0% - Max: 100.0%)
+---
+#result definition
+Header header
+bool is_ready
+bool is_reset
+bool is_moving
+bool obj_detected
+uint8 fault_status
+float32 position
+float32 requested_position
+float32 current
+---
+#feedback
+Header header
+bool is_ready
+bool is_reset
+bool is_moving
+bool obj_detected
+uint8 fault_status
+float32 position
+float32 requested_position
+float32 current

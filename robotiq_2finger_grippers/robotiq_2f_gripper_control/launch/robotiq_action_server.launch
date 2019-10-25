@@ -1,0 +1,23 @@
+<launch>
+    
+    <arg name="comport" default="/dev/ttyUSB0"                   doc="Communication port of gripper, use `dmesg | grep tty` command to list ports"/>
+    <arg name="baud" default="115200"/>
+    <arg name="stroke" default="0.085"                            doc="Max open finger distance of gripper, it usually is 0.085m or 0.140m"/>
+    <arg name="joint_name" default="finger_joint"                 doc="Full name of gripper joint in URDF robot description"/>
+    <arg name="verbose" default="true"/>
+    <arg name="sim" default="false"                               doc="Whether to use a simulated gripper or not"/>
+    <arg name="rate" default="50"                                 doc="Frequenzy in Herz of gripper state update"/>
+	        
+    <!-- Robotiq 2finger_gripper action Server -->
+    
+    <node pkg="robotiq_2f_gripper_control" type="robotiq_2f_action_server.py" 
+        name="robotiq_2f_action_server" respawn="false" output="screen">
+        <param name="comport" value="$(arg comport)" />
+        <param name="baud" value="$(arg baud)" />
+        <param name="stroke" value="$(arg stroke)" />
+        <param name="joint_name" value="$(arg joint_name)" />
+        <param name="sim" value="$(arg sim)"/>
+        <param name="rate" value="$(arg rate)"/>
+    </node>
+ 
+</launch>

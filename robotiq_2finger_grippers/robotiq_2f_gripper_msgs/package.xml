@@ -1,0 +1,23 @@
+<package>
+    <name>robotiq_2f_gripper_msgs</name>
+    <version>0.0.2</version>
+    <description>Messages for Robotiq 2 Finger Adaptive Gripper Model (Also known as C series) Driver</description>
+    
+    <maintainer email="daniels.ordonez@gmail.com">Daniel Ordonez</maintainer>
+    <author email="dev@stanleyinnovation.com">Stanley Innovation, Inc.</author>
+    <author email="daniels.ordonez@gmail.com">Daniel Ordonez</author>
+    <license>BSD</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <!-- Packages needed to build and run-->
+    <build_depend>roslaunch</build_depend>
+    <build_depend>message_generation</build_depend>
+    <build_depend>actionlib_msgs</build_depend>
+    <run_depend>actionlib_msgs</run_depend>
+    <run_depend>message_runtime</run_depend>  
+    <build_depend>std_msgs</build_depend>
+    <run_depend>std_msgs</run_depend>
+	<export>
+	</export>
+</package>
