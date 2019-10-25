@@ -52,10 +52,10 @@ sudo chmod 777 /dev/ttyUSB0
 
 On a new terminal type the following line:
 ```
-# Connect and move 85 mm gripper  
-roslaunch robotiq_2f_gripper_control test_85mm_gripper.launch comport:="<YOUR GRIPPER TTY PORT NAME>"
-# Simulate 85mm gripper 
-roslaunch robotiq_2f_gripper_control test_85mm_gripper.launch sim:=true
+# Connect and move 140 mm gripper  
+roslaunch robotiq_2f_gripper_control test_140mm_gripper.launch comport:="<YOUR GRIPPER TTY PORT NAME>"
+# Simulate 140mm gripper 
+roslaunch robotiq_2f_gripper_control test_140mm_gripper.launch sim:=true
 ```
 This launch file starts a `robotiq_action_server` and an example action client which recursively commands the the real gripper *or simulated one) with diferent poses/speeds while updating the gripper joints on `rviz`. 
 
