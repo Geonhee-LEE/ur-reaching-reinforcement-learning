@@ -1,3 +1,5 @@
+[Danfoa/robotiq_2finger_grippers](https://github.com/Danfoa/robotiq_2finger_grippers)
+
 This package contains the necesary files to connect and control the Robotiq 2 finger adaptive grippers (85mm and 140mm stroke) of the `C` series through a **USB port using the Modbus RTU communication protocol**. (Currently only URDF descriptions of models C3 are available)
 
 ![C3 models](https://user-images.githubusercontent.com/8356912/52115661-78872b00-260f-11e9-8eb3-960747131df6.jpg)
