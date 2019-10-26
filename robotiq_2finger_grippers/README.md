@@ -1,3 +1,5 @@
+# [Danfoa/robotiq_2finger_grippers](https://github.com/Danfoa/robotiq_2finger_grippers)
+
 This package contains the necesary files to connect and control the Robotiq 2 finger adaptive grippers (85mm and 140mm stroke) of the `C` series through a **USB port using the Modbus RTU communication protocol**. (Currently only URDF descriptions of models C3 are available)
 
 ![C3 models](https://user-images.githubusercontent.com/8356912/52115661-78872b00-260f-11e9-8eb3-960747131df6.jpg)
@@ -52,10 +54,10 @@ sudo chmod 777 /dev/ttyUSB0
 
 On a new terminal type the following line:
 ```
-# Connect and move 85 mm gripper  
-roslaunch robotiq_2f_gripper_control test_85mm_gripper.launch comport:="<YOUR GRIPPER TTY PORT NAME>"
-# Simulate 85mm gripper 
-roslaunch robotiq_2f_gripper_control test_85mm_gripper.launch sim:=true
+# Connect and move 140 mm gripper  
+roslaunch robotiq_2f_gripper_control test_140mm_gripper.launch comport:="<YOUR GRIPPER TTY PORT NAME>"
+# Simulate 140mm gripper 
+roslaunch robotiq_2f_gripper_control test_140mm_gripper.launch sim:=true
 ```
 This launch file starts a `robotiq_action_server` and an example action client which recursively commands the the real gripper *or simulated one) with diferent poses/speeds while updating the gripper joints on `rviz`. 
 
