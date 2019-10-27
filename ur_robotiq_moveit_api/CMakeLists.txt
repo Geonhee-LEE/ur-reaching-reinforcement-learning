@@ -19,10 +19,13 @@ find_package(catkin REQUIRED
     tf2_ros
     tf2_eigen
     tf2_geometry_msgs
+    rospy
 )
 
 find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED system filesystem date_time thread)
+
+catkin_python_setup()
 
 catkin_package(
     INCLUDE_DIRS include
@@ -50,6 +53,12 @@ target_link_libraries(ur_move_group_interface
   ${Boost_LIBRARIES}
 )
 
-
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 install(DIRECTORY config DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(PROGRAMS
+  scripts/moveit_reinforcement_learning.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+

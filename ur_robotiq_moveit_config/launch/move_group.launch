@@ -1,5 +1,7 @@
 <launch>
   <arg name="limited" default="false"/>
+  <arg name="controller" default="real"/> <!-- 'pos' or 'traj_vel' or 'pos' or 'traj_pos'-->
+
 
   <include file="$(find ur_robotiq_moveit_config)/launch/planning_context.launch">
     <arg name="limited" value="$(arg limited)" />

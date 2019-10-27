@@ -9,7 +9,7 @@
 <launch>
 
   <!-- robot_ip: IP-address of the robot's socket-messaging server -->
-  <arg name="robot_ip" doc="IP of the controller" />
+  <arg name="robot_ip" doc="IP of the controller" default="192.168.0.3" />
   <arg name="reverse_ip" default="" doc="IP of the computer running the driver" />
   <arg name="reverse_port" default="50001"/>
   <arg name="limited" default="false"/>
@@ -28,7 +28,10 @@
   <arg name="tool_frame" default="$(arg prefix)tool0_controller" />
   <arg name="shutdown_on_disconnect" default="true" />
   <!-- robot model -->
-  <include file="$(find ur_description)/launch/ur5_upload.launch">
+  <!--include file="$(find ur_description)/launch/ur5_upload.launch">
+    <arg name="limited" value="$(arg limited)"/>
+  </include-->
+  <include file="$(find ur_description)/launch/ur5_robotiq_gripper_upload.launch">
     <arg name="limited" value="$(arg limited)"/>
   </include>
 

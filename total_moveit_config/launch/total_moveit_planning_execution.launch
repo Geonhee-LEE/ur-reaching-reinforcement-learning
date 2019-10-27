@@ -1,0 +1,37 @@
+<launch>
+  <arg name="sim" default="false" />
+  <arg name="limited" default="false"/>
+  <arg name="debug" default="false" />
+    
+  <!-- Remap follow_joint_trajectory -->
+  <remap if="$(arg sim)" from="/follow_joint_trajectory" to="/trajectory_controller/follow_joint_trajectory"/>
+  
+  <!-- Launch moveit -->
+  <include file="$(find total_moveit_config)/launch/move_group.launch">
+    <arg name="limited" default="$(arg limited)"/>
+    <arg name="debug" default="$(arg debug)" />
+  </include>
+
+  <!-- Launch gripper config -->
+  <include file="$(find robotiq_2f_gripper_control)/launch/robotiq_action_server.launch">
+    <arg name="sim" value="false"/>
+  </include>
+  <node pkg="robotiq_2f_gripper_control" name="robotiq_2f_client_sub" type="robotiq_2f_client_sub.py" output="screen"/>
+
+  <!-- Connect the base_link of UR and camera_link of camera -->
+  <node pkg="tf" type="static_transform_publisher" name="kinect_base_link5" args="0.3 -0.12 1.10 0 1.57 0 /base_link /camera_link 100"/>
+
+
+  <!-- Launch Rviz -->
+  <include file="$(find total_moveit_config)/launch/moveit_rviz.launch">
+  </include>
+
+  <!-- Launch Realsense -->
+  <!--include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="filters" default="pointcloud"/>
+    <arg name="enable_infra1" default="false" />
+    <arg name="enable_infra2" default="false" />
+  </include-->
+
+
+</launch>

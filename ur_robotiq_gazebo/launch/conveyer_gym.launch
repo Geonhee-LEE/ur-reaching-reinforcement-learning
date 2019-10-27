@@ -6,7 +6,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="pause" default="false"/>  <!-- Start Gazebo with a blank world -->
-  <arg name="controller" default="traj_pos"/> <!-- 'pos' or 'traj_vel' or 'pos' or 'traj_pos'-->
+  <arg name="controller" default="pos"/> <!-- 'pos' or 'traj_vel' or 'pos' or 'traj_pos'-->
 
   <!-- Object pose -->
   <arg name="x" default="0"/>
@@ -94,6 +94,7 @@
   <!-- Run moveit -->
   <include file="$(find ur_robotiq_moveit_config)/launch/move_group.launch">
     <arg name="debug" default="$(arg debug)" />
+    <arg name="controller" default="$(arg controller)" />
   </include>
 
   <!-- Run Rviz -->

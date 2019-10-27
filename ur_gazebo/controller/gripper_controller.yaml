@@ -1,0 +1,9 @@
+gripper_controller:
+  type: position_controllers/GripperActionController
+  joints: finger_joint
+  action_monitor_rate: 20
+  goal_tolerance: 0.002
+  max_effort: 100
+  stall_velocity_threshold: 0.001
+  stall_timeout: 1.0
+

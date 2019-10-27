@@ -1,0 +1,1040 @@
+2019-10-21 20:36:21.365846 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 0 finished
+-------------------------------------------------  -------------
+replay_buffer/size                                  20
+trainer/QF1 Loss                                     1.01145
+trainer/QF2 Loss                                     0.993615
+trainer/Policy Loss                                  0.0511249
+trainer/Q1 Predictions Mean                          0.00450355
+trainer/Q1 Predictions Std                           6.48706e-05
+trainer/Q1 Predictions Max                           0.00463904
+trainer/Q1 Predictions Min                           0.0043932
+trainer/Q2 Predictions Mean                         -0.00440076
+trainer/Q2 Predictions Std                           0.000129841
+trainer/Q2 Predictions Max                          -0.0041554
+trainer/Q2 Predictions Min                          -0.00459145
+trainer/Q Targets Mean                              -1.00108
+trainer/Q Targets Std                                0.0159614
+trainer/Q Targets Max                               -0.974123
+trainer/Q Targets Min                               -1.03453
+trainer/Bellman Errors 1 Mean                        1.01145
+trainer/Bellman Errors 1 Std                         0.0321924
+trainer/Bellman Errors 1 Max                         1.07973
+trainer/Bellman Errors 1 Min                         0.957783
+trainer/Bellman Errors 2 Mean                        0.993615
+trainer/Bellman Errors 2 Std                         0.0318069
+trainer/Bellman Errors 2 Max                         1.06078
+trainer/Bellman Errors 2 Min                         0.940132
+trainer/Policy Action Mean                           0.00490462
+trainer/Policy Action Std                            0.00322376
+trainer/Policy Action Max                            0.0102387
+trainer/Policy Action Min                           -2.61404e-05
+exploration/num steps total                         20
+exploration/num paths total                          2
+exploration/path length Mean                        10
+exploration/path length Std                          0
+exploration/path length Max                         10
+exploration/path length Min                         10
+exploration/Rewards Mean                            -1.01389
+exploration/Rewards Std                              0.00841647
+exploration/Rewards Max                             -1.00522
+exploration/Rewards Min                             -1.0326
+exploration/Returns Mean                           -10.1389
+exploration/Returns Std                              0
+exploration/Returns Max                            -10.1389
+exploration/Returns Min                            -10.1389
+exploration/Actions Mean                            -0.0148214
+exploration/Actions Std                              0.108255
+exploration/Actions Max                              0.286276
+exploration/Actions Min                             -0.261303
+exploration/Num Paths                                1
+exploration/Average Returns                        -10.1389
+exploration/env_infos/final/total_distance Mean      1.00688
+exploration/env_infos/final/total_distance Std       0
+exploration/env_infos/final/total_distance Max       1.00688
+exploration/env_infos/final/total_distance Min       1.00688
+exploration/env_infos/initial/total_distance Mean    1.0026
+exploration/env_infos/initial/total_distance Std     0
+exploration/env_infos/initial/total_distance Max     1.0026
+exploration/env_infos/initial/total_distance Min     1.0026
+exploration/env_infos/total_distance Mean            1.00691
+exploration/env_infos/total_distance Std             0.00417031
+exploration/env_infos/total_distance Max             1.01617
+exploration/env_infos/total_distance Min             1.0026
+evaluation/num steps total                          10
+evaluation/num paths total                           1
+evaluation/path length Mean                         10
+evaluation/path length Std                           0
+evaluation/path length Max                          10
+evaluation/path length Min                          10
+evaluation/Rewards Mean                             -1.03249
+evaluation/Rewards Std                               0.00109543
+evaluation/Rewards Max                              -1.03122
+evaluation/Rewards Min                              -1.0345
+evaluation/Returns Mean                            -10.3249
+evaluation/Returns Std                               0
+evaluation/Returns Max                             -10.3249
+evaluation/Returns Min                             -10.3249
+evaluation/Actions Mean                              0.00490312
+evaluation/Actions Std                               0.00322853
+evaluation/Actions Max                               0.0102407
+evaluation/Actions Min                               3.22721e-05
+evaluation/Num Paths                                 1
+evaluation/Average Returns                         -10.3249
+evaluation/env_infos/final/total_distance Mean       1.0155
+evaluation/env_infos/final/total_distance Std        0
+evaluation/env_infos/final/total_distance Max        1.0155
+evaluation/env_infos/final/total_distance Min        1.0155
+evaluation/env_infos/initial/total_distance Mean     1.01549
+evaluation/env_infos/initial/total_distance Std      0
+evaluation/env_infos/initial/total_distance Max      1.01549
+evaluation/env_infos/initial/total_distance Min      1.01549
+evaluation/env_infos/total_distance Mean             1.01611
+evaluation/env_infos/total_distance Std              0.0005389
+evaluation/env_infos/total_distance Max              1.0171
+evaluation/env_infos/total_distance Min              1.01549
+time/data storing (s)                                9.9052e-05
+time/evaluation sampling (s)                         0.859752
+time/exploration sampling (s)                        0.82627
+time/logging (s)                                     0.00233856
+time/saving (s)                                      0.0124206
+time/training (s)                                    0.706246
+time/epoch (s)                                       2.40713
+time/total (s)                                       4.23027
+Epoch                                                0
+-------------------------------------------------  -------------
+2019-10-21 20:36:23.892337 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 1 finished
+-------------------------------------------------  -------------
+replay_buffer/size                                  30
+trainer/QF1 Loss                                     0.0724266
+trainer/QF2 Loss                                     0.0724188
+trainer/Policy Loss                                  1.38992
+trainer/Q1 Predictions Mean                         -1.28853
+trainer/Q1 Predictions Std                           0.0149757
+trainer/Q1 Predictions Max                          -1.26336
+trainer/Q1 Predictions Min                          -1.31244
+trainer/Q2 Predictions Mean                         -1.28926
+trainer/Q2 Predictions Std                           0.011309
+trainer/Q2 Predictions Max                          -1.26978
+trainer/Q2 Predictions Min                          -1.30667
+trainer/Q Targets Mean                              -1.02339
+trainer/Q Targets Std                                0.0394686
+trainer/Q Targets Max                               -0.977147
+trainer/Q Targets Min                               -1.13769
+trainer/Bellman Errors 1 Mean                        0.0724266
+trainer/Bellman Errors 1 Std                         0.0225319
+trainer/Bellman Errors 1 Max                         0.101589
+trainer/Bellman Errors 1 Min                         0.025236
+trainer/Bellman Errors 2 Mean                        0.0724188
+trainer/Bellman Errors 2 Std                         0.0205069
+trainer/Bellman Errors 2 Max                         0.0996336
+trainer/Bellman Errors 2 Min                         0.0276882
+trainer/Policy Action Mean                          -0.0816093
+trainer/Policy Action Std                            0.179836
+trainer/Policy Action Max                            0.289257
+trainer/Policy Action Min                           -0.264798
+exploration/num steps total                         30
+exploration/num paths total                          3
+exploration/path length Mean                        10
+exploration/path length Std                          0
+exploration/path length Max                         10
+exploration/path length Min                         10
+exploration/Rewards Mean                            -1.06373
+exploration/Rewards Std                              0.0402966
+exploration/Rewards Max                             -1.0099
+exploration/Rewards Min                             -1.13261
+exploration/Returns Mean                           -10.6373
+exploration/Returns Std                              0
+exploration/Returns Max                            -10.6373
+exploration/Returns Min                            -10.6373
+exploration/Actions Mean                            -0.0848093
+exploration/Actions Std                              0.212775
+exploration/Actions Max                              0.448991
+exploration/Actions Min                             -0.419596
+exploration/Num Paths                                1
+exploration/Average Returns                        -10.6373
+exploration/env_infos/final/total_distance Mean      1.06424
+exploration/env_infos/final/total_distance Std       0
+exploration/env_infos/final/total_distance Max       1.06424
+exploration/env_infos/final/total_distance Min       1.06424
+exploration/env_infos/initial/total_distance Mean    1.00494
+exploration/env_infos/initial/total_distance Std     0
+exploration/env_infos/initial/total_distance Max     1.00494
+exploration/env_infos/initial/total_distance Min     1.00494
+exploration/env_infos/total_distance Mean            1.03119
+exploration/env_infos/total_distance Std             0.0195028
+exploration/env_infos/total_distance Max             1.06424
+exploration/env_infos/total_distance Min             1.00494
+evaluation/num steps total                          20
+evaluation/num paths total                           2
+evaluation/path length Mean                         10
+evaluation/path length Std                           0
+evaluation/path length Max                          10
+evaluation/path length Min                          10
+evaluation/Rewards Mean                             -1.08773
+evaluation/Rewards Std                               0.026797
+evaluation/Rewards Max                              -1.05452
+evaluation/Rewards Min                              -1.1314
+evaluation/Returns Mean                            -10.8773
+evaluation/Returns Std                               0
+evaluation/Returns Max                             -10.8773
+evaluation/Returns Min                             -10.8773
+evaluation/Actions Mean                             -0.0820549
+evaluation/Actions Std                               0.180761
+evaluation/Actions Max                               0.289122
+evaluation/Actions Min                              -0.264663
+evaluation/Num Paths                                 1
+evaluation/Average Returns                         -10.8773
+evaluation/env_infos/final/total_distance Mean       1.06367
+evaluation/env_infos/final/total_distance Std        0
+evaluation/env_infos/final/total_distance Max        1.06367
+evaluation/env_infos/final/total_distance Min        1.06367
+evaluation/env_infos/initial/total_distance Mean     1.0269
+evaluation/env_infos/initial/total_distance Std      0
+evaluation/env_infos/initial/total_distance Max      1.0269
+evaluation/env_infos/initial/total_distance Min      1.0269
+evaluation/env_infos/total_distance Mean             1.04286
+evaluation/env_infos/total_distance Std              0.0128328
+evaluation/env_infos/total_distance Max              1.06367
+evaluation/env_infos/total_distance Min              1.0269
+time/data storing (s)                                0.000120959
+time/evaluation sampling (s)                         0.875415
+time/exploration sampling (s)                        0.838338
+time/logging (s)                                     0.00238124
+time/saving (s)                                      0.0138783
+time/training (s)                                    0.791401
+time/epoch (s)                                       2.52153
+time/total (s)                                       6.75611
+Epoch                                                1
+-------------------------------------------------  -------------
+2019-10-21 20:36:26.251838 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 2 finished
+-------------------------------------------------  -------------
+replay_buffer/size                                  40
+trainer/QF1 Loss                                     0.0597109
+trainer/QF2 Loss                                     0.0585999
+trainer/Policy Loss                                  0.68524
+trainer/Q1 Predictions Mean                         -0.777047
+trainer/Q1 Predictions Std                           0.0598718
+trainer/Q1 Predictions Max                          -0.679071
+trainer/Q1 Predictions Min                          -0.850505
+trainer/Q2 Predictions Mean                         -0.778201
+trainer/Q2 Predictions Std                           0.053259
+trainer/Q2 Predictions Max                          -0.688428
+trainer/Q2 Predictions Min                          -0.844657
+trainer/Q Targets Mean                              -1.01414
+trainer/Q Targets Std                                0.0412942
+trainer/Q Targets Max                               -0.924106
+trainer/Q Targets Min                               -1.14397
+trainer/Bellman Errors 1 Mean                        0.0597109
+trainer/Bellman Errors 1 Std                         0.0289923
+trainer/Bellman Errors 1 Max                         0.120003
+trainer/Bellman Errors 1 Min                         0.0230978
+trainer/Bellman Errors 2 Mean                        0.0585999
+trainer/Bellman Errors 2 Std                         0.0265547
+trainer/Bellman Errors 2 Max                         0.119079
+trainer/Bellman Errors 2 Min                         0.0249097
+trainer/Policy Action Mean                          -0.131785
+trainer/Policy Action Std                            0.63247
+trainer/Policy Action Max                            0.827179
+trainer/Policy Action Min                           -0.812907
+exploration/num steps total                         40
+exploration/num paths total                          4
+exploration/path length Mean                        10
+exploration/path length Std                          0
+exploration/path length Max                         10
+exploration/path length Min                         10
+exploration/Rewards Mean                            -0.961903
+exploration/Rewards Std                              0.0227277
+exploration/Rewards Max                             -0.913224
+exploration/Rewards Min                             -0.990556
+exploration/Returns Mean                            -9.61903
+exploration/Returns Std                              0
+exploration/Returns Max                             -9.61903
+exploration/Returns Min                             -9.61903
+exploration/Actions Mean                            -0.144114
+exploration/Actions Std                              0.668289
+exploration/Actions Max                              0.927782
+exploration/Actions Min                             -1
+exploration/Num Paths                                1
+exploration/Average Returns                         -9.61903
+exploration/env_infos/final/total_distance Mean      0.955628
+exploration/env_infos/final/total_distance Std       0
+exploration/env_infos/final/total_distance Max       0.955628
+exploration/env_infos/final/total_distance Min       0.955628
+exploration/env_infos/initial/total_distance Mean    0.995267
+exploration/env_infos/initial/total_distance Std     0
+exploration/env_infos/initial/total_distance Max     0.995267
+exploration/env_infos/initial/total_distance Min     0.995267
+exploration/env_infos/total_distance Mean            0.980698
+exploration/env_infos/total_distance Std             0.0116405
+exploration/env_infos/total_distance Max             0.995267
+exploration/env_infos/total_distance Min             0.955628
+evaluation/num steps total                          30
+evaluation/num paths total                           3
+evaluation/path length Mean                         10
+evaluation/path length Std                           0
+evaluation/path length Max                          10
+evaluation/path length Min                          10
+evaluation/Rewards Mean                             -1.00785
+evaluation/Rewards Std                               0.0143651
+evaluation/Rewards Max                              -0.988817
+evaluation/Rewards Min                              -1.02555
+evaluation/Returns Mean                            -10.0785
+evaluation/Returns Std                               0
+evaluation/Returns Max                             -10.0785
+evaluation/Returns Min                             -10.0785
+evaluation/Actions Mean                             -0.132785
+evaluation/Actions Std                               0.638922
+evaluation/Actions Max                               0.834435
+evaluation/Actions Min                              -0.820495
+evaluation/Num Paths                                 1
+evaluation/Average Returns                         -10.0785
+evaluation/env_infos/final/total_distance Mean       0.994393
+evaluation/env_infos/final/total_distance Std        0
+evaluation/env_infos/final/total_distance Max        0.994393
+evaluation/env_infos/final/total_distance Min        0.994393
+evaluation/env_infos/initial/total_distance Mean     1.01181
+evaluation/env_infos/initial/total_distance Std      0
+evaluation/env_infos/initial/total_distance Max      1.01181
+evaluation/env_infos/initial/total_distance Min      1.01181
+evaluation/env_infos/total_distance Mean             1.00389
+evaluation/env_infos/total_distance Std              0.00715887
+evaluation/env_infos/total_distance Max              1.01269
+evaluation/env_infos/total_distance Min              0.994393
+time/data storing (s)                                0.000105151
+time/evaluation sampling (s)                         0.834493
+time/exploration sampling (s)                        0.807805
+time/logging (s)                                     0.0019542
+time/saving (s)                                      0.00967855
+time/training (s)                                    0.69957
+time/epoch (s)                                       2.35361
+time/total (s)                                       9.11438
+Epoch                                                2
+-------------------------------------------------  -------------
+2019-10-21 20:36:28.763854 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 3 finished
+-------------------------------------------------  ------------
+replay_buffer/size                                 50
+trainer/QF1 Loss                                    0.0208447
+trainer/QF2 Loss                                    0.0226914
+trainer/Policy Loss                                 1.15518
+trainer/Q1 Predictions Mean                        -1.14661
+trainer/Q1 Predictions Std                          0.0160688
+trainer/Q1 Predictions Max                         -1.11887
+trainer/Q1 Predictions Min                         -1.17776
+trainer/Q2 Predictions Mean                        -1.15159
+trainer/Q2 Predictions Std                          0.0136634
+trainer/Q2 Predictions Max                         -1.13062
+trainer/Q2 Predictions Min                         -1.20012
+trainer/Q Targets Mean                             -1.01134
+trainer/Q Targets Std                               0.0463953
+trainer/Q Targets Max                              -0.900052
+trainer/Q Targets Min                              -1.15075
+trainer/Bellman Errors 1 Mean                       0.0208447
+trainer/Bellman Errors 1 Std                        0.0148311
+trainer/Bellman Errors 1 Max                        0.0771096
+trainer/Bellman Errors 1 Min                        7.72539e-05
+trainer/Bellman Errors 2 Mean                       0.0226914
+trainer/Bellman Errors 2 Std                        0.0173685
+trainer/Bellman Errors 2 Max                        0.0900307
+trainer/Bellman Errors 2 Min                        6.26456e-05
+trainer/Policy Action Mean                         -0.184696
+trainer/Policy Action Std                           0.834857
+trainer/Policy Action Max                           0.995406
+trainer/Policy Action Min                          -0.994871
+exploration/num steps total                        50
+exploration/num paths total                         5
+exploration/path length Mean                       10
+exploration/path length Std                         0
+exploration/path length Max                        10
+exploration/path length Min                        10
+exploration/Rewards Mean                           -0.944146
+exploration/Rewards Std                             0.0402819
+exploration/Rewards Max                            -0.882374
+exploration/Rewards Min                            -0.990556
+exploration/Returns Mean                           -9.44146
+exploration/Returns Std                             0
+exploration/Returns Max                            -9.44146
+exploration/Returns Min                            -9.44146
+exploration/Actions Mean                           -0.160066
+exploration/Actions Std                             0.825413
+exploration/Actions Max                             1
+exploration/Actions Min                            -1
+exploration/Num Paths                               1
+exploration/Average Returns                        -9.44146
+exploration/env_infos/final/total_distance Mean     0.939348
+exploration/env_infos/final/total_distance Std      0
+exploration/env_infos/final/total_distance Max      0.939348
+exploration/env_infos/final/total_distance Min      0.939348
+exploration/env_infos/initial/total_distance Mean   0.995267
+exploration/env_infos/initial/total_distance Std    0
+exploration/env_infos/initial/total_distance Max    0.995267
+exploration/env_infos/initial/total_distance Min    0.995267
+exploration/env_infos/total_distance Mean           0.971449
+exploration/env_infos/total_distance Std            0.0208198
+exploration/env_infos/total_distance Max            0.995267
+exploration/env_infos/total_distance Min            0.939348
+evaluation/num steps total                         40
+evaluation/num paths total                          4
+evaluation/path length Mean                        10
+evaluation/path length Std                          0
+evaluation/path length Max                         10
+evaluation/path length Min                         10
+evaluation/Rewards Mean                            -0.991245
+evaluation/Rewards Std                              0.0311674
+evaluation/Rewards Max                             -0.941321
+evaluation/Rewards Min                             -1.027
+evaluation/Returns Mean                            -9.91245
+evaluation/Returns Std                              0
+evaluation/Returns Max                             -9.91245
+evaluation/Returns Min                             -9.91245
+evaluation/Actions Mean                            -0.184196
+evaluation/Actions Std                              0.835725
+evaluation/Actions Max                              0.994597
+evaluation/Actions Min                             -0.993981
+evaluation/Num Paths                                1
+evaluation/Average Returns                         -9.91245
+evaluation/env_infos/final/total_distance Mean      0.970217
+evaluation/env_infos/final/total_distance Std       0
+evaluation/env_infos/final/total_distance Max       0.970217
+evaluation/env_infos/final/total_distance Min       0.970217
+evaluation/env_infos/initial/total_distance Mean    1.01341
+evaluation/env_infos/initial/total_distance Std     0
+evaluation/env_infos/initial/total_distance Max     1.01341
+evaluation/env_infos/initial/total_distance Min     1.01341
+evaluation/env_infos/total_distance Mean            0.995489
+evaluation/env_infos/total_distance Std             0.0157086
+evaluation/env_infos/total_distance Max             1.01341
+evaluation/env_infos/total_distance Min             0.970217
+time/data storing (s)                               0.000187827
+time/evaluation sampling (s)                        0.807526
+time/exploration sampling (s)                       0.858563
+time/logging (s)                                    0.00195178
+time/saving (s)                                     0.00968411
+time/training (s)                                   0.828356
+time/epoch (s)                                      2.50627
+time/total (s)                                     11.6256
+Epoch                                               3
+-------------------------------------------------  ------------
+2019-10-21 20:36:31.293965 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 4 finished
+-------------------------------------------------  -------------
+replay_buffer/size                                  60
+trainer/QF1 Loss                                     0.0276564
+trainer/QF2 Loss                                     0.0264423
+trainer/Policy Loss                                  0.870308
+trainer/Q1 Predictions Mean                         -0.91981
+trainer/Q1 Predictions Std                           0.0430475
+trainer/Q1 Predictions Max                          -0.859865
+trainer/Q1 Predictions Min                          -0.981949
+trainer/Q2 Predictions Mean                         -0.920635
+trainer/Q2 Predictions Std                           0.039187
+trainer/Q2 Predictions Max                          -0.862716
+trainer/Q2 Predictions Min                          -0.977837
+trainer/Q Targets Mean                              -1.05269
+trainer/Q Targets Std                                0.0856623
+trainer/Q Targets Max                               -0.907831
+trainer/Q Targets Min                               -1.30013
+trainer/Bellman Errors 1 Mean                        0.0276564
+trainer/Bellman Errors 1 Std                         0.0404096
+trainer/Bellman Errors 1 Max                         0.163649
+trainer/Bellman Errors 1 Min                         0.000316468
+trainer/Bellman Errors 2 Mean                        0.0264423
+trainer/Bellman Errors 2 Std                         0.0374396
+trainer/Bellman Errors 2 Max                         0.152878
+trainer/Bellman Errors 2 Min                         0.000206256
+trainer/Policy Action Mean                          -0.456247
+trainer/Policy Action Std                            0.734542
+trainer/Policy Action Max                            0.999813
+trainer/Policy Action Min                           -0.999793
+exploration/num steps total                         60
+exploration/num paths total                          6
+exploration/path length Mean                        10
+exploration/path length Std                          0
+exploration/path length Max                         10
+exploration/path length Min                         10
+exploration/Rewards Mean                            -1.15763
+exploration/Rewards Std                              0.0852322
+exploration/Rewards Max                             -1.02741
+exploration/Rewards Min                             -1.27423
+exploration/Returns Mean                           -11.5763
+exploration/Returns Std                              0
+exploration/Returns Max                            -11.5763
+exploration/Returns Min                            -11.5763
+exploration/Actions Mean                            -0.444807
+exploration/Actions Std                              0.719643
+exploration/Actions Max                              1
+exploration/Actions Min                             -1
+exploration/Num Paths                                1
+exploration/Average Returns                        -11.5763
+exploration/env_infos/final/total_distance Mean      1.12882
+exploration/env_infos/final/total_distance Std       0
+exploration/env_infos/final/total_distance Max       1.12882
+exploration/env_infos/final/total_distance Min       1.12882
+exploration/env_infos/initial/total_distance Mean    1.01361
+exploration/env_infos/initial/total_distance Std     0
+exploration/env_infos/initial/total_distance Max     1.01361
+exploration/env_infos/initial/total_distance Min     1.01361
+exploration/env_infos/total_distance Mean            1.0752
+exploration/env_infos/total_distance Std             0.0398342
+exploration/env_infos/total_distance Max             1.12882
+exploration/env_infos/total_distance Min             1.01361
+evaluation/num steps total                          50
+evaluation/num paths total                           5
+evaluation/path length Mean                         10
+evaluation/path length Std                           0
+evaluation/path length Max                          10
+evaluation/path length Min                          10
+evaluation/Rewards Mean                             -1.17037
+evaluation/Rewards Std                               0.0898181
+evaluation/Rewards Max                              -1.0533
+evaluation/Rewards Min                              -1.31834
+evaluation/Returns Mean                            -11.7037
+evaluation/Returns Std                               0
+evaluation/Returns Max                             -11.7037
+evaluation/Returns Min                             -11.7037
+evaluation/Actions Mean                             -0.457542
+evaluation/Actions Std                               0.734936
+evaluation/Actions Max                               0.999791
+evaluation/Actions Min                              -0.999769
+evaluation/Num Paths                                 1
+evaluation/Average Returns                         -11.7037
+evaluation/env_infos/final/total_distance Mean       1.14819
+evaluation/env_infos/final/total_distance Std        0
+evaluation/env_infos/final/total_distance Max        1.14819
+evaluation/env_infos/final/total_distance Min        1.14819
+evaluation/env_infos/initial/total_distance Mean     1.0263
+evaluation/env_infos/initial/total_distance Std      0
+evaluation/env_infos/initial/total_distance Max      1.0263
+evaluation/env_infos/initial/total_distance Min      1.0263
+evaluation/env_infos/total_distance Mean             1.08104
+evaluation/env_infos/total_distance Std              0.0414024
+evaluation/env_infos/total_distance Max              1.14819
+evaluation/env_infos/total_distance Min              1.0263
+time/data storing (s)                                0.000170996
+time/evaluation sampling (s)                         0.779783
+time/exploration sampling (s)                        0.884407
+time/logging (s)                                     0.00235866
+time/saving (s)                                      0.0116821
+time/training (s)                                    0.846411
+time/epoch (s)                                       2.52481
+time/total (s)                                      14.1553
+Epoch                                                4
+-------------------------------------------------  -------------
+2019-10-21 20:36:33.881320 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 5 finished
+-------------------------------------------------  -------------
+replay_buffer/size                                  70
+trainer/QF1 Loss                                     0.013222
+trainer/QF2 Loss                                     0.0124131
+trainer/Policy Loss                                  1.14978
+trainer/Q1 Predictions Mean                         -1.1379
+trainer/Q1 Predictions Std                           0.0250728
+trainer/Q1 Predictions Max                          -1.08463
+trainer/Q1 Predictions Min                          -1.19665
+trainer/Q2 Predictions Mean                         -1.13865
+trainer/Q2 Predictions Std                           0.0294326
+trainer/Q2 Predictions Max                          -1.07678
+trainer/Q2 Predictions Min                          -1.20504
+trainer/Q Targets Mean                              -1.09032
+trainer/Q Targets Std                                0.122868
+trainer/Q Targets Max                               -0.91526
+trainer/Q Targets Min                               -1.53253
+trainer/Bellman Errors 1 Mean                        0.013222
+trainer/Bellman Errors 1 Std                         0.0181333
+trainer/Bellman Errors 1 Max                         0.119422
+trainer/Bellman Errors 1 Min                         1.68312e-05
+trainer/Bellman Errors 2 Mean                        0.0124131
+trainer/Bellman Errors 2 Std                         0.0168405
+trainer/Bellman Errors 2 Max                         0.110874
+trainer/Bellman Errors 2 Min                         3.2093e-05
+trainer/Policy Action Mean                          -0.596941
+trainer/Policy Action Std                            0.72262
+trainer/Policy Action Max                            0.999978
+trainer/Policy Action Min                           -0.999976
+exploration/num steps total                         70
+exploration/num paths total                          7
+exploration/path length Mean                        10
+exploration/path length Std                          0
+exploration/path length Max                         10
+exploration/path length Min                         10
+exploration/Rewards Mean                            -1.24661
+exploration/Rewards Std                              0.153512
+exploration/Rewards Max                             -1.01703
+exploration/Rewards Min                             -1.4985
+exploration/Returns Mean                           -12.4661
+exploration/Returns Std                              0
+exploration/Returns Max                            -12.4661
+exploration/Returns Min                            -12.4661
+exploration/Actions Mean                            -0.587828
+exploration/Actions Std                              0.698723
+exploration/Actions Max                              1
+exploration/Actions Min                             -1
+exploration/Num Paths                                1
+exploration/Average Returns                        -12.4661
+exploration/env_infos/final/total_distance Mean      1.22413
+exploration/env_infos/final/total_distance Std       0
+exploration/env_infos/final/total_distance Max       1.22413
+exploration/env_infos/final/total_distance Min       1.22413
+exploration/env_infos/initial/total_distance Mean    1.00848
+exploration/env_infos/initial/total_distance Std     0
+exploration/env_infos/initial/total_distance Max     1.00848
+exploration/env_infos/initial/total_distance Min     1.00848
+exploration/env_infos/total_distance Mean            1.11436
+exploration/env_infos/total_distance Std             0.0693607
+exploration/env_infos/total_distance Max             1.22413
+exploration/env_infos/total_distance Min             1.00848
+evaluation/num steps total                          60
+evaluation/num paths total                           6
+evaluation/path length Mean                         10
+evaluation/path length Std                           0
+evaluation/path length Max                          10
+evaluation/path length Min                          10
+evaluation/Rewards Mean                             -1.34577
+evaluation/Rewards Std                               0.192766
+evaluation/Rewards Max                              -1.03351
+evaluation/Rewards Min                              -1.64452
+evaluation/Returns Mean                            -13.4577
+evaluation/Returns Std                               0
+evaluation/Returns Max                             -13.4577
+evaluation/Returns Min                             -13.4577
+evaluation/Actions Mean                             -0.599047
+evaluation/Actions Std                               0.723141
+evaluation/Actions Max                               0.999975
+evaluation/Actions Min                              -0.999973
+evaluation/Num Paths                                 1
+evaluation/Average Returns                         -13.4577
+evaluation/env_infos/final/total_distance Mean       1.28239
+evaluation/env_infos/final/total_distance Std        0
+evaluation/env_infos/final/total_distance Max        1.28239
+evaluation/env_infos/final/total_distance Min        1.28239
+evaluation/env_infos/initial/total_distance Mean     1.01662
+evaluation/env_infos/initial/total_distance Std      0
+evaluation/env_infos/initial/total_distance Max      1.01662
+evaluation/env_infos/initial/total_distance Min      1.01662
+evaluation/env_infos/total_distance Mean             1.15704
+evaluation/env_infos/total_distance Std              0.08386
+evaluation/env_infos/total_distance Max              1.28239
+evaluation/env_infos/total_distance Min              1.01662
+time/data storing (s)                                0.000119741
+time/evaluation sampling (s)                         0.796078
+time/exploration sampling (s)                        0.828783
+time/logging (s)                                     0.00358186
+time/saving (s)                                      0.0187929
+time/training (s)                                    0.934287
+time/epoch (s)                                       2.58164
+time/total (s)                                      16.743
+Epoch                                                5
+-------------------------------------------------  -------------
+2019-10-21 20:36:37.410184 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 6 finished
+-------------------------------------------------  -------------
+replay_buffer/size                                  80
+trainer/QF1 Loss                                     0.0157235
+trainer/QF2 Loss                                     0.0155815
+trainer/Policy Loss                                  1.16982
+trainer/Q1 Predictions Mean                         -1.09387
+trainer/Q1 Predictions Std                           0.0660418
+trainer/Q1 Predictions Max                          -1.00778
+trainer/Q1 Predictions Min                          -1.23365
+trainer/Q2 Predictions Mean                         -1.09376
+trainer/Q2 Predictions Std                           0.067629
+trainer/Q2 Predictions Max                          -0.999856
+trainer/Q2 Predictions Min                          -1.23681
+trainer/Q Targets Mean                              -1.1234
+trainer/Q Targets Std                                0.168142
+trainer/Q Targets Max                               -0.923586
+trainer/Q Targets Min                               -1.69148
+trainer/Bellman Errors 1 Mean                        0.0157235
+trainer/Bellman Errors 1 Std                         0.0462951
+trainer/Bellman Errors 1 Max                         0.244558
+trainer/Bellman Errors 1 Min                         1.09117e-07
+trainer/Bellman Errors 2 Mean                        0.0155815
+trainer/Bellman Errors 2 Std                         0.0460776
+trainer/Bellman Errors 2 Max                         0.243457
+trainer/Bellman Errors 2 Min                         2.91362e-07
+trainer/Policy Action Mean                          -0.48354
+trainer/Policy Action Std                            0.70745
+trainer/Policy Action Max                            0.999981
+trainer/Policy Action Min                           -0.99998
+exploration/num steps total                         80
+exploration/num paths total                          8
+exploration/path length Mean                        10
+exploration/path length Std                          0
+exploration/path length Max                         10
+exploration/path length Min                         10
+exploration/Rewards Mean                            -1.40062
+exploration/Rewards Std                              0.209556
+exploration/Rewards Max                             -0.998815
+exploration/Rewards Min                             -1.64824
+exploration/Returns Mean                           -14.0062
+exploration/Returns Std                              0
+exploration/Returns Max                            -14.0062
+exploration/Returns Min                            -14.0062
+exploration/Actions Mean                            -0.490751
+exploration/Actions Std                              0.688073
+exploration/Actions Max                              1
+exploration/Actions Min                             -1
+exploration/Num Paths                                1
+exploration/Average Returns                        -14.0062
+exploration/env_infos/final/total_distance Mean      1.28384
+exploration/env_infos/final/total_distance Std       0
+exploration/env_infos/final/total_distance Max       1.28384
+exploration/env_infos/final/total_distance Min       1.28384
+exploration/env_infos/initial/total_distance Mean    0.999408
+exploration/env_infos/initial/total_distance Std     0
+exploration/env_infos/initial/total_distance Max     0.999408
+exploration/env_infos/initial/total_distance Min     0.999408
+exploration/env_infos/total_distance Mean            1.17996
+exploration/env_infos/total_distance Std             0.0912112
+exploration/env_infos/total_distance Max             1.28384
+exploration/env_infos/total_distance Min             0.999408
+evaluation/num steps total                          70
+evaluation/num paths total                           7
+evaluation/path length Mean                         10
+evaluation/path length Std                           0
+evaluation/path length Max                          10
+evaluation/path length Min                          10
+evaluation/Rewards Mean                             -1.36914
+evaluation/Rewards Std                               0.150419
+evaluation/Rewards Max                              -1.07435
+evaluation/Rewards Min                              -1.57029
+evaluation/Returns Mean                            -13.6914
+evaluation/Returns Std                               0
+evaluation/Returns Max                             -13.6914
+evaluation/Returns Min                             -13.6914
+evaluation/Actions Mean                             -0.485962
+evaluation/Actions Std                               0.707357
+evaluation/Actions Max                               0.999978
+evaluation/Actions Min                              -0.999976
+evaluation/Num Paths                                 1
+evaluation/Average Returns                         -13.6914
+evaluation/env_infos/final/total_distance Mean       1.25311
+evaluation/env_infos/final/total_distance Std        0
+evaluation/env_infos/final/total_distance Max        1.25311
+evaluation/env_infos/final/total_distance Min        1.25311
+evaluation/env_infos/initial/total_distance Mean     1.03651
+evaluation/env_infos/initial/total_distance Std      0
+evaluation/env_infos/initial/total_distance Max      1.03651
+evaluation/env_infos/initial/total_distance Min      1.03651
+evaluation/env_infos/total_distance Mean             1.16828
+evaluation/env_infos/total_distance Std              0.065283
+evaluation/env_infos/total_distance Max              1.25311
+evaluation/env_infos/total_distance Min              1.03651
+time/data storing (s)                                0.000193963
+time/evaluation sampling (s)                         1.13835
+time/exploration sampling (s)                        1.14674
+time/logging (s)                                     0.003922
+time/saving (s)                                      0.0188559
+time/training (s)                                    1.21181
+time/epoch (s)                                       3.51987
+time/total (s)                                      20.2706
+Epoch                                                6
+-------------------------------------------------  -------------
+2019-10-21 20:36:40.183286 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 7 finished
+-------------------------------------------------  ------------
+replay_buffer/size                                 90
+trainer/QF1 Loss                                    0.0136173
+trainer/QF2 Loss                                    0.0137423
+trainer/Policy Loss                                 0.945206
+trainer/Q1 Predictions Mean                        -1.12817
+trainer/Q1 Predictions Std                          0.129617
+trainer/Q1 Predictions Max                         -0.910447
+trainer/Q1 Predictions Min                         -1.38144
+trainer/Q2 Predictions Mean                        -1.12879
+trainer/Q2 Predictions Std                          0.128039
+trainer/Q2 Predictions Max                         -0.911999
+trainer/Q2 Predictions Min                         -1.37879
+trainer/Q Targets Mean                             -1.13168
+trainer/Q Targets Std                               0.182783
+trainer/Q Targets Max                              -0.900145
+trainer/Q Targets Min                              -1.69998
+trainer/Bellman Errors 1 Mean                       0.0136173
+trainer/Bellman Errors 1 Std                        0.0292838
+trainer/Bellman Errors 1 Max                        0.146204
+trainer/Bellman Errors 1 Min                        5.53691e-07
+trainer/Bellman Errors 2 Mean                       0.0137423
+trainer/Bellman Errors 2 Std                        0.0297013
+trainer/Bellman Errors 2 Max                        0.148669
+trainer/Bellman Errors 2 Min                        2.08566e-07
+trainer/Policy Action Mean                         -0.0868389
+trainer/Policy Action Std                           0.917088
+trainer/Policy Action Max                           0.999943
+trainer/Policy Action Min                          -0.999941
+exploration/num steps total                        90
+exploration/num paths total                         9
+exploration/path length Mean                       10
+exploration/path length Std                         0
+exploration/path length Max                        10
+exploration/path length Min                        10
+exploration/Rewards Mean                           -0.926338
+exploration/Rewards Std                             0.0473133
+exploration/Rewards Max                            -0.850604
+exploration/Rewards Min                            -0.983633
+exploration/Returns Mean                           -9.26338
+exploration/Returns Std                             0
+exploration/Returns Max                            -9.26338
+exploration/Returns Min                            -9.26338
+exploration/Actions Mean                           -0.065452
+exploration/Actions Std                             0.906287
+exploration/Actions Max                             1
+exploration/Actions Min                            -1
+exploration/Num Paths                               1
+exploration/Average Returns                        -9.26338
+exploration/env_infos/final/total_distance Mean     0.922282
+exploration/env_infos/final/total_distance Std      0
+exploration/env_infos/final/total_distance Max      0.922282
+exploration/env_infos/final/total_distance Min      0.922282
+exploration/env_infos/initial/total_distance Mean   0.991783
+exploration/env_infos/initial/total_distance Std    0
+exploration/env_infos/initial/total_distance Max    0.991783
+exploration/env_infos/initial/total_distance Min    0.991783
+exploration/env_infos/total_distance Mean           0.962147
+exploration/env_infos/total_distance Std            0.0247184
+exploration/env_infos/total_distance Max            0.991783
+exploration/env_infos/total_distance Min            0.922282
+evaluation/num steps total                         80
+evaluation/num paths total                          8
+evaluation/path length Mean                        10
+evaluation/path length Std                          0
+evaluation/path length Max                         10
+evaluation/path length Min                         10
+evaluation/Rewards Mean                            -0.915143
+evaluation/Rewards Std                              0.0749808
+evaluation/Rewards Max                             -0.805285
+evaluation/Rewards Min                             -1.03036
+evaluation/Returns Mean                            -9.15143
+evaluation/Returns Std                              0
+evaluation/Returns Max                             -9.15143
+evaluation/Returns Min                             -9.15143
+evaluation/Actions Mean                            -0.0859841
+evaluation/Actions Std                              0.917869
+evaluation/Actions Max                              0.999925
+evaluation/Actions Min                             -0.999923
+evaluation/Num Paths                                1
+evaluation/Average Returns                         -9.15143
+evaluation/env_infos/final/total_distance Mean      0.897377
+evaluation/env_infos/final/total_distance Std       0
+evaluation/env_infos/final/total_distance Max       0.897377
+evaluation/env_infos/final/total_distance Min       0.897377
+evaluation/env_infos/initial/total_distance Mean    1.01507
+evaluation/env_infos/initial/total_distance Std     0
+evaluation/env_infos/initial/total_distance Max     1.01507
+evaluation/env_infos/initial/total_distance Min     1.01507
+evaluation/env_infos/total_distance Mean            0.955825
+evaluation/env_infos/total_distance Std             0.039263
+evaluation/env_infos/total_distance Max             1.01507
+evaluation/env_infos/total_distance Min             0.897377
+time/data storing (s)                               0.000221419
+time/evaluation sampling (s)                        0.874141
+time/exploration sampling (s)                       0.816996
+time/logging (s)                                    0.00305237
+time/saving (s)                                     0.014853
+time/training (s)                                   1.05321
+time/epoch (s)                                      2.76247
+time/total (s)                                     23.0414
+Epoch                                               7
+-------------------------------------------------  ------------
+2019-10-21 20:36:42.961032 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 8 finished
+-------------------------------------------------  -------------
+replay_buffer/size                                 100
+trainer/QF1 Loss                                     0.012677
+trainer/QF2 Loss                                     0.0129777
+trainer/Policy Loss                                  0.887984
+trainer/Q1 Predictions Mean                         -1.11278
+trainer/Q1 Predictions Std                           0.169908
+trainer/Q1 Predictions Max                          -0.861177
+trainer/Q1 Predictions Min                          -1.46628
+trainer/Q2 Predictions Mean                         -1.11451
+trainer/Q2 Predictions Std                           0.16909
+trainer/Q2 Predictions Max                          -0.853285
+trainer/Q2 Predictions Min                          -1.46207
+trainer/Q Targets Mean                              -1.10649
+trainer/Q Targets Std                                0.164096
+trainer/Q Targets Max                               -0.908935
+trainer/Q Targets Min                               -1.7095
+trainer/Bellman Errors 1 Mean                        0.012677
+trainer/Bellman Errors 1 Std                         0.0221484
+trainer/Bellman Errors 1 Max                         0.100024
+trainer/Bellman Errors 1 Min                         2.51754e-08
+trainer/Bellman Errors 2 Mean                        0.0129777
+trainer/Bellman Errors 2 Std                         0.0223768
+trainer/Bellman Errors 2 Max                         0.0993747
+trainer/Bellman Errors 2 Min                         2.03265e-07
+trainer/Policy Action Mean                          -0.00243189
+trainer/Policy Action Std                            0.997518
+trainer/Policy Action Max                            0.999995
+trainer/Policy Action Min                           -0.999995
+exploration/num steps total                        100
+exploration/num paths total                         10
+exploration/path length Mean                        10
+exploration/path length Std                          0
+exploration/path length Max                         10
+exploration/path length Min                         10
+exploration/Rewards Mean                            -0.943668
+exploration/Rewards Std                              0.0367602
+exploration/Rewards Max                             -0.865997
+exploration/Rewards Min                             -0.990556
+exploration/Returns Mean                            -9.43668
+exploration/Returns Std                              0
+exploration/Returns Max                             -9.43668
+exploration/Returns Min                             -9.43668
+exploration/Actions Mean                             0.00308654
+exploration/Actions Std                              0.96083
+exploration/Actions Max                              1
+exploration/Actions Min                             -1
+exploration/Num Paths                                1
+exploration/Average Returns                         -9.43668
+exploration/env_infos/final/total_distance Mean      0.93059
+exploration/env_infos/final/total_distance Std       0
+exploration/env_infos/final/total_distance Max       0.93059
+exploration/env_infos/final/total_distance Min       0.93059
+exploration/env_infos/initial/total_distance Mean    0.995267
+exploration/env_infos/initial/total_distance Std     0
+exploration/env_infos/initial/total_distance Max     0.995267
+exploration/env_infos/initial/total_distance Min     0.995267
+exploration/env_infos/total_distance Mean            0.971239
+exploration/env_infos/total_distance Std             0.0190535
+exploration/env_infos/total_distance Max             0.995267
+exploration/env_infos/total_distance Min             0.93059
+evaluation/num steps total                          90
+evaluation/num paths total                           9
+evaluation/path length Mean                         10
+evaluation/path length Std                           0
+evaluation/path length Max                          10
+evaluation/path length Min                          10
+evaluation/Rewards Mean                             -0.896172
+evaluation/Rewards Std                               0.0957779
+evaluation/Rewards Max                              -0.750636
+evaluation/Rewards Min                              -1.03228
+evaluation/Returns Mean                             -8.96172
+evaluation/Returns Std                               0
+evaluation/Returns Max                              -8.96172
+evaluation/Returns Min                              -8.96172
+evaluation/Actions Mean                             -0.00229005
+evaluation/Actions Std                               0.997665
+evaluation/Actions Max                               0.999993
+evaluation/Actions Min                              -0.999993
+evaluation/Num Paths                                 1
+evaluation/Average Returns                          -8.96172
+evaluation/env_infos/final/total_distance Mean       0.866393
+evaluation/env_infos/final/total_distance Std        0
+evaluation/env_infos/final/total_distance Max        0.866393
+evaluation/env_infos/final/total_distance Min        0.866393
+evaluation/env_infos/initial/total_distance Mean     1.01601
+evaluation/env_infos/initial/total_distance Std      0
+evaluation/env_infos/initial/total_distance Max      1.01601
+evaluation/env_infos/initial/total_distance Min      1.01601
+evaluation/env_infos/total_distance Mean             0.945294
+evaluation/env_infos/total_distance Std              0.0509019
+evaluation/env_infos/total_distance Max              1.01601
+evaluation/env_infos/total_distance Min              0.866393
+time/data storing (s)                                0.000113488
+time/evaluation sampling (s)                         1.05957
+time/exploration sampling (s)                        0.901059
+time/logging (s)                                     0.00221033
+time/saving (s)                                      0.0108594
+time/training (s)                                    0.794387
+time/epoch (s)                                       2.7682
+time/total (s)                                      25.8168
+Epoch                                                8
+-------------------------------------------------  -------------
+2019-10-21 20:36:45.425255 KST | [test_2019_10_21_20_36_17_0000--s-0] Epoch 9 finished
+-------------------------------------------------  -------------
+replay_buffer/size                                 110
+trainer/QF1 Loss                                     0.007792
+trainer/QF2 Loss                                     0.00811323
+trainer/Policy Loss                                  0.949624
+trainer/Q1 Predictions Mean                         -1.10661
+trainer/Q1 Predictions Std                           0.143862
+trainer/Q1 Predictions Max                          -0.912733
+trainer/Q1 Predictions Min                          -1.44852
+trainer/Q2 Predictions Mean                         -1.10807
+trainer/Q2 Predictions Std                           0.145281
+trainer/Q2 Predictions Max                          -0.9009
+trainer/Q2 Predictions Min                          -1.44589
+trainer/Q Targets Mean                              -1.11037
+trainer/Q Targets Std                                0.160427
+trainer/Q Targets Max                               -0.908034
+trainer/Q Targets Min                               -1.71807
+trainer/Bellman Errors 1 Mean                        0.007792
+trainer/Bellman Errors 1 Std                         0.0148611
+trainer/Bellman Errors 1 Max                         0.0858701
+trainer/Bellman Errors 1 Min                         4.03563e-07
+trainer/Bellman Errors 2 Mean                        0.00811323
+trainer/Bellman Errors 2 Std                         0.0152967
+trainer/Bellman Errors 2 Max                         0.0877588
+trainer/Bellman Errors 2 Min                         5.76451e-07
+trainer/Policy Action Mean                          -6.71142e-05
+trainer/Policy Action Std                            0.999924
+trainer/Policy Action Max                            1
+trainer/Policy Action Min                           -1
+exploration/num steps total                        110
+exploration/num paths total                         11
+exploration/path length Mean                        10
+exploration/path length Std                          0
+exploration/path length Max                         10
+exploration/path length Min                         10
+exploration/Rewards Mean                            -0.945548
+exploration/Rewards Std                              0.0416174
+exploration/Rewards Max                             -0.840378
+exploration/Rewards Min                             -0.990556
+exploration/Returns Mean                            -9.45548
+exploration/Returns Std                              0
+exploration/Returns Max                             -9.45548
+exploration/Returns Min                             -9.45548
+exploration/Actions Mean                             0.000413063
+exploration/Actions Std                              0.953496
+exploration/Actions Max                              1
+exploration/Actions Min                             -1
+exploration/Num Paths                                1
+exploration/Average Returns                         -9.45548
+exploration/env_infos/final/total_distance Mean      0.916721
+exploration/env_infos/final/total_distance Std       0
+exploration/env_infos/final/total_distance Max       0.916721
+exploration/env_infos/final/total_distance Min       0.916721
+exploration/env_infos/initial/total_distance Mean    0.995267
+exploration/env_infos/initial/total_distance Std     0
+exploration/env_infos/initial/total_distance Max     0.995267
+exploration/env_infos/initial/total_distance Min     0.995267
+exploration/env_infos/total_distance Mean            0.97215
+exploration/env_infos/total_distance Std             0.0217475
+exploration/env_infos/total_distance Max             0.995267
+exploration/env_infos/total_distance Min             0.916721
+evaluation/num steps total                         100
+evaluation/num paths total                          10
+evaluation/path length Mean                         10
+evaluation/path length Std                           0
+evaluation/path length Max                          10
+evaluation/path length Min                          10
+evaluation/Rewards Mean                             -0.966722
+evaluation/Rewards Std                               0.0454201
+evaluation/Rewards Max                              -0.881174
+evaluation/Rewards Min                              -1.02695
+evaluation/Returns Mean                             -9.66722
+evaluation/Returns Std                               0
+evaluation/Returns Max                              -9.66722
+evaluation/Returns Min                              -9.66722
+evaluation/Actions Mean                             -6.7836e-05
+evaluation/Actions Std                               0.999923
+evaluation/Actions Max                               0.999999
+evaluation/Actions Min                              -0.999999
+evaluation/Num Paths                                 1
+evaluation/Average Returns                          -9.66722
+evaluation/env_infos/final/total_distance Mean       0.938709
+evaluation/env_infos/final/total_distance Std        0
+evaluation/env_infos/final/total_distance Max        0.938709
+evaluation/env_infos/final/total_distance Min        0.938709
+evaluation/env_infos/initial/total_distance Mean     1.01338
+evaluation/env_infos/initial/total_distance Std      0
+evaluation/env_infos/initial/total_distance Max      1.01338
+evaluation/env_infos/initial/total_distance Min      1.01338
+evaluation/env_infos/total_distance Mean             0.982947
+evaluation/env_infos/total_distance Std              0.0231871
+evaluation/env_infos/total_distance Max              1.01338
+evaluation/env_infos/total_distance Min              0.938709
+time/data storing (s)                                0.000128204
+time/evaluation sampling (s)                         0.806134
+time/exploration sampling (s)                        0.858067
+time/logging (s)                                     0.00237745
+time/saving (s)                                      0.0117639
+time/training (s)                                    0.779023
+time/epoch (s)                                       2.45749
+time/total (s)                                      28.2802
+Epoch                                                9
+-------------------------------------------------  -------------

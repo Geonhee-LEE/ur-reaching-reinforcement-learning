@@ -144,7 +144,7 @@ class GazeboExecution():
 
         result = self.set_physics(set_physics_request)
         rospy.logdebug("Gravity Update Result==" + str(result.success) + ",message==" + str(result.status_message))
-
+        
         self.unpauseSim()
 
 

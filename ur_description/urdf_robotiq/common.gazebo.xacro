@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <gazebo>
+    <plugin name="ros_control" filename="libgazebo_ros_control.so">
+      <!--robotNamespace>/</robotNamespace-->
+      <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
+    <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    <legacyModeNS>true</legacyModeNS>
+    </plugin>
+
+<!--
+    <plugin name="gazebo_ros_power_monitor_controller" filename="libgazebo_ros_power_monitor.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>1.0</updateRate>
+      <timeout>5</timeout>
+      <powerStateTopic>power_state</powerStateTopic>
+      <powerStateRate>10.0</powerStateRate>
+      <fullChargeCapacity>87.78</fullChargeCapacity>     
+      <dischargeRate>-474</dischargeRate>
+      <chargeRate>525</chargeRate>
+      <dischargeVoltage>15.52</dischargeVoltage>
+      <chargeVoltage>16.41</chargeVoltage>
+    </plugin>
+-->
+  </gazebo>
+
+  <gazebo reference="camera_link">
+    <sensor type="depth" name="fixed_camera">       
+      <always_on>true</always_on>
+      <visualize>true</visualize>             
+      <camera>
+          <horizontal_fov>1.047</horizontal_fov>
+          <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+          </image>
+          <depth_camera>
+
+          </depth_camera>
+          <clip>
+              <near>0.1</near>
+              <far>100</far>
+          </clip>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+          <baseline>0.2</baseline>
+          <alwaysOn>true</alwaysOn>
+              <updateRate>10.0</updateRate>
+              <cameraName>fixed_camera</cameraName>
+              <frameName>points_frame</frameName>                   
+          <imageTopicName>/rgb/image_raw</imageTopicName>
+          <depthImageTopicName>/depth/image_raw</depthImageTopicName>
+          <pointCloudTopicName>/depth/points</pointCloudTopicName>
+          <cameraInfoTopicName>/rgb/camera_info</cameraInfoTopicName>              
+          <depthImageCameraInfoTopicName>/depth/camera_info</depthImageCameraInfoTopicName>            
+          <pointCloudCutoff>0.4</pointCloudCutoff>                
+              <hackBaseline>0.07</hackBaseline>
+              <distortionK1>0.0</distortionK1>
+              <distortionK2>0.0</distortionK2>
+              <distortionK3>0.0</distortionK3>
+              <distortionT1>0.0</distortionT1>
+              <distortionT2>0.0</distortionT2>
+          <CxPrime>0.0</CxPrime>
+          <Cx>0.0</Cx>
+          <Cy>0.0</Cy>
+          <focalLength>0.0</focalLength>
+          </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="robotiq_arg2f_base_link">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+
+</robot>

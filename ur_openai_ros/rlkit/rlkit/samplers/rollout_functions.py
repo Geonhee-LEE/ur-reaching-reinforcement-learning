@@ -36,6 +36,7 @@ def multitask_rollout(
         if observation_key:
             o = o[observation_key]
         new_obs = np.hstack((o, goal))
+        #print("samplers/rollout_functions.py, new_obs", new_obs)
         a, agent_info = agent.get_action(new_obs, **get_action_kwargs)
         next_o, r, d, env_info = env.step(a)
         if render:

@@ -1,6 +1,13 @@
 <launch>
-  <rosparam file="$(find ur_robotiq_moveit_config)/config/controllers.yaml"/>
+  <arg name="controller" default="real"/> <!-- 'pos' or 'traj_vel' or 'pos' or 'traj_pos'-->
+
+  <rosparam file="$(find ur_robotiq_moveit_config)/config/real_controllers.yaml" if="$(eval controller == 'real')"/>
+  <rosparam file="$(find ur_robotiq_moveit_config)/config/controllers.yaml" if="$(eval controller == 'pos')"/>
+  <rosparam file="$(find ur_robotiq_moveit_config)/config/controllers.yaml" if="$(eval controller == 'traj_pos')"/>
+  <rosparam file="$(find ur_robotiq_moveit_config)/config/controllers-vel.yaml" if="$(eval controller == 'vel')"/>
+  <rosparam file="$(find ur_robotiq_moveit_config)/config/controllers-vel.yaml" if="$(eval controller == 'traj_vel')"/>
   <param name="use_controller_manager" value="false"/>
   <param name="trajectory_execution/execution_duration_monitoring" value="false"/>
+
   <param name="moveit_controller_manager" value="moveit_simple_controller_manager/MoveItSimpleControllerManager"/>
 </launch>

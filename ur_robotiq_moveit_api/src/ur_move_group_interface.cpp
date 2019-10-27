@@ -33,7 +33,9 @@ using namespace moveit_visual_tools;
 
 namespace rvt = rviz_visual_tools;
 
- 
+bool success;
+std::string PLANNING_GROUP;
+
 class URMoveGroup
 {
     public:
@@ -46,7 +48,7 @@ class URMoveGroup
             // The :move_group_interface:`MoveGroup` class can be easily
             // setup using just the name of the planning group you would like to control and plan for.
             static MoveGroupInterface move_group(PLANNING_GROUP);
-            static ::MoveItVisualTools visual_tools("base_link");
+            static MoveItVisualTools visual_tools("base_link");
 
             success = false;
 

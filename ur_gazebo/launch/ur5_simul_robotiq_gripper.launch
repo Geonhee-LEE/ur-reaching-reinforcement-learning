@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Launch file parameters -->
+  <arg name="limited" default="true"  doc="If true, limits joint range [-PI, PI] on all joints." />
+  <arg name="paused" default="false" doc="Starts gazebo in paused mode" />
+  <arg name="gui" default="true" doc="Starts gazebo gui" />
+  <arg name="sim" default="true" />
+
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" default="worlds/empty.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <!-- send robot urdf to param server -->
+  <include file="$(find ur_description)/launch/ur5_robotiq85_gripper_upload.launch">
+    <arg name="limited" value="$(arg limited)"/>
+  </include>
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -z 0.2 -y 0.7" respawn="false" output="screen" /> 
+
+  <!-- PID Gain -->
+
+  <!--rosparam file="$(find ur_gazebo)/controller/pid_for_gazebo_ros_control.yaml" command="load"/-->
+  <rosparam file="$(find ur_gazebo)/controller/total_gripper_controllers.yaml" command="load"/>
+   
+  <!-- Load controllers -->
+  <node name="robot_controllers" pkg="controller_manager" type="spawner"
+        output="screen"
+        args="joint_state_controller trajectory_controller gripper_controller"/>
+
+  <!-- TF -->
+  <node pkg="robot_state_publisher" type="state_publisher"
+        name="state_publisher">
+    <param name="publish_frequency"  type="double" value="50" />
+  </node>
+
+
+  <param name="red_box_path" type="str" value="$(find ur5_notebook)/urdf/red_box.urdf"/>
+  <!-- spawn the conveyor_belt in gazebo -->
+  <node name="spawn_conveyor_belt" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur5_notebook)/urdf/conveyor_belt.urdf -urdf bin -model conveyor_belt" />
+  <!-- spawn the conveyor_belt in gazebo -->
+  <node name="bin" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur5_notebook)/urdf/bin.urdf -urdf -model bin -y 0.8 -x -0.5 -z 0.05" />
+  <!-- the red blocks spawner node -->
+  <node name="blocks_spawner" pkg="ur5_notebook" type="blocks_spawner" output="screen" />
+
+  <!-- the cylinder poses publisher node -->
+  <node name="blocks_poses_publisher" pkg="ur5_notebook" type="blocks_poses_publisher" output="screen" />
+ 
+  <!-- the cylinder poses publisher node -->
+  <node name="ur5_vision" pkg="ur5_notebook" type="ur5_vision.py" output="screen" />
+
+</launch>

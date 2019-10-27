@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- pick and place simulator, first project-->
+  <arg name="limited" default="true" doc="If true, limits joint range [-PI, PI] on all joints." />
+  
+  <param unless="$(arg limited)" name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_description)/urdf_robotiq/ur5_simul_gripper.urdf.xacro'" />
+  <param if="$(arg limited)" name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_description)/urdf_robotiq/ur5_simul_gripper.urdf.xacro'" />
+</launch>

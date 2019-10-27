@@ -112,7 +112,7 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
 
     def _ros_init(self):
         # Can check log msgs according to log_level {rospy.DEBUG, rospy.INFO, rospy.WARN, rospy.ERROR} 
-        rospy.init_node('RLkitUR', anonymous=True, log_level=rospy.INFO)
+        rospy.init_node('RLkitUR', anonymous=True, log_level=rospy.DEBUG)
         rospy.logdebug("Starting RLkitUR Class object...")
 
         # Init GAZEBO Objects
@@ -365,14 +365,13 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         else:
             rospy.logwarn("Controller type is wrong!!!!")
 
+
+
         # 3rd: resets the robot to initial conditions
         rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_angles))
         # We save that position as the current joint desired position
         self.init_joints_pose(self.init_joint_angles)
 
-        # 4th: We Set the init pose to the jump topic so that the jump control can update
-        # We check the jump publisher has connection
-        
 
         # 5th: Check all subscribers work.
         # Get the state of the Robot defined by its RPY orientation, distance from
@@ -524,8 +523,29 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         return [seed]
         
     def link_state_callback(self, msg):
+        '''
+        name: 
+        - ground_plane::link
+        - conveyor_belt::base_link
+        - robot::_kinect2_link
+        - robot::base_link
+        - robot::shoulder_link
+        - robot::upper_arm_link
+        - robot::forearm_link
+        - robot::wrist_1_link
+        - robot::wrist_2_link
+        - robot::wrist_3_link
+        - robot::gripper_finger1_inner_knuckle_link
+        - robot::gripper_finger1_finger_tip_link
+        - robot::gripper_finger1_knuckle_link
+        - robot::gripper_finger2_inner_knuckle_link
+        - robot::gripper_finger2_finger_tip_link
+        - robot::gripper_finger2_knuckle_link
+        - bin::bottom
+        - red_blocks_0::base_link
+        '''
         self.link_state = msg
-        self.end_effector = self.link_state.pose[8]
+        self.end_effector = self.link_state.pose[9]
         self.current_pos = np.array([self.end_effector.position.x, self.end_effector.position.y, self.end_effector.position.z])
             
     def target_point_callback(self, msg):
@@ -636,15 +656,20 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         
         # Default waiting time
         #rospy.sleep(5.)
+        count = 0
 
         # Calculate the differetial distance
         while np.linalg.norm(self.joint_angles - self.init_joint_angles) > 0.10 and not rospy.is_shutdown():                        
             #print ("norm : \n", np.linalg.norm(self.joint_angles - self.init_joint_angles))      
             #print ("self.joint_angles : ",self.joint_angles)      
             #print ("self.init_joint_angles : ", self.init_joint_angles) 
+            count = count + 1
             self._joint_pubisher.move_joints(self.init_joint_angles)               
             if np.linalg.norm(self.joint_angles-self.init_joint_angles) < 0.1:
-                break             
+                break       
+            elif count > 10000:
+                print ("count is over")
+                break      
             #rate.sleep()
             
         self.sum_pos_action = self.init_joint_angles #np.array([0., 0., 0., 0., 0., 0.], dtype=np.float32)
@@ -788,6 +813,12 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         return np.random.uniform(low=np.array([-.14, -.13, 0.26]), high=np.array([.14, .13, .39]))
 
     def set_goal(self, goal):
+        '''
+            position: 
+            x: 0.19941478286
+            y: -0.400622037007
+            z: 1.14590045074
+        '''
         print ("goal: ", goal)
         self.goal = goal
         self.target_point = Point(goal[0], goal[1], goal[2])
@@ -841,10 +872,8 @@ class RLkitUR(robot_gazebo_env_goal.RobotGazeboEnv):
         del state['pos_controller']
         del state['pos_traj_controller']
         del state['vel_traj_controller']
-        del state['_ctrl_conn']
         del state['joint_velocty_limits']
         del state['joint_limits']
-        del state['_gz_conn']
         del state['target_point']
         del state['joint_names']
         del state['set_obj_state']
