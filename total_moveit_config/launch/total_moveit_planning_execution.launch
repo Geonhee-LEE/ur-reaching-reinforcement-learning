@@ -14,9 +14,9 @@
 
   <!-- Launch gripper config -->
   <include file="$(find robotiq_2f_gripper_control)/launch/robotiq_action_server.launch">
-    <arg name="sim" value="false"/>
+    <arg name="sim" value="true"/>
   </include>
-  <node pkg="robotiq_2f_gripper_control" name="robotiq_2f_client_sub" type="robotiq_2f_client_sub.py" output="screen"/>
+  <!--node pkg="robotiq_2f_gripper_control" name="robotiq_2f_client_sub" type="robotiq_2f_client_sub.py" output="screen"/-->
 
   <!-- Connect the base_link of UR and camera_link of camera -->
   <node pkg="tf" type="static_transform_publisher" name="kinect_base_link5" args="0.3 -0.12 1.10 0 1.57 0 /base_link /camera_link 100"/>
