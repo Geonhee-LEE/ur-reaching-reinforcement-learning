@@ -14,6 +14,7 @@ To bring up the real robot, run:
 
 __MoveIt! with real Hardware and gripper__  
 To run the MoveIt with gripper, run
+
 ```roslaunch total_moveit_config total_moveit_planning_execution.launch ```
 
 MoveIt API Python execution!
