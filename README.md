@@ -1,5 +1,32 @@
 # Universal Robot
 
+
+__Usage with real Hardware__  
+There are launch files available to bringup a real robot - either UR5 or UR10.  
+In the following the commands for the UR5 are given. For the UR10, simply replace the prefix accordingly.
+
+Don't forget to source the correct setup shell files and use a new terminal for each command!   
+
+To bring up the real robot, run:
+
+```roslaunch ur_modern_driver ur5_bringup.launch robot_ip:=192.168.0.3```
+
+
+__MoveIt! with real Hardware and gripper__  
+
+```roslaunch total_moveit_config total_moveit_planning_execution.launch ```
+
+
+
+A simple test script that moves the robot to predefined positions can be executed like this:
+
+```rosrun ur_driver test_move.py```
+
+
+CAUTION:  
+Remember that you should always have your hands on the big red button in case there is something in the way or anything unexpected happens.
+
+
 __Usage with Gazebo Simulation__  
 There are launch files available to bringup a simulated robot - either UR5 or UR10.  
 In the following the commands for the UR5 are given. For the UR10, simply replace the prefix accordingly.
@@ -35,25 +62,6 @@ As MoveIt! seems to have difficulties with finding plans for the UR with full jo
 
 
 ---
-
-__Usage with real Hardware__  
-There are launch files available to bringup a real robot - either UR5 or UR10.  
-In the following the commands for the UR5 are given. For the UR10, simply replace the prefix accordingly.
-
-Don't forget to source the correct setup shell files and use a new terminal for each command!   
-
-To bring up the real robot, run:
-
-```roslaunch ur_modern_driver ur5_bringup.launch robot_ip:=ROBOT_IP_ADDRESS```
-
-A simple test script that moves the robot to predefined positions can be executed like this:
-
-```rosrun ur_driver test_move.py```
-
-
-CAUTION:  
-Remember that you should always have your hands on the big red button in case there is something in the way or anything unexpected happens.
-
 
 
 __MoveIt! with real Hardware__  
