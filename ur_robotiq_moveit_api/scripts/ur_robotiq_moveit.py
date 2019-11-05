@@ -196,6 +196,16 @@ class UR_Moveit_API:
         plan = self.group_commander.plan(NEUTRAL_VALUES)
         return self.group_commander.execute(plan, wait=True)
 
+    def move_to_home(self):
+        print('Moving to home...')                  
+        plan = self.group_commander.plan(HOME)
+        return self.group_commander.execute(plan, wait=True)
+
+    def move_to_up(self):
+        print('Moving to up...')                  
+        plan = self.group_commander.plan(UP)
+        return self.group_commander.execute(plan, wait=True)
+
     def reset(self, data):
         print ("data: ", data)
         self.move_to_neutral()
@@ -389,6 +399,7 @@ def main():
     rospy.init_node("UR_Moveit_API")
     ur_moveit_api = UR_Moveit_API(boundaries=False)
     #ur_moveit_api.move_to_neutral()
+    ur_moveit_api.move_to_up()
     
     svd_node = StateValidity()
     svd_node.start_collision_checker()
