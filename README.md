@@ -18,7 +18,7 @@ To run the MoveIt with gripper, run
 
 MoveIt API Python execution!
 
-```roslaunch total_moveit_config total_moveit_planning_execution.launch ```
+```rosrun ur_robotiq_moveit_api ur_robotiq_moveit.py  ```
 
 A simple test script that moves the robot to predefined positions can be executed like this:
 
