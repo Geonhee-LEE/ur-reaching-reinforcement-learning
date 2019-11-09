@@ -4,15 +4,16 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /MotionPlanning1
         - /MotionPlanning1/Scene Geometry1
         - /MotionPlanning1/Scene Robot1
+        - /MotionPlanning1/Scene Robot1/Links1
         - /MotionPlanning1/Planning Request1
         - /MotionPlanning1/Planning Metrics1
         - /MotionPlanning1/Planned Path1
-        - /MarkerArray1
+        - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.742560029
-    Tree Height: 353
+    Tree Height: 405
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -206,7 +207,7 @@ Visualization Manager:
         Interactive Marker Size: 0.25
         Joint Violation Color: 255; 0; 255
         Planning Group: manipulator
-        Query Goal State: true
+        Query Goal State: false
         Query Start State: false
         Show Workspace: false
         Start State Alpha: 1
@@ -337,7 +338,7 @@ Visualization Manager:
             Value: true
         Robot Alpha: 0.5
         Show Robot Collision: false
-        Show Robot Visual: false
+        Show Robot Visual: true
       Value: true
       Velocity_Scaling_Factor: 1
     - Class: rviz/InteractiveMarkers
@@ -362,24 +363,106 @@ Visualization Manager:
       Marker Topic: /rviz_visual_tools
       Name: MarkerArray
       Namespaces:
-        Cylinder: true
-        Sphere: true
-        Text: true
-        goal: true
-        pose1: true
-        pt0: true
-        pt1: true
-        pt2: true
-        pt3: true
-        pt4: true
-        start: true
+        {}
       Queue Size: 100
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        base:
+          Value: false
+        base_link:
+          Value: false
+        camera_link:
+          Value: false
+        ee_link:
+          Value: true
+        forearm_link:
+          Value: false
+        left_inner_finger:
+          Value: false
+        left_inner_finger_pad:
+          Value: false
+        left_inner_knuckle:
+          Value: false
+        left_outer_finger:
+          Value: false
+        left_outer_knuckle:
+          Value: false
+        right_inner_finger:
+          Value: false
+        right_inner_finger_pad:
+          Value: false
+        right_inner_knuckle:
+          Value: false
+        right_outer_finger:
+          Value: false
+        right_outer_knuckle:
+          Value: false
+        robotiq_arg2f_base_link:
+          Value: false
+        shoulder_link:
+          Value: false
+        tool0:
+          Value: false
+        tool0_controller:
+          Value: false
+        upper_arm_link:
+          Value: false
+        world:
+          Value: false
+        wrist_1_link:
+          Value: false
+        wrist_2_link:
+          Value: false
+        wrist_3_link:
+          Value: false
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+      Tree:
+        world:
+          base_link:
+            base:
+              tool0_controller:
+                {}
+            camera_link:
+              {}
+            shoulder_link:
+              upper_arm_link:
+                forearm_link:
+                  wrist_1_link:
+                    wrist_2_link:
+                      wrist_3_link:
+                        ee_link:
+                          {}
+                        tool0:
+                          robotiq_arg2f_base_link:
+                            left_inner_knuckle:
+                              {}
+                            left_outer_knuckle:
+                              left_outer_finger:
+                                left_inner_finger:
+                                  left_inner_finger_pad:
+                                    {}
+                            right_inner_knuckle:
+                              {}
+                            right_outer_knuckle:
+                              right_outer_finger:
+                                right_inner_finger:
+                                  right_inner_finger_pad:
+                                    {}
+      Update Interval: 0
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: world
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -392,25 +475,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 2.94021678
+      Distance: 4.72411966
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.292176604
-        Y: 0.316771984
-        Z: 2.36928508e-06
+        X: 0.191634178
+        Y: 0.0649095401
+        Z: 2.13086651e-06
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.224796757
+      Pitch: 0.149796441
       Target Frame: world
       Value: XYOrbit (rviz)
-      Yaw: 0.848600984
+      Yaw: 0.0486087017
     Saved: ~
 Window Geometry:
   Displays:
@@ -429,4 +512,4 @@ Window Geometry:
     collapsed: false
   Width: 937
   X: 47
-  Y: 623
+  Y: 624
