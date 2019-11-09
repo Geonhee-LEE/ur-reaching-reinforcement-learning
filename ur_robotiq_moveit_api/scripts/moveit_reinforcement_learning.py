@@ -40,7 +40,7 @@ class UR_Moveit_API:
         self.scene = PlanningSceneInterface("/base_link")
         self.robot = RobotCommander()
         self.group_commander = MoveGroupCommander("manipulator")
-        self.gripper = MoveGroupCommander("gripper")
+        #self.gripper = MoveGroupCommander("gripper")
         self.group_commander.set_end_effector_link('ee_link')
         self.get_basic_infomation()
 
@@ -120,9 +120,11 @@ class UR_Moveit_API:
         # Publish
         display_trajectory_publisher.publish(display_trajectory);
 
+    '''
     def open_gripper(self, drop=False):
         plan = self.gripper.plan(GRIPPER_DROP if drop else GRIPPER_OPEN)
         return self.gripper.execute(plan, wait=True)
+    '''
 
     def add_bounds(self):
         print("Complete to add_bounds")
@@ -139,10 +141,12 @@ class UR_Moveit_API:
         for obj in self.scene.get_objects().keys():
             self.scene.remove_world_object(obj)
 
+    '''
     def close_gripper(self):
         plan = self.gripper.plan(GRIPPER_CLOSED)
         return self.gripper.execute(plan, wait=True)
-
+    '''
+    
     def get_ik_client(self, request):
         rospy.wait_for_service('/compute_ik')
         inverse_ik = rospy.ServiceProxy('/compute_ik', GetPositionIK)
@@ -297,7 +301,7 @@ class UR_Moveit_API:
         self.group_commander.execute(plan, wait=True)
         plan = self.group_commander.plan(DISCARD_VALUES)
         self.group_commander.execute(plan, wait=True)
-        self.open_gripper(drop=True)
+        #self.open_gripper(drop=True)
         plan = self.group_commander.plan(PREDISCARD_VALUES)
         self.group_commander.execute(plan, wait=True)
         self.move_to_neutral()
