@@ -28,8 +28,8 @@ bool RTPublisher::publishJoints(RTShared& packet, Time& t)
   joint_msg.velocity.assign(packet.qd_actual.begin(), packet.qd_actual.end());
   joint_msg.effort.assign(packet.i_actual.begin(), packet.i_actual.end());
 
-  joint_pub_.publish(joint_msg);
 
+  joint_pub_.publish(joint_msg);
   return true;
 }
 
